@@ -1,0 +1,5 @@
+node_modules/
+scripts/test-*.ts
+scripts-js/test-*.js
+token.txt
+.env
