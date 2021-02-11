@@ -18,6 +18,7 @@
   },
   "homepage": "https://gitlab.com/ptsgrn/ainalbot#readme",
   "dependencies": {
-    "mwn": "^0.8.2"
+    "express": "^4.17.1",
+    "mwn": "^0.9.1"
   }
 }
