@@ -18,7 +18,13 @@
   },
   "homepage": "https://gitlab.com/ptsgrn/ainalbot#readme",
   "dependencies": {
+    "dotenv": "^8.2.0",
+    "env": "0.0.2",
     "express": "^4.17.1",
     "mwn": "^0.9.1"
+  },
+  "devDependencies": {
+    "eslint": "^7.19.0",
+    "eslint-config-wikimedia": "^0.18.1"
   }
 }
