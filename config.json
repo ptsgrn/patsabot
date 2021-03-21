@@ -1,0 +1,24 @@
+{
+  "site": {
+    "_default": "thwiki",
+    "thwiki": "th.wikipedia.org",
+    "thwikisource": "th.wikisource.org",
+    "thwiktionary": "th.wiktionary.org",
+    "enwiki": "en.wikipedia.org",
+    "wikidatawiki": "wikidata.org",
+    "testwikidatawiki": "test.wikidata.org",
+    "wikicommons": "commons.wikimedia.org",
+    "testwiki": "test.wikipedia.org",
+    "test2wiki": "test2.wikipedia.org"
+  },
+  "config": {
+    "credentials": "./credentials.json",
+    "simulate": "false",
+    "disabled": []
+  },
+  "log": {
+    "log": "true",
+    "autolog": [],
+    "excludes": []
+  }
+}

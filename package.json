@@ -5,7 +5,9 @@
   "description": "NodeJS bot to go with Thai wikipedia",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "lint": "eslint .",
+    "lint:fix": "eslint . --fix"
   },
   "repository": {
     "type": "git",
@@ -18,13 +20,17 @@
   },
   "homepage": "https://gitlab.com/ptsgrn/ainalbot#readme",
   "dependencies": {
-    "dotenv": "^8.2.0",
-    "env": "0.0.2",
+    "chalk": "^1.1.3",
     "express": "^4.17.1",
-    "mwn": "^0.9.1"
+    "log-symbols": "^4.1.0",
+    "loglevel": "^1.7.1",
+    "loglevel-filesave": "^1.0.0",
+    "loglevel-plugin-prefix": "^0.8.4",
+    "minimist": "^1.2.5",
+    "mwn": "^0.9.1",
+    "winston": "^3.3.3"
   },
   "devDependencies": {
-    "eslint": "^7.19.0",
-    "eslint-config-wikimedia": "^0.18.1"
+    "eslint": "^7.19.0"
   }
 }
