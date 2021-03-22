@@ -1,9 +1,10 @@
 const fs = require('fs')
-const argv = require('minimist')(process.argv.    slice(2), {                               
+const argv = require('minimist')(process.argv.slice(2), {                               
     alias: {
       simulate: ['s', 'dry-run'],
-      cron: ['c', 'date'],
-      all: ['a', 'run-all', 'run']
+      cron: ['date'],
+      all: ['a', 'run-all', 'run'],
+      credentials: ['c'],
     }
 })
 
@@ -21,11 +22,14 @@ const config = {
           process.exit(0)
         })
       } else {
-
+        return require(file)
       }
     })
   },
-  userInfo: function (argv, file) {
+  userInfo: function () {
+    let file = () => {
+      if (typeof argv.credentials === string) { argv.credentials } else { './credentials.json' } 
+    }
     config.readConfig(file)
   }
 }
