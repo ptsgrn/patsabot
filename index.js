@@ -1,6 +1,9 @@
 const mwn = require('mwn')
+if (require.main !== module) return
 
-const config = require('./ainalbot/config').userInfo()
+// const config = require('./ainalbot/config').userInfo()
 
-// console.log(config)
-if (require.main !=== module) return
+let log = require('./ainalbot/logger')('main')
+var config = require('./config.json')
+
+
