@@ -1,13 +1,13 @@
 # AinalBOT
 **[ผู้ใช้:AinalBOT][botuserpage]** ([คุย][botusertalk] | [ส่วนร่วม][botcontribs])
 
-วิกิพีเดียบอคโดยนายง่อย ๆ ที่ชอบดองคนหนึ่ง บอตนี้ก็เป็นส่วนหนึ่งที่นำออกมาจากโอ่งดองได้ซักที...
+วิกิพีเดียบอคโดย[นายง่อย ๆ ที่ชอบดองคนหนึ่ง][] บอตนี้ก็เป็นส่วนหนึ่งที่นำออกมาจากโอ่งดองได้ซักที...
 
 # TODO
 - [ ] บอตที่คอยบันทึกการอัปโหลดข้ามวิกิจาก th.wikipedia.org ไปคอมมอนส์ แล้วบันทึกไว้ให้ผู้ใช้อื่นตรวจสอบง่าย ๆ
 - [ ] บอตที่เก็บการอภิปรายเข้ากรุ
-- [ ] ทำงานร่วมกับ ORES ย้อนการก่อกวน (อย่าลืมขโมยการทำงานของ JBot มาด้วย, และ ClueBot! [⬀](https://en.m.wikipedia.org/wiki/User:ClueBot_NG))
-- [ ] บอตอัปเดตจำนวนการ Transclude ของแม่แบบ และจัดการแม่แบบ High risk และ High usages (ดูที่ (Wikipedia:Bots/Requests for approval/Ahechtbot 6)[http://en.wikipedia.org/wiki/Wikipedia:Bots/Requests_for_approval/Ahechtbot_6])
+- [ ] ทำงานร่วมกับ ORES ย้อนการก่อกวน (อย่าลืมขโมยการทำงานของ JBot มาด้วย, และ ClueBot! [ตัวอย่าง](https://en.m.wikipedia.org/wiki/User:ClueBot_NG))
+- [ ] บอตอัปเดตจำนวนการ Transclude ของแม่แบบ และจัดการแม่แบบ High risk และ High usages (ดูที่ (Wikipedia:Bots/Requests for approval/Ahechtbot 6)[http://en.wikipedia.org/wiki/Wikipedia:Bots/Requests_for_approval/Ahechtbot_6] )
 - [ ] บอตจัดการ แม่แบบ DiBabel (เพิ่มแม่แบบอย่าแก้ไข แล้วรันบอตตรวจตรา (ใช้ [SPARQL ที่ P31=Q63090714](https://w.wiki/37yN))
 - [ ] นับจำนวนการใช้ {{Bots}} และทำสถิติ
 - [ ] "subst:" แม่แบบที่มีป้าย {{must be subst}} ที่ถูกใช้แล้วลืม subst [ดูตัวอย่าง](https://en.wikipedia.org/wiki/User:AnomieBOT/docs/TemplateSubster)
@@ -23,7 +23,7 @@
 - [ ] บีบความละเอียดของสื่อไม่เสรีให้ตรงตามที่นโยบายกำหนด
 
 
-[opuserpage]: https://w.wiki/JSB
+[นายง่อย ๆ ที่ชอบดองคนหนึ่ง]: https://w.wiki/JSB
 [botuserpage]: https://w.wiki/37yG
 [botcontribs]: https://w.wiki/37yK
 [botusertalk]: https://w.wiki/37yM
