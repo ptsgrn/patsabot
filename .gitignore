@@ -1,5 +1,8 @@
 node_modules/
 logs/
 credentials.json
-.*.swp
+
+.*.swn
 .*.swo
+.*.swp
+.*.sw*
