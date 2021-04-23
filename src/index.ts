@@ -6,10 +6,7 @@ if (config.help) config.help()
 
 const bree = new Bree({
   logger: console,
-  root: path.resolve('dist/tasks'),
-  jobs: [
-    'task1',
-  ]
+  root: path.resolve('dist/tasks')
 })
 
 bree.start()
