@@ -3,35 +3,35 @@ import jsonfile from 'jsonfile'
 import yargs from 'yargs/yargs'
 
 interface PackageJsonFile {
-  name: string,
-  version: number,
-  'private': boolean,
-  'description': string,
-  main: string,
-  scripts: object,
-  repository: object,
-  author: string,
-  maintainers: object[],
-  license: string,
+  name: string
+  version: number
+  'private': boolean
+  'description': string
+  main: string
+  scripts: object
+  repository: object
+  author: string
+  maintainers: object[]
+  license: string
   bugs: {
-    url?: string,
-    email?: string,
-  },
-  homepage: string,
-  dependencies: object,
-  devDependencies: object,
+    url?: string
+    email?: string
+  }
+  homepage: string
+  dependencies: object
+  devDependencies: object
 }
 
 interface ConfigJson {
   _site: {
     (x: string): string[]
-  },
+  }
   config: {
     user: string
     credentials: string
     simulate: boolean
     disabled: []
-  },
+  }
   log: {
     logdir: string
     debug: boolean
@@ -71,6 +71,7 @@ const argv: any = yargs(process.argv.slice(2))
   })
   .option('site',{
     describe: 'What site should bot usend in',
+    alias: 'wiki',
     default: '_default',
   })
   // --debug
@@ -81,6 +82,7 @@ const argv: any = yargs(process.argv.slice(2))
   })
   .group(['config', 'credential'], 'Bot\'s Autherization')
   .epilogue('Running to any issue? File a bug at <https://gitlab.com/ptsgrn/ainalbot/-/issues> or contact the owner at <https://w.wiki/JSB>')
+  .command('start','start bot', (yargs)=>{})
   .argv
 
 class Site {
@@ -89,7 +91,8 @@ class Site {
   }
   getSiteApiUrl() {
     let s: any = argv._site[argv.site] ?? argv._site._default
-    return `${s[0]}//${s[1] + s[2]}/api.php` as string
+    // return `${s[0]}//${s[1] + s[2]}/api.php` as string
+    return `https://th.wikipedia.org/w/api.php`
   }
 }
 
@@ -98,7 +101,7 @@ class User {
     let keys:any =  argv[argv.config.user]
     return keys[key] as string
   }
-  getUserAgent (pkgfile:string = '../../package.json'):string {
+  getUserAgent (pkgfile:string = 'package.json'):string {
     let pkg: PackageJsonFile = jsonfile.readFileSync(pkgfile)
     let ret:string = ''
     ret += pkg.name + '/'
