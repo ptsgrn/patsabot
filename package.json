@@ -1,6 +1,6 @@
 {
   "name": "ainalbot",
-  "version": "0.0.1",
+  "version": "0.0.2-alpha",
   "private": "true",
   "description": "NodeJS bot to go with Thai wikipedia",
   "main": "dist/index.js",
@@ -10,7 +10,6 @@
     "lint:fix": "eslint . --fix",
     "start": "tsc && node .",
     "build": "tsc",
-    "type": "module",
     "dev": "tsc --watch false && node dist/index.js"
   },
   "repository": {
