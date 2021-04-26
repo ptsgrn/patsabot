@@ -18,38 +18,49 @@ var __importStar = (this && this.__importStar) || function (mod) {
     __setModuleDefault(result, mod);
     return result;
 };
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
 Object.defineProperty(exports, "__esModule", { value: true });
 const mwn_1 = require("mwn");
 const config_1 = __importStar(require("./config"));
+const logger_1 = __importDefault(require("./logger"));
+const log = logger_1.default.extend('bot');
 const site = new config_1.Site(), user = new config_1.User(), { getKeyOf, getUserAgent } = user;
-const bot = new mwn_1.mwn({
-    apiUrl: site.getSiteApiUrl(),
-    username: config_1.default.username,
-    OAuthCredentials: {
-        accessSecret: getKeyOf('consumer_secret'),
-        accessToken: getKeyOf('consumer_token'),
-        consumerSecret: getKeyOf('access_secret'),
-        consumerToken: getKeyOf('access_token'),
-    },
-    userAgent: getUserAgent(),
-    silent: !config_1.default.debug,
-    maxRetries: 7,
-    defaultParams: {
-        assert: 'user',
-    },
-    shutoff: {
-        onShutoff: (wikitext) => {
-            throw new Error('Bot had been shutted off\nPage text is ⟩' + wikitext);
-            process.exit(1);
+try {
+    let bot = new mwn_1.mwn({
+        apiUrl: site.getSiteApiUrl(),
+        OAuthCredentials: {
+            consumerSecret: getKeyOf('consumer_secret'),
+            consumerToken: getKeyOf('consumer_token'),
+            accessSecret: getKeyOf('access_secret'),
+            accessToken: getKeyOf('access_token'),
         },
-        page: 'User:AinalBOT/shutoff',
-        condition: (wikitext) => {
-            if (wikitext !== 'running')
-                return false;
-            return true;
+        password: getKeyOf('password'),
+        username: config_1.default.username,
+        userAgent: getUserAgent(),
+        silent: !config_1.default.debug,
+        maxRetries: 7,
+        defaultParams: {
+            assert: 'user',
+        },
+        shutoff: {
+            onShutoff: (wikitext) => {
+                throw new Error('Bot had been shutted off\nPage text is ⟩' + wikitext);
+                process.exit(1);
+            },
+            page: 'User:AinalBOT/shutoff',
+            condition: (wikitext) => {
+                if (wikitext !== 'running')
+                    return false;
+                return true;
+            }
         }
-    }
-});
-bot.login();
-bot.getTokensAndSiteInfo();
-exports.default = bot;
+    });
+    bot.login();
+    bot.getTokensAndSiteInfo();
+    export default bot;
+}
+catch (err) {
+    console.log(err);
+}
