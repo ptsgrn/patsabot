@@ -6,7 +6,7 @@
 # TODO
 - [ ] เก็บกวาด Lang-xx ในการใช้ตัวเอียง
 - [ ] บอตส่งออก Short Description ไปวิกิสนเทศ
-- [ ] บอตที่คอยบันทึกการอัปโหลดข้ามวิกิจาก th.wikipedia.org ไปคอมมอนส์ แล้วบันทึกไว้ให้ผู้ใช้อื่นตรวจสอบง่าย ๆ
+- [x] บอตที่คอยบันทึกการอัปโหลดข้ามวิกิจาก th.wikipedia.org ไปคอมมอนส์ แล้วบันทึกไว้ให้ผู้ใช้อื่นตรวจสอบง่าย ๆ (มี [abusefilter](https://commons.wikimedia.org/wiki/Special:AbuseFilter/153))
 - [ ] บอตที่เก็บการอภิปรายเข้ากรุ
 - [ ] ทำงานร่วมกับ ORES ย้อนการก่อกวน (อย่าลืมขโมยการทำงานของ JBot มาด้วย, และ ClueBot! [ตัวอย่าง](https://en.m.wikipedia.org/wiki/User:ClueBot_NG))
 - [ ] บอตอัปเดตจำนวนการ Transclude ของแม่แบบ และจัดการแม่แบบ High risk และ High usages (ดูที่ (Wikipedia:Bots/Requests for approval/Ahechtbot 6)[http://en.wikipedia.org/wiki/Wikipedia:Bots/Requests_for_approval/Ahechtbot_6] )
@@ -14,7 +14,7 @@
 - [ ] นับจำนวนการใช้ {{Bots}} และทำสถิติ
 - [ ] "subst:" แม่แบบที่มีป้าย {{must be subst}} ที่ถูกใช้แล้วลืม subst [ดูตัวอย่าง](https://en.wikipedia.org/wiki/User:AnomieBOT/docs/TemplateSubster)
 - [ ] อัปเดต "แม่แบบ:FA title" สำหรับใช้ค้นชื่อบทความคัดสรรเดือนปัจจุบันและในอดีตหรือแม้แต่อนาคต
-- [ ] อัปเดต <ref/> ที่ใช้งานผิด [ดูตัวอย่าง](https://en.wikipedia.org/wiki/User:AnomieBOT/source/tasks/OrphanReferenceFixer.pm)
+- [ ] อัปเดต \<ref/\> ที่ใช้งานผิด [ดูตัวอย่าง](https://en.wikipedia.org/wiki/User:AnomieBOT/source/tasks/OrphanReferenceFixer.pm)
 - [ ] ดูการใช้แม่แบบกึ่งล็อค และแม่แบบ pp ตรวจสอบว่าหน้านั้นถูกล็อกอยู่หรือไม่ ถ้าใช่ เพิ่มแม่แบบกรณีไม่มี ถ้าไม่ใช่ ลบแม่แบบออก และตรวจดูการใช้แม่แบบซ้อนด้วย
 - [ ] จัดหน้าในหมวดหมู่ ลบหน้าที่ไม่น่าจะเกี่ยวกับหมวดหมู่ออก [ตัวอย่าง](https://en.m.wikipedia.org/wiki/User:AnomieBOT/source/tasks/CategoryCleaner.pm)
 - [ ] ให้บอตเก็บกวาดหน้ากระบะทราย พร้อมทำหน้าไว้ตั้งค่า และย้อนไปรุ่นการแก้ไขที่เป็นรุ่นรีเซ็ต
