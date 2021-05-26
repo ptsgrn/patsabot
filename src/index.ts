@@ -28,13 +28,34 @@ import { mwn } from 'mwn'
 // Bot's internal
 import scripts from './tasks/index'
 import log, { Multi } from './ainalbot/logger'
+<<<<<<< HEAD
 import config, { Site, User } from './ainalbot/config'
+=======
+import bot from './ainalbot/bot'
+
+interface JobsOptions {
+  name: string
+  path?: string
+  timeout?: Number | Object | string | boolean
+  interval?: Number | Object | string
+  date?: Date
+  cron?: string
+  hasSeconds?: boolean
+  cronValidate?: Object
+  closeWorkerAfterMs?: Number
+  worker?: Object
+  outputWorkerMetadata?: boolean
+}
+
+type Jobs = JobsOptions[] | string[]
+>>>>>>> main
 
 // Variables
 const site = new Site(),
    user = new User(),
   { getKeyOf, getUserAgent } = user
 
+<<<<<<< HEAD
 class AinalBOT {
   constructor() {
     this.tasks = new Map()
@@ -76,6 +97,24 @@ class AinalBOT {
     
   }
 }
+=======
+const bree = new Bree({
+  logger: Multi,
+  root: path.resolve('./dist/tasks'),
+  jobs: [
+    {
+      name: 'task2',
+    },
+  ],
+  worker: {
+    workerData: {
+      text: 'feat',
+    } 
+  }
+})
+
+bree.start()
+>>>>>>> main
 
 if (config.help) config.help()
 if (require.main !== module) process.abort()

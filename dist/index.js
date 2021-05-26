@@ -18,14 +18,8 @@ var __importStar = (this && this.__importStar) || function (mod) {
     __setModuleDefault(result, mod);
     return result;
 };
-var __importDefault = (this && this.__importDefault) || function (mod) {
-    return (mod && mod.__esModule) ? mod : { "default": mod };
-};
 Object.defineProperty(exports, "__esModule", { value: true });
-const path_1 = __importDefault(require("path"));
-const bree_1 = __importDefault(require("bree"));
 const mwn_1 = require("mwn");
-const logger_1 = require("./ainalbot/logger");
 const config_1 = __importStar(require("./ainalbot/config"));
 const site = new config_1.Site(), user = new config_1.User(), { getKeyOf, getUserAgent } = user;
 class AinalBOT {
@@ -60,26 +54,14 @@ class AinalBOT {
             });
             return bot;
         };
-        this.job = () => {
-            const bree = new bree_1.default({
-                logger: logger_1.Multi,
-                root: path_1.default.resolve('./dist/tasks'),
-                jobs: [
-                    {
-                        name: 'task2',
-                    },
-                ],
-                worker: {
-                    workerData: {
-                        text: 'feat',
-                    }
-                }
-            });
-            return bree;
-        };
+        this.tasks = new Map();
+        console.log(0);
+    }
+    start() {
     }
 }
 if (config_1.default.help)
     config_1.default.help();
 if (require.main !== module)
     process.abort();
+new AinalBOT.start();
