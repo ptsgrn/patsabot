@@ -1,4 +1,3 @@
-
 interface JobsOptions {
   name: string
   path?: string
@@ -12,7 +11,11 @@ interface JobsOptions {
   worker?: Object
   outputWorkerMetadata?: boolean
 }
-
+interface AinalBOT {
+  tasks: Map<string, VoidFunction>
+  bot(): Promise<mwn> 
+  start(): void
+}
 type Jobs = JobsOptions[] | string[]
 
 // NodeJS internal
@@ -23,6 +26,7 @@ import Bree from 'bree'
 import { mwn } from 'mwn'
 
 // Bot's internal
+import scripts from './tasks/index'
 import log, { Multi } from './ainalbot/logger'
 import config, { Site, User } from './ainalbot/config'
 
@@ -32,7 +36,11 @@ const site = new Site(),
   { getKeyOf, getUserAgent } = user
 
 class AinalBOT {
-  bot = async (): Promise<mwn> => {
+  constructor() {
+    this.tasks = new Map()
+    console.log(0)
+  }
+  bot = async () => {
     const bot = await mwn.init({
       apiUrl: site.getSiteApiUrl(),
       OAuthCredentials: {
@@ -64,25 +72,11 @@ class AinalBOT {
     })
     return bot
   }
-
-  job = (): any => {
-    const bree = new Bree({
-      logger: Multi,
-      root: path.resolve('./dist/tasks'),
-      jobs: [
-        {
-          name: 'task2',
-        },
-      ],
-      worker: {
-        workerData: {
-          text: 'feat',
-        } 
-      }
-    })
-    return bree
+  start() {
+    
   }
 }
 
 if (config.help) config.help()
-if (require.main !== module) process.abort() 
+if (require.main !== module) process.abort()
+new AinalBOT.start()
