@@ -18,61 +18,15 @@ var __importStar = (this && this.__importStar) || function (mod) {
     __setModuleDefault(result, mod);
     return result;
 };
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
 Object.defineProperty(exports, "__esModule", { value: true });
-<<<<<<< HEAD
-const mwn_1 = require("mwn");
+const path_1 = __importDefault(require("path"));
+const bree_1 = __importDefault(require("bree"));
+const logger_1 = require("./ainalbot/logger");
 const config_1 = __importStar(require("./ainalbot/config"));
 const site = new config_1.Site(), user = new config_1.User(), { getKeyOf, getUserAgent } = user;
-class AinalBOT {
-    constructor() {
-        this.bot = async () => {
-            const bot = await mwn_1.mwn.init({
-                apiUrl: site.getSiteApiUrl(),
-                OAuthCredentials: {
-                    consumerSecret: getKeyOf('consumer_secret'),
-                    consumerToken: getKeyOf('consumer_token'),
-                    accessSecret: getKeyOf('access_secret'),
-                    accessToken: getKeyOf('access_token'),
-                },
-                password: getKeyOf('password'),
-                username: config_1.default.username,
-                userAgent: getUserAgent(),
-                silent: !config_1.default.debug,
-                maxRetries: 7,
-                defaultParams: {
-                    assert: 'user',
-                },
-                shutoff: {
-                    onShutoff: (wikitext) => {
-                        throw new Error('Bot had been shutted off\nPage text is ⟩' + wikitext);
-                        process.exit(1);
-                    },
-                    page: 'User:AinalBOT/shutoff',
-                    condition: (wikitext) => {
-                        return true;
-                    }
-                }
-            });
-            return bot;
-        };
-        this.tasks = new Map();
-        console.log(0);
-    }
-    start() {
-    }
-}
-if (config_1.default.help)
-    config_1.default.help();
-if (require.main !== module)
-    process.abort();
-new AinalBOT.start();
-=======
-const config_1 = __importDefault(require("./ainalbot/config"));
-const bree_1 = __importDefault(require("bree"));
-const path_1 = __importDefault(require("path"));
-const logger_1 = require("./ainalbot/logger");
-if (config_1.default.help)
-    config_1.default.help();
 const bree = new bree_1.default({
     logger: logger_1.Multi,
     root: path_1.default.resolve('./dist/tasks'),
@@ -88,4 +42,8 @@ const bree = new bree_1.default({
     }
 });
 bree.start();
->>>>>>> main
+if (config_1.default.help)
+    config_1.default.help();
+if (require.main !== module)
+    process.abort();
+new AinalBOT.start();
