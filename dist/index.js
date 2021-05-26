@@ -19,6 +19,7 @@ var __importStar = (this && this.__importStar) || function (mod) {
     return result;
 };
 Object.defineProperty(exports, "__esModule", { value: true });
+<<<<<<< HEAD
 const mwn_1 = require("mwn");
 const config_1 = __importStar(require("./ainalbot/config"));
 const site = new config_1.Site(), user = new config_1.User(), { getKeyOf, getUserAgent } = user;
@@ -65,3 +66,26 @@ if (config_1.default.help)
 if (require.main !== module)
     process.abort();
 new AinalBOT.start();
+=======
+const config_1 = __importDefault(require("./ainalbot/config"));
+const bree_1 = __importDefault(require("bree"));
+const path_1 = __importDefault(require("path"));
+const logger_1 = require("./ainalbot/logger");
+if (config_1.default.help)
+    config_1.default.help();
+const bree = new bree_1.default({
+    logger: logger_1.Multi,
+    root: path_1.default.resolve('./dist/tasks'),
+    jobs: [
+        {
+            name: 'task2',
+        },
+    ],
+    worker: {
+        workerData: {
+            text: 'feat',
+        }
+    }
+});
+bree.start();
+>>>>>>> main
