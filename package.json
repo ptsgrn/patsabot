@@ -30,6 +30,10 @@
     "url": "https://github.com/ptsgrn/ainalbot/issues"
   },
   "homepage": "https://github.com/ptsgrn/ainalbot#readme",
+  "config": {
+    "commitizen": {
+      "path": "cz-conventional-changelog"
+    },
   "dependencies": {
     "bree": "^6.2.0",
     "bthreads": "^0.5.1",
