@@ -15,7 +15,7 @@ const logger = createLogger({
   defaultMeta: { service: 'ainalbot' },
   transports: [
     new transports.File({ filename: `${loggerDir}/error.log`, level: 'error' }),
-  ],
+  ],\
   exceptionHandlers: [
     new transports.File({ filename: `${loggerDir}/exceptions.log` })
   ]
@@ -37,4 +37,4 @@ logger.configure({
   ]
 })
 
-module.exports = module.exports.default = logger
+module.exports = logger
