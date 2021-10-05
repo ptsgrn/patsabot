@@ -8,8 +8,6 @@ const config = require('./config')
 
 const bot = new mwn({
   apiUrl: config.site.siteUrl,
-  // username: 'YourBotUsername',
-  // password: 'YourBotPassword',
   OAuthCredentials: {
     ...config.user.OAuthCredentials
   },
@@ -19,7 +17,7 @@ const bot = new mwn({
     assert: 'user' // ensure we're logged in
   },
   exclusionRegex: /\{\{nobots\}\}/i
-})
+}) 
 
 bot.initOAuth()
 bot.getTokensAndSiteInfo()

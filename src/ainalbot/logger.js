@@ -1,6 +1,6 @@
 const { createLogger, format, transports } = require('winston')
-const { loggerDir, isDebug } = require('./config')
-const { DailyRotateFile } = require('winston-daily-rotate-file')
+const { loggerDir } = require('./config')
+require('winston-daily-rotate-file')
 
 const logger = createLogger({
   level: 'info',
@@ -14,26 +14,25 @@ const logger = createLogger({
   ),
   defaultMeta: { service: 'ainalbot' },
   transports: [
-    new transports.File({ filename: `${loggerDir}/error.log`, level: 'error' }),
-  ],\
+    new transports.DailyRotateFile({
+      dirname: './logs/',
+      frequency: '24h',
+      filename: process.env.NODE_ENV === 'production' ? 'prod-%DATE%.log' : '%DATE%.log',
+      maxSize: '1mb',
+      maxFiles: '15d',
+      utc: true,
+      createSymlink: true,
+      symlinkName: '_current.log'
+    }),
+    new transports.Console({
+      format: format.combine(
+        format.colorize(),
+        format.simple()
+      )
+    })
+  ],
   exceptionHandlers: [
     new transports.File({ filename: `${loggerDir}/exceptions.log` })
-  ]
-})
-
-if (process.env.NODE_ENV !== 'production') {
-  logger.add(new transports.Console({
-    format: format.combine(
-      format.colorize(),
-      format.simple()
-    )
-  }))
-}
-
-logger.configure({
-  level: 'verbose',
-  transports: [
-    new DailyRotateFile()
   ]
 })
 
