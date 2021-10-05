@@ -1,9 +1,5 @@
 node_modules/
 logs/
-dist/
 credentials.json
-
-.*.swn
-.*.swo
-.*.swp
+configstore/
 .*.sw*
