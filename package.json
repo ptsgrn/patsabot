@@ -3,7 +3,7 @@
   "version": "0.0.2-alpha",
   "private": "true",
   "description": "NodeJS bot to go with Thai wikipedia",
-  "main": "dist/index.js",
+  "main": "src/index.js",
   "type": "commonjs",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
@@ -38,11 +38,13 @@
   },
   "dependencies": {
     "bthreads": "^0.5.1",
+    "dayjs": "^1.10.7",
     "jsonfile": "^6.1.0",
     "mwn": "^0.9.1",
     "ontime": "^0.0.8",
     "winston": "^3.3.3",
-    "winston-daily-rotate-file": "^4.5.5"
+    "winston-daily-rotate-file": "^4.5.5",
+    "yargs": "^17.2.1"
   },
   "devDependencies": {
     "cz-conventional-changelog": "^3.3.0",
