@@ -1,7 +1,7 @@
 lockfileVersion: 5.3
 
 specifiers:
-  bthreads: ^0.5.1
+  cuid: ^2.1.8
   cz-conventional-changelog: ^3.3.0
   dayjs: ^1.10.7
   eslint: ^7.19.0
@@ -13,7 +13,7 @@ specifiers:
   yargs: ^17.2.1
 
 dependencies:
-  bthreads: 0.5.1
+  cuid: 2.1.8
   dayjs: 1.10.7
   jsonfile: 6.1.0
   mwn: 0.9.1
@@ -316,22 +316,10 @@ packages:
       fill-range: 7.0.1
     dev: true
 
-  /bthreads/0.5.1:
-    resolution: {integrity: sha512-nK7Jo9ll+r1FRMNPWEFRTZMQrX6HhX8JjPAofxmbTNILHqWVIJPmWzCi9JlX/K0DL5AKZTFZg2Qser5C6gVs9A==}
-    engines: {node: '>=8.0.0'}
-    dependencies:
-      bufio: 1.0.7
-    dev: false
-
   /buffer-from/1.1.2:
     resolution: {integrity: sha512-E+XQCRwSbaaiChtv6k6Dwgc+bx+Bs6vuKJHHl5kox/BaKbhiXzqQOwK4cO22yElGp2OCmjwVhT3HmxgyPGnJfQ==}
     dev: true
     optional: true
-
-  /bufio/1.0.7:
-    resolution: {integrity: sha512-bd1dDQhiC+bEbEfg56IdBv7faWa6OipMs/AFFFvtFnB3wAYjlwQpQRZ0pm6ZkgtfL0pILRXhKxOiQj6UzoMR7A==}
-    engines: {node: '>=8.0.0'}
-    dev: false
 
   /cachedir/2.2.0:
     resolution: {integrity: sha512-VvxA0xhNqIIfg0V9AmJkDg91DaJwryutH5rVEZAhcNi4iJFj9f+QxmAjgK1LT9I8OgToX27fypX6/MeCXVbBjQ==}
@@ -504,6 +492,10 @@ packages:
       shebang-command: 2.0.0
       which: 2.0.2
     dev: true
+
+  /cuid/2.1.8:
+    resolution: {integrity: sha512-xiEMER6E7TlTPnDxrM4eRiC6TRgjNX9xzEZ5U/Se2YJKr7Mq4pJn/2XEHjl3STcSh96GmkHPcBXLES8M29wyyg==}
+    dev: false
 
   /cz-conventional-changelog/3.2.0:
     resolution: {integrity: sha512-yAYxeGpVi27hqIilG1nh4A9Bnx4J3Ov+eXy4koL3drrR+IO9GaWPsKjik20ht608Asqi8TQPf0mczhEeyAtMzg==}
