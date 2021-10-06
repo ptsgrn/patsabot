@@ -3,7 +3,7 @@
 // This software is released under the MIT License.
 // https://opensource.org/licenses/MIT
 
-const { accessSync } = require('fs')
+const { accessSync, readdirSync } = require('fs')
 const { resolve } = require('path')
 const bot = require('./ainalbot/bot')
 const log = require('./ainalbot/logger')
@@ -21,12 +21,16 @@ let args = yargs(hideBin(process.argv))
         normalize: true
       })
   })
+  .completion('completion', function() {
+    let files = readdirSync(resolve(__dirname, './scripts/'))
+    console.log(files)
+    return files
+  })
   .help('help')
   .alias('help', 'h')
   .epilog('MIT License by Patsagorn Y. 2020-2021')
-  .argv
-console.log(args)
-if (args.help) throw args.help()
+  .parse()
+
 try {
   accessSync(resolve(__dirname, `./scripts/${args._[0]}.js`)) 
 } catch {
@@ -42,9 +46,9 @@ script.run({
     script: script.id || 'UNKNOWN',
     workid
   })
-}).then(()=>{
+}).then(() => {
   log.log('scriptdone',`script ${script.id} (workid:${workid}) done in ${dayjs(new bot.date()).diff(startRun)}ms`)
-}).catch((err)=>{
+}).catch((err) => {
   log.error(err)
   throw err
 })
