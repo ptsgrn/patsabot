@@ -8,11 +8,7 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "lint": "eslint .",
-    "lint:fix": "eslint . --fix",
-    "start": "tsc && node .",
-    "build": "tsc",
-    "type": "module",
-    "dev": "tsc --watch false && node dist/index.js"
+    "lint:fix": "eslint . --fix"
   },
   "repository": {
     "type": "git",
