@@ -28,7 +28,8 @@ const logger = createLogger({
       stack: true
     }),
     format.splat(),
-    format.json()
+    format.json(),
+    format.ms()
   ),
   defaultMeta: { service: 'ainalbot' },
   transports: [
