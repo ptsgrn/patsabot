@@ -5,36 +5,32 @@
 
 const config = {
   category: 'หมวดหมู่:แม่แบบที่ควรรวมผ่านเสมอ',
-  worknamespaces: ['0']
+  worknamespaces: ['*']
 }
 
 let workingPage = {}
 
 async function foreachTemplatename(templatename, idx, { log, bot }) {
-  log.log('debug', 'script.foreachTemplatename.start %s', templatename)
-  bot.request({
+  log.log('debug', 'script.foreachTemplatename.start', {data: templatename})
+  const response = await bot.request({
     'action': 'query',
     'format': 'json',
     'prop': 'transcludedin',
-    'titles': templatename,
+    'titles': 'แม่แบบ:ยินดีต้อนรับ',
     'utf8': 1,
     'formatversion': '2',
     'tinamespace': config.worknamespaces.join('|')
   })
-    .then((json) => {
-      // log.log('debug', 'script.foreachTemplatename.mass.get %o', json)
-      json.query.pages.forEach(pagename => {
-        workingPage[pagename.title+''] = []
-        workingPage[pagename.title+''].push(templatename+'')
-      })
-    })
-    .finally(() => {
-      log.log('debug', 'script.foreachTemplatename.end %s', templatename)
-    })
+  response.query.pages[0].transcludedin.forEach(page => {
+    workingPage[page.title+''] = []
+    workingPage[page.title+''].push(templatename)
+  })
+  log.log('debug', 'script.foreachTemplatename.end', {data: templatename})
+  console.log(workingPage)
 }
 
 function pushPageToWorks(page, templatename) {
-
+  console.log(page, templatename)
 }
 
 async function main({bot, log}) {
@@ -47,18 +43,18 @@ async function main({bot, log}) {
     'cmlimit': 'max'
   })) {
     templateslist = templateslist.concat(json.query.categorymembers.map((tem) => tem.title))
-    log.log('debug', 'script.templatelist.get %o', templateslist)
+    log.log('debug', 'script.templatelist.get', {data: templateslist})
     log.log('debug', 'script.templatelist.foreach.start')
     bot.seriesBatchOperation(
       templateslist,
       async (templatename, idx) => {
         await foreachTemplatename(templatename, idx, { log, bot })
       },
-      2000,
+      10,
       2
     ).finally(()=>{
       log.log('debug', 'script.templatelist.foreach.end')
-      log.log('debug', 'script.foreachTemplatename.get %o', workingPage)
+      log.log('debug', 'script.foreachTemplatename.get', {data: workingPage})
     })
   }
 }

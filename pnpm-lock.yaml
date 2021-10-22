@@ -1,11 +1,13 @@
 lockfileVersion: 5.3
 
 specifiers:
+  '@types/lowdb': ^1.0.11
   cuid: ^2.1.8
   cz-conventional-changelog: ^3.3.0
   dayjs: ^1.10.7
   eslint: ^7.19.0
   jsonfile: ^6.1.0
+  lowdb: ^3.0.0
   mwn: ^0.9.1
   ontime: ^0.0.8
   winston: ^3.3.3
@@ -13,9 +15,11 @@ specifiers:
   yargs: ^17.2.1
 
 dependencies:
+  '@types/lowdb': 1.0.11
   cuid: 2.1.8
   dayjs: 1.10.7
   jsonfile: 6.1.0
+  lowdb: 3.0.0
   mwn: 0.9.1
   ontime: 0.0.8
   winston: 3.3.3
@@ -157,6 +161,16 @@ packages:
 
   /@types/eventsource/1.1.6:
     resolution: {integrity: sha512-y4xcLJ+lcoZ6mN9ndSdKOWg24Nj5uQc4Z/NRdy3HbiGGt5hfH3RLwAXr6V+RzGzOljAk48a09n6iY4BMNumEng==}
+    dev: false
+
+  /@types/lodash/4.14.176:
+    resolution: {integrity: sha512-xZmuPTa3rlZoIbtDUyJKZQimJV3bxCmzMIO2c9Pz9afyDro6kr7R79GwcB6mRhuoPmV2p1Vb66WOJH7F886WKQ==}
+    dev: false
+
+  /@types/lowdb/1.0.11:
+    resolution: {integrity: sha512-h99VMxvTuz+VsXUVCCJo4dsps4vbkXwvU71TpmxDoiBU24bJ0VBygIHgmMm+UPoQIFihmV6euRik4z8J7XDJWg==}
+    dependencies:
+      '@types/lodash': 4.14.176
     dev: false
 
   /@types/node/14.17.20:
@@ -1189,6 +1203,13 @@ packages:
     engines: {node: '>=0.10.0'}
     dev: true
 
+  /lowdb/3.0.0:
+    resolution: {integrity: sha512-9KZRulmIcU8fZuWiaM0d5e2/nPnrFyXkeXVpqT+MJS+vgbgOf1EbtvgQmba8HwUFgDl1oeZR6XqEJnkJmQdKmg==}
+    engines: {node: ^12.20.0 || ^14.13.1 || >=16.0.0}
+    dependencies:
+      steno: 2.1.0
+    dev: false
+
   /lru-cache/6.0.0:
     resolution: {integrity: sha512-Jo6dJ04CmSjuznwJSS3pUeWmd/H0ffTlkXXgwZi+eq1UCmqQwCh+eLsYOYCwY991i2Fah4h1BEMCx4qThGbsiA==}
     engines: {node: '>=10'}
@@ -1585,6 +1606,11 @@ packages:
 
   /stack-trace/0.0.10:
     resolution: {integrity: sha1-VHxws0fo0ytOEI6hoqFZ5f3eGcA=}
+    dev: false
+
+  /steno/2.1.0:
+    resolution: {integrity: sha512-mauOsiaqTNGFkWqIfwcm3y/fq+qKKaIWf1vf3ocOuTdco9XoHCO2AGF1gFYXuZFSWuP38Q8LBHBGJv2KnJSXyA==}
+    engines: {node: ^14.13.1 || >=16.0.0}
     dev: false
 
   /string-width/2.1.1:
