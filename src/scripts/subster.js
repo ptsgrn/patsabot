@@ -3,24 +3,21 @@
 // This software is released under the MIT License.
 // https://opensource.org/licenses/MIT
 
-import { mwn } from 'mwn'
-import winston from 'winston'
-
 const config = {
   category: 'หมวดหมู่:แม่แบบที่ควรรวมผ่านเสมอ',
   worknamespaces: ['*']
 }
 
-let workingPage = {}
+// let workingPage = {}
 /**
  * run on each template
  * @param  {String[]} templatename
  * @param  {winston} others.log
  * @param  {mwn} others.bot
  */
-async function foreachTemplatename(templatename, { log, bot }) {
+// async function foreachTemplatename(templatename, { log, bot }) {
   
-}
+// }
 
 /**
  * @param  {mwn} bot
@@ -37,7 +34,7 @@ async function main({bot, log}) {
   })) {
     templateslist = templateslist.concat(json.query.categorymembers.map((tem) => tem.title))
     log.log('debug', 'script.templateslist.request.get', {data: templateslist})
-    await foreachTemplatename(templateslist, {bot, log})
+    // await foreachTemplatename(templateslist, {bot, log})
   }
 }
 
