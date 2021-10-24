@@ -2,9 +2,9 @@ lockfileVersion: 5.3
 
 specifiers:
   '@types/lowdb': ^1.0.11
+  '@types/node': ^16.11.4
   cuid: ^2.1.8
   cz-conventional-changelog: ^3.3.0
-  dayjs: ^1.10.7
   eslint: ^7.19.0
   jsonfile: ^6.1.0
   lowdb: ^3.0.0
@@ -16,8 +16,8 @@ specifiers:
 
 dependencies:
   '@types/lowdb': 1.0.11
+  '@types/node': 16.11.4
   cuid: 2.1.8
-  dayjs: 1.10.7
   jsonfile: 6.1.0
   lowdb: 3.0.0
   mwn: 0.9.1
@@ -175,6 +175,10 @@ packages:
 
   /@types/node/14.17.20:
     resolution: {integrity: sha512-gI5Sl30tmhXsqkNvopFydP7ASc4c2cLfGNQrVKN3X90ADFWFsPEsotm/8JHSUJQKTHbwowAHtcJPeyVhtKv0TQ==}
+    dev: false
+
+  /@types/node/16.11.4:
+    resolution: {integrity: sha512-TMgXmy0v2xWyuCSCJM6NCna2snndD8yvQF67J29ipdzMcsPa9u+o0tjF5+EQNdhcuZplYuouYqpc4zcd5I6amQ==}
     dev: false
 
   /@types/parse-json/4.0.0:
@@ -542,10 +546,6 @@ packages:
     transitivePeerDependencies:
       - typescript
     dev: true
-
-  /dayjs/1.10.7:
-    resolution: {integrity: sha512-P6twpd70BcPK34K26uJ1KT3wlhpuOAPoMwJzpsIWUxHZ7wpmbdZL/hQqBDfz7hGurYSa5PhzdhDHtt319hL3ig==}
-    dev: false
 
   /debug/4.3.2:
     resolution: {integrity: sha512-mOp8wKcvj7XxC78zLgw/ZA+6TSgkoE2C/ienthhRD298T7UNwAg9diBpLRxC0mOezLl4B0xV7M0cCO6P/O0Xhw==}

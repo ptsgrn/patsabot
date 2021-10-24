@@ -1,6 +1,7 @@
-const { createLogger, format, transports, addColors } = require('winston')
-const { loggerDir } = require('./config')
-require('winston-daily-rotate-file')
+import _winston from 'winston'
+const { createLogger, format, transports, addColors } = _winston
+import { loggerDir } from './config.js'
+import 'winston-daily-rotate-file'
 
 addColors({
   done: 'green',
@@ -55,4 +56,4 @@ const logger = createLogger({
   ]
 })
 
-module.exports = logger
+export default logger
