@@ -1,7 +1,8 @@
-import _winston from 'winston'
-const { createLogger, format, transports, addColors } = _winston
-import { loggerDir } from './config.js'
 import 'winston-daily-rotate-file'
+
+import _winston from 'winston'
+import { loggerDir } from './config.js'
+const { createLogger, format, transports, addColors } = _winston
 
 addColors({
   done: 'green',
@@ -35,7 +36,7 @@ const logger = createLogger({
   defaultMeta: { service: 'ainalbot' },
   transports: [
     new transports.DailyRotateFile({
-      dirname: './logs/',
+      dirname: loggerDir,
       frequency: '24h',
       filename: process.env.NODE_ENV === 'production' ? 'prod-%DATE%.log' : '%DATE%.log',
       maxSize: '1mb',
