@@ -2,6 +2,7 @@ import 'winston-daily-rotate-file'
 
 import _winston from 'winston'
 import { loggerDir } from './config.js'
+
 const { createLogger, format, transports, addColors } = _winston
 
 addColors({
@@ -15,6 +16,7 @@ const logger = createLogger({
     alert: 1,
     crit: 2,
     error: 3,
+    apierror: 6,
     warning: 4,
     notice: 5,
     info: 6,
