@@ -3,13 +3,13 @@
 // This software is released under the MIT License.
 // https://opensource.org/licenses/MIT
 
-import { ScriptNotFound } from './ainalbot/errorfactory.js'
+import { ScriptNotFound } from './patsabot/errorfactory.js'
 import _cron from 'node-cron'
 import { accessSync } from 'node:fs'
-import bot from './ainalbot/bot.js'
+import bot from './patsabot/bot.js'
 import cuid from 'cuid'
 import { hideBin } from 'yargs/helpers'
-import log from './ainalbot/logger.js'
+import log from './patsabot/logger.js'
 import yargs from 'yargs'
 const { schedule, validate } = _cron
 
