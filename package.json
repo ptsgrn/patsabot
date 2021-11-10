@@ -1,5 +1,5 @@
 {
-  "name": "ainalbot",
+  "name": "patsabot",
   "version": "0.1.7",
   "private": "true",
   "description": "NodeJS bot to go with Thai wikipedia",
@@ -15,21 +15,21 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+ssh://git@gitlab.com/ptsgrn/ainalbot.git"
+    "url": "git+ssh://git@gitlab.com/ptsgrn/patsabot.git"
   },
   "author": "Patsagorn Y.",
   "maintainers": [
     {
       "name": "Patsagorn Y.",
-      "email": "49602385+ptsgrn@users.noreply.github.com",
+      "email": "mpy@toolforge.org",
       "web": "https://w.wiki/JSB"
     }
   ],
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/ptsgrn/ainalbot/issues"
+    "url": "https://github.com/ptsgrn/patsabot/issues"
   },
-  "homepage": "https://github.com/ptsgrn/ainalbot#readme",
+  "homepage": "https://github.com/ptsgrn/patsabot#readme",
   "config": {
     "commitizen": {
       "path": "cz-conventional-changelog"

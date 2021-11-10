@@ -35,7 +35,7 @@ const logger = createLogger({
     format.json(),
     format.ms()
   ),
-  defaultMeta: { service: 'ainalbot' },
+  defaultMeta: { service: 'patsabot' },
   transports: [
     new transports.DailyRotateFile({
       dirname: loggerDir,

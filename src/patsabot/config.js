@@ -4,10 +4,10 @@
 // https://opensource.org/licenses/MIT
 
 import _jsonfile from 'jsonfile'
+import {fileURLToPath} from 'node:url'
+import path from 'node:path'
 const { readFileSync } = _jsonfile
 const credentials = readFileSync('credentials.json')
-import path from 'node:path'
-import {fileURLToPath} from 'node:url'
 
 /**
  * processing current user informations
