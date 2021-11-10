@@ -43,6 +43,7 @@
     "jsonfile": "^6.1.0",
     "lowdb": "^3.0.0",
     "mwn": "^0.9.1",
+    "node-cron": "^3.0.0",
     "ontime": "^0.0.8",
     "wikiapi": "^1.18.0",
     "winston": "^3.3.3",
