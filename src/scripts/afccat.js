@@ -47,7 +47,7 @@ async function main({ bot, log }) {
       log.error('bot.shutoff', {pagetext})
       // let's just exit, though we could also terminate
       // any open connections, close files, etc.
-      process.exit({ bot, log })
+      process.exit(0)
     }
   })
   return savePage({ bot, log })
