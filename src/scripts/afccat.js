@@ -3,17 +3,10 @@
 // This software is released under the MIT License.
 // https://opensource.org/licenses/MI
 
+import { DateTime } from '../patsabot/utils.js'
+
 async function savePage({ bot, log }) {
-  // thai month names
-  const months = [
-    'มกราคม', 'กุมภาพันธ์', 'มีนาคม', 'เมษายน',
-    'พฤษภาคม', 'มิถุนายน', 'กรกฎาคม', 'สิงหาคม',
-    'กันยายน', 'ตุลาคม', 'พฤศจิกายน', 'ธันวาคม'
-  ]
-  // get tomorrow date in form 01 พฤศจิกายน 2021
-  const tomorrow = new Date()
-  tomorrow.setDate(tomorrow.getDate() + 2)
-  const tomorrowDate = `${tomorrow.getDate()} ${months[tomorrow.getMonth()]} ${tomorrow.getFullYear()}`
+  const tomorrowDate = DateTime.format('DD MMMM yyyy')
   log.log('debug', 'script.main.prepare', { data: `หมวดหมู่:ฉบับร่างเรียงตามวันที่ส่ง/${tomorrowDate}` })
   try {
     return bot.save(
@@ -25,7 +18,7 @@ async function savePage({ bot, log }) {
         'createonly': 1
       })
   } catch (e) {
-    log.error('script.main.prepare', { data: e })
+    log.error('script.main.error', { data: e })
   } finally {
     log.log('debug', 'script.main.done', { data: `หมวดหมู่:ฉบับร่างเรียงตามวันที่ส่ง/${tomorrowDate}` })
   }
@@ -41,13 +34,13 @@ async function main({ bot, log }) {
     intervalDuration: 5000,
 
     // function to determine whether the bot should continue to run or not
-    condition: (pagetext) => pagetext !== 'on',
+    condition: (pagetext) => pagetext === 'on',
     // function to trigger when shutoff is activated
     onShutoff: function (pagetext) {
       log.error('bot.shutoff', {pagetext})
       // let's just exit, though we could also terminate
       // any open connections, close files, etc.
-      process.exit(0)
+      // process.exit(0)
     }
   })
   return savePage({ bot, log })
