@@ -3,9 +3,9 @@
 // This software is released under the MIT License.
 // https://opensource.org/licenses/MIT
 
+import { mwnVersion, version } from './version.js'
 import { site, user } from './config.js'
 
-import log from './logger.js'
 import { mwn } from 'mwn'
 
 const bot = new mwn({
@@ -14,7 +14,7 @@ const bot = new mwn({
     ...user.OAuthCredentials
   },
   // Set your user agent (required for WMF wikis, see https://meta.wikimedia.org/wiki/User-Agent_policy):
-  userAgent: 'AinalBOT/0.0.2-alpha ([[m:User:Patsagorn Y.]]) mwn/0.9.1',
+  userAgent: `AinalBOT/${version} ([[m:User:Patsagorn Y.]]) mwn/${mwnVersion}`,
   defaultParams: {
     assert: 'user' // ensure we're logged in
   },
