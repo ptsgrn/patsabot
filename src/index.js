@@ -32,7 +32,7 @@ let args = yargs(hideBin(process.argv))
   }
   const script = await import(`./scripts/${args._[0]}.js`)
   const workid = cuid()
-  log.log('scriptrun', 'script.runner.start', { workid })
+  log.log('scriptrun', 'script.runner.start', {script: args._[0], workid })
   script.run({
     bot, 
     log: log.child({ 
@@ -41,7 +41,7 @@ let args = yargs(hideBin(process.argv))
     })
   })
     .finally(() => {
-      log.log('scriptdone', 'script.runner.done', { workid })
+      log.log('scriptdone', 'script.runner.done', {script: args._[0], workid })
     })
     .catch((err) => {
       log.error(err)
