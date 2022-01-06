@@ -7,7 +7,7 @@ import _jsonfile from 'jsonfile'
 import {fileURLToPath} from 'node:url'
 import path from 'node:path'
 const { readFileSync } = _jsonfile
-const credentials = readFileSync('credentials.json')
+const credentials = readFileSync(path.resolve(path.dirname(fileURLToPath(import.meta.url)), '../../credentials.json'))
 
 /**
  * processing current user informations
