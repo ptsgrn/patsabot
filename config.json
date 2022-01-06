@@ -13,11 +13,15 @@
   },
   "config": {
     "credentials": "./credentials.json",
-    "simulate": "false",
+    "simulate": false,
     "disabled": []
   },
   "log": {
-    "log": "true",
+    "logdir": "./logs/",
+    "debug": false,
+    "debugprefix": "",
+    "debugdir": "./logs/debug/",
+    "log": true,
     "autolog": [],
     "excludes": []
   }

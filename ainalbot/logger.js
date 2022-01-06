@@ -1,37 +1,40 @@
-var modulename = 'default' // stupid default name
-module.exports.modulename = exports.modulename = modulename
-const log = require('loglevel')
-const prefix = require('loglevel-plugin-prefix')
-const fileSave = require('loglevel-filesave')
-const chalk = require('chalk')
-const argv = require('minimist')(process.argv.slice(2), {
-  alias: {
-    silent: ['sil'],
-    filelog: ['log'],
-    filelogall: ['logall'],
-    nofilelog: ['nologall'],
-    nofilelogall: ['nofilelogall'],
-    logprefix: ['logprefix'],
-  }
+const winston = require('winston')
+const { combine, timestamp, label, printf } = winston.format
+
+const config = require('./config.js')
+const myFormat = winston.format.printf(({ level, message, label, timestamp }) => {
+  return `${timestamp} [${label}] ${level}: ${message}`
 })
-const colors = {
-  TRACE: chalk.magenta,
-  DEBUG: chalk.cyan,
-  INFO: chalk.blue,
-  WARN: chalk.yellow,
-  ERROR: chalk.red,
+
+
+module.exports = exports = function (args) {
+  const modulename = args
+  const prefix = config.isDebug ? config.configFile().log.debugdir : config.configFile().log.logdir 
+  const logger = winston.createLogger({
+    level: 'info',
+    format: myFormat,
+    defaultMeta: { module: modulename },
+    transports: [
+      new winston.transports.File({ 
+        filename: `${prefix}error.log`, 
+        level: 'error', 
+        format: combine(label({label: modulename}), timestamp(), myFormat),
+      }),
+      new winston.transports.File({
+        filename: `${prefix + modulename}.log`, 
+        level: 'info'
+      }),
+      new winston.transports.Console({
+        format: combine(
+          label({ label: modulename }),
+          timestamp(),
+          myFormat
+        ),
+      })
+    ],
+    silent: !!config.isSilent,
+  }) 
+
+
+  return logger
 }
-prefix.reg(log)
-
-if (argv.debug) { log.enableAll() }
-
-var logger = loglevel.getLogger(modulename);
-fileSave(logger, {file: `./logs/${argv.debug ? 'debug/'}${modulename}.log`});
-
-prefix.apply(log, {
-  format(level, name, timestamp) {
-    return `${chalk.gray(`[${timestamp}]`)} ${colors[level.toUpperCase()](level)} ${chalk.green(`${name}:`)}`;
-  },
-})
-
-module.exports = exports = log
