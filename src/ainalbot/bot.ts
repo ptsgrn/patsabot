@@ -5,11 +5,10 @@ import debug from './logger'
 const log = debug.extend('bot')
 
 const site = new Site(),
-   user = new User(),
+    user = new User(),
   { getKeyOf, getUserAgent } = user
 
 let bot = new mwn({
-// const bot = await mwn.init({
   apiUrl: site.getSiteApiUrl(),
   OAuthCredentials: {
     consumerSecret: getKeyOf('consumer_secret'),
