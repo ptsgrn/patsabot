@@ -4,12 +4,15 @@
 // https://opensource.org/licenses/MIT
 
 import { ScriptNotFound } from './ainalbot/errorfactory.js'
+import _cron from 'node-cron'
 import { accessSync } from 'node:fs'
 import bot from './ainalbot/bot.js'
 import cuid from 'cuid'
 import { hideBin } from 'yargs/helpers'
 import log from './ainalbot/logger.js'
 import yargs from 'yargs'
+const { schedule, validate } = _cron
+
 
 let args = yargs(hideBin(process.argv))
   .command('node . [script]', 'run script', (_args) => {
@@ -32,18 +35,52 @@ let args = yargs(hideBin(process.argv))
   }
   const script = await import(`./scripts/${args._[0]}.js`)
   const workid = cuid()
-  log.log('scriptrun', 'script.runner.start', {script: args._[0], workid })
-  script.run({
-    bot,
-    log: log.child({ 
-      script: script.id || 'UNKNOWN',
-      workid
-    })
+  log.log('scriptrun', 'script.runner.start', {
+    script: args._[0],
+    id: script.id,
+    workid
   })
-    .catch((err) => {
-      log.error(err)
+  // check if script has schedule inside
+  // TODO: make a new cli option to overide this
+  if (!script.schedule) {
+    script.run({
+      bot,
+      log: log.child({
+        script: script.id || 'UNKNOWN',
+        workid
+      })
     })
-    .finally(() => {
-      log.log('scriptdone', 'script.runner.done', {script: args._[0], workid })
+      .catch((err) => {
+        log.error(err)
+      })
+      .finally(() => {
+        log.log('scriptdone', 'script.runner.done', { script: args._[0], workid })
+      })
+  } else {
+    if (typeof script.schedule !== 'string') throw new Error('schedule must be a string')
+    if (!validate(script.schedule)) throw new Error(`schedule (${script.schedule}) is not valid`)
+    schedule(script.schedule, () => {
+      script.run({
+        bot,
+        log: log.child({
+          id: script.id || 'UNKNOWN',
+          script: args._[0],
+          workid
+        })
+      })
+        .catch((err) => {
+          log.error(err)
+        })
+        .finally(() => {
+          log.log('scriptdone', 'script.runner.done', {
+            script: args._[0],
+            id: script.id || 'UNKNOWN',
+            workid
+          })
+        })
+    }, {
+      scheduled: true,
+      timezone: 'Asia/Bangkok'
     })
+  }
 })()
