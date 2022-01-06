@@ -1,9 +1,19 @@
-const loglevel = require('loglevel')
-const prefixer = require('loglevel-plugin-prefix')
+var modulename = 'default' // stupid default name
+module.exports.modulename = exports.modulename = modulename
+const log = require('loglevel')
+const prefix = require('loglevel-plugin-prefix')
 const fileSave = require('loglevel-filesave')
-
 const chalk = require('chalk')
-
+const argv = require('minimist')(process.argv.slice(2), {
+  alias: {
+    silent: ['sil'],
+    filelog: ['log'],
+    filelogall: ['logall'],
+    nofilelog: ['nologall'],
+    nofilelogall: ['nofilelogall'],
+    logprefix: ['logprefix'],
+  }
+})
 const colors = {
   TRACE: chalk.magenta,
   DEBUG: chalk.cyan,
@@ -11,9 +21,12 @@ const colors = {
   WARN: chalk.yellow,
   ERROR: chalk.red,
 }
-
 prefix.reg(log)
-log.enableAll()
+
+if (argv.debug) { log.enableAll() }
+
+var logger = loglevel.getLogger(modulename);
+fileSave(logger, {file: `./logs/${argv.debug ? 'debug/'}${modulename}.log`});
 
 prefix.apply(log, {
   format(level, name, timestamp) {
@@ -21,41 +34,4 @@ prefix.apply(log, {
   },
 })
 
-const log = require('loglevel');
-const prefix = require('loglevel-plugin-prefix');
-
-prefix.reg(log);
-log.enableAll();
-
-log.info('root');
-
-const chicken = log.getLogger('chicken');
-chicken.info('chicken');
-
-prefix.apply(chicken, { template: '%l (%n):' });
-chicken.info('chicken');
-
-prefix.apply(log);
-log.info('root');
-
-const egg = log.getLogger('egg');
-egg.info('egg');
-
-const fn = (level, name) => `${level} (${name}):`;
-
-prefix.apply(egg, { format: fn });
-egg.info('egg');
-
-prefix.apply(egg, {
-  levelFormatter(level) {
-    return level.toLowerCase();
-  },
-});
-egg.info('egg');
-
-chicken.info('chicken');
-log.info('root');
-
-
-
-module.exports = log
+module.exports = exports = log
