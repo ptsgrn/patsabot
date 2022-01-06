@@ -24,6 +24,7 @@ const config_1 = __importStar(require("./config"));
 const site = new config_1.Site(), user = new config_1.User(), { getKeyOf, getUserAgent } = user;
 const bot = new mwn_1.mwn({
     apiUrl: site.getSiteApiUrl(),
+    username: config_1.default.username,
     OAuthCredentials: {
         accessSecret: getKeyOf('consumer_secret'),
         accessToken: getKeyOf('consumer_token'),
@@ -33,5 +34,22 @@ const bot = new mwn_1.mwn({
     userAgent: getUserAgent(),
     silent: !config_1.default.debug,
     maxRetries: 7,
+    defaultParams: {
+        assert: 'user',
+    },
+    shutoff: {
+        onShutoff: (wikitext) => {
+            throw new Error('Bot had been shutted off\nPage text is ⟩' + wikitext);
+            process.exit(1);
+        },
+        page: 'User:AinalBOT/shutoff',
+        condition: (wikitext) => {
+            if (wikitext !== 'running')
+                return false;
+            return true;
+        }
+    }
 });
+bot.login();
+bot.getTokensAndSiteInfo();
 exports.default = bot;

@@ -1,6 +1,13 @@
 import Debug from 'debug'
 import config, { PackageJsonFile } from './config'
 import jsonfile from 'jsonfile'
-let pkg: PackageJsonFile = jsonfile.readFileSync('package.json')
-const debug = Debug(pkg.name)
+let debug = Debug('AinalBotInternal')
+let { extend } = debug
+const Multi = {
+  info: extend('info'),
+  error: extend('error'),
+}
 export default debug
+export {
+  Multi,
+}

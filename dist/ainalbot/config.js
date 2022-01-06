@@ -26,6 +26,12 @@ const argv = yargs_1.default(process.argv.slice(2))
     'config': 'Configuration file',
     'credential': 'Credential keys file (a.k.a. OAuth key) to use with `config.site` or `--site`, file can be blank if you don\'t have to login',
 })
+    .option('user', {
+    describe: 'Username of bot',
+    string: true,
+    alias: 'username',
+    default: 'AinalBOT',
+})
     .option('site', {
     describe: 'What site should bot usend in',
     default: '_default',
@@ -52,7 +58,7 @@ class User {
         let keys = argv[argv.config.user];
         return keys[key];
     }
-    getUserAgent(pkgfile = 'package.json') {
+    getUserAgent(pkgfile = '../../package.json') {
         let pkg = jsonfile_1.default.readFileSync(pkgfile);
         let ret = '';
         ret += pkg.name + '/';
@@ -70,11 +76,6 @@ class User {
 }
 exports.User = User;
 class Page {
-    allowBots(text, user = argv.config.user) {
-        if (!new RegExp("\\{\\{\\s*(nobots|bots[^}]*)\\s*\\}\\}", "i").test(text))
-            return true;
-        return (new RegExp("\\{\\{\\s*bots\\s*\\|\\s*deny\\s*=\\s*([^}]*,\\s*)*" + user.replace(/([\(\)\*\+\?\.\-\:\!\=\/\^\$])/g, "\\$1") + "\\s*(?=[,\\}])[^}]*\\s*\\}\\}", "i").test(text)) ? false : new RegExp("\\{\\{\\s*((?!nobots)|bots(\\s*\\|\\s*allow\\s*=\\s*((?!none)|([^}]*,\\s*)*" + user.replace(/([\(\)\*\+\?\.\-\:\!\=\/\^\$])/g, "\\$1") + "\\s*(?=[,\\}])[^}]*|all))?|bots\\s*\\|\\s*deny\\s*=\\s*(?!all)[^}]*|bots\\s*\\|\\s*optout=(?!all)[^}]*)\\s*\\}\\}", "i").test(text);
-    }
 }
 exports.Page = Page;
 exports.default = argv;

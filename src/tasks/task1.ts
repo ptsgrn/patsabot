@@ -1,5 +1,9 @@
 const text:String = "Hello world"
+import debug from '../ainalbot/logger'
+const log = debug.extend('task1')
+
 
 setTimeout(function(){
-  console.log(text)
-}, 30*1000)
+  log(text)
+}, 3*1000)
+
