@@ -10,6 +10,7 @@ let { extend } = debug;
 const Multi = {
     info: extend('info'),
     error: extend('error'),
+    warn: extend('warn'),
 };
 exports.Multi = Multi;
 exports.default = debug;

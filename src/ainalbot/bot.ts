@@ -1,19 +1,23 @@
 import { mwn } from 'mwn'
 import config, { Site, User } from './config'
+import debug from './logger'
+const log = debug.extend('bot')
 
 const site = new Site(),
    user = new User(),
   { getKeyOf, getUserAgent } = user
 
-const bot = new mwn({
+let bot = new mwn({
+// const bot = await mwn.init({
   apiUrl: site.getSiteApiUrl(),
-  username: config.username,
   OAuthCredentials: {
-    accessSecret: getKeyOf('consumer_secret'),
-    accessToken: getKeyOf('consumer_token'),
-    consumerSecret: getKeyOf('access_secret'),
-    consumerToken: getKeyOf('access_token'),
+    consumerSecret: getKeyOf('consumer_secret'),
+    consumerToken: getKeyOf('consumer_token'),
+    accessSecret: getKeyOf('access_secret'),
+    accessToken: getKeyOf('access_token'),
   },
+  password: getKeyOf('password'),
+  username: config.username,
   userAgent: getUserAgent(),
   silent: !config.debug,
   maxRetries: 7,
@@ -34,7 +38,13 @@ const bot = new mwn({
   }
 })
 
-bot.login() // ให้บอตเตรียมเข้าสู่ระบบ
-bot.getTokensAndSiteInfo() // จุดนี้เข้าสู่ระบบจริง ๆ อ้างอิงตามคู่มือของ mwn
+bot.login()
+bot.getTokensAndSiteInfo()
 
 export default bot
+
+/*
+bot.initOAuth()
+bot.getTokensAndSiteInfo()
+*/
+
