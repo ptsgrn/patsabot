@@ -3,7 +3,7 @@
 // This software is released under the MIT License.
 // https://opensource.org/licenses/MIT
 
-const log = require('./logger')
+import log from './logger.js'
 
 class ErrGen extends Error {
   constructor(message) {
@@ -14,14 +14,10 @@ class ErrGen extends Error {
   }
 }
 
-class ScriptNotFound extends ErrGen {
+export class ScriptNotFound extends ErrGen {
   constructor (message) {
     super(message)
     Error.captureStackTrace(this, this.constructor)
     this.name = this.constructor.name
   }
-}
-
-module.exports = {
-  ScriptNotFound
 }

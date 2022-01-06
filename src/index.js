@@ -3,15 +3,14 @@
 // This software is released under the MIT License.
 // https://opensource.org/licenses/MIT
 
-const { accessSync, readdirSync } = require('fs')
-const { resolve } = require('path')
-const bot = require('./ainalbot/bot')
-const log = require('./ainalbot/logger')
-const { ScriptNotFound } = require('./ainalbot/errorfactory')
-const yargs = require('yargs/yargs')
-const { hideBin } = require('yargs/helpers')
-const dayjs = require('dayjs')
-const cuid = require('cuid')
+import { accessSync, readdirSync } from 'node:fs'
+import { resolve } from 'node:path'
+import bot from './ainalbot/bot.js'
+import log from './ainalbot/logger.js'
+import { ScriptNotFound } from './ainalbot/errorfactory.js'
+import yargs from 'yargs'
+import { hideBin } from 'yargs/helpers'
+import cuid from 'cuid'
 
 let args = yargs(hideBin(process.argv))
   .command('node . [script]', 'run script', (yargs) => {
@@ -21,22 +20,17 @@ let args = yargs(hideBin(process.argv))
         normalize: true
       })
   })
-  .completion('completion', function() {
-    let files = readdirSync(resolve(__dirname, './scripts/'))
-    console.log(files)
-    return files
-  })
   .help('help')
   .alias('help', 'h')
   .epilog('MIT License by Patsagorn Y. 2020-2021')
   .parse()
 
 try {
-  accessSync(resolve(__dirname, `./scripts/${args._[0]}.js`)) 
+  accessSync(new URL(`./scripts/${args._[0]}.js`, import.meta.url)) 
 } catch {
   throw new ScriptNotFound(`script "${args._[0]}" might be not existed.`)
 }
-const script = require(resolve(__dirname, `./scripts/${args._[0]}.js`))
+const script = await import(`./scripts/${args._[0]}.js`)
 const workid = cuid()
 log.log('scriptrun', 'script.runner.start', { workid })
 script.run({

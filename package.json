@@ -1,10 +1,13 @@
 {
   "name": "ainalbot",
-  "version": "0.0.2-alpha",
+  "version": "0.1.5",
   "private": "true",
   "description": "NodeJS bot to go with Thai wikipedia",
-  "main": "src/index.js",
-  "type": "commonjs",
+  "exports": "./src/index.js",
+  "type": "module",
+  "engines": {
+    "node": "^12.20.0 || ^14.13.1 || >=16.0.0"
+  },
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "lint": "eslint .",
@@ -34,8 +37,8 @@
   },
   "dependencies": {
     "@types/lowdb": "^1.0.11",
+    "@types/node": "^16.11.4",
     "cuid": "^2.1.8",
-    "dayjs": "^1.10.7",
     "jsonfile": "^6.1.0",
     "lowdb": "^3.0.0",
     "mwn": "^0.9.1",
