@@ -37,22 +37,14 @@
     }
   },
   "dependencies": {
-    "bree": "^6.2.0",
     "bthreads": "^0.5.1",
-    "debug": "^4.3.1",
     "jsonfile": "^6.1.0",
     "mwn": "^0.9.1",
     "ontime": "^0.0.8",
     "winston": "^3.3.3",
-    "winston-daily-rotate-file": "^4.5.5",
-    "yargs": "^16.2.0"
+    "winston-daily-rotate-file": "^4.5.5"
   },
   "devDependencies": {
-    "@types/debug": "^4.1.5",
-    "@types/jsonfile": "^6.0.0",
-    "@types/node": "^14.14.37",
-    "@types/ontime": "^0.0.1",
-    "@types/yargs": "^16.0.1",
     "cz-conventional-changelog": "^3.3.0",
     "eslint": "^7.19.0"
   }
