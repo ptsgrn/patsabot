@@ -3,4 +3,5 @@
 # This software is released under the MIT License.
 # https://opensource.org/licenses/MIT
 
-asdf exec pnpm install && asdf exec node src/patsabot/run.js afccat
+# afccat
+NODE_ENV=production ./src/patsabot/run.js afccat > /dev/null 2>&1 &
