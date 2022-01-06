@@ -1,6 +1,5 @@
 // eslint-disable-next-line no-unused-vars
-const mwn = require('mwn')
-if (require.main !== module) return
+import mwn = require('mwn')
 
 // const config = require('./ainalbot/config').userInfo()
 
@@ -16,4 +15,3 @@ const job = new CronJob('* * * * * *', function() {
 })
 
 log.info('After job instantiation')
-job.start()
