@@ -27,40 +27,35 @@ const config_1 = __importStar(require("./config"));
 const logger_1 = __importDefault(require("./logger"));
 const log = logger_1.default.extend('bot');
 const site = new config_1.Site(), user = new config_1.User(), { getKeyOf, getUserAgent } = user;
-try {
-    let bot = new mwn_1.mwn({
-        apiUrl: site.getSiteApiUrl(),
-        OAuthCredentials: {
-            consumerSecret: getKeyOf('consumer_secret'),
-            consumerToken: getKeyOf('consumer_token'),
-            accessSecret: getKeyOf('access_secret'),
-            accessToken: getKeyOf('access_token'),
+let bot = new mwn_1.mwn({
+    apiUrl: site.getSiteApiUrl(),
+    OAuthCredentials: {
+        consumerSecret: getKeyOf('consumer_secret'),
+        consumerToken: getKeyOf('consumer_token'),
+        accessSecret: getKeyOf('access_secret'),
+        accessToken: getKeyOf('access_token'),
+    },
+    password: getKeyOf('password'),
+    username: config_1.default.username,
+    userAgent: getUserAgent(),
+    silent: !config_1.default.debug,
+    maxRetries: 7,
+    defaultParams: {
+        assert: 'user',
+    },
+    shutoff: {
+        onShutoff: (wikitext) => {
+            throw new Error('Bot had been shutted off\nPage text is ⟩' + wikitext);
+            process.exit(1);
         },
-        password: getKeyOf('password'),
-        username: config_1.default.username,
-        userAgent: getUserAgent(),
-        silent: !config_1.default.debug,
-        maxRetries: 7,
-        defaultParams: {
-            assert: 'user',
-        },
-        shutoff: {
-            onShutoff: (wikitext) => {
-                throw new Error('Bot had been shutted off\nPage text is ⟩' + wikitext);
-                process.exit(1);
-            },
-            page: 'User:AinalBOT/shutoff',
-            condition: (wikitext) => {
-                if (wikitext !== 'running')
-                    return false;
-                return true;
-            }
+        page: 'User:AinalBOT/shutoff',
+        condition: (wikitext) => {
+            if (wikitext !== 'running')
+                return false;
+            return true;
         }
-    });
-    bot.login();
-    bot.getTokensAndSiteInfo();
-    export default bot;
-}
-catch (err) {
-    console.log(err);
-}
+    }
+});
+bot.login();
+bot.getTokensAndSiteInfo();
+exports.default = bot;
