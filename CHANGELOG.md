@@ -1,0 +1,83 @@
+# Changelog
+
+## v0.2.1 (11/11/2021)
+Since the bot is still not reach v1.x yet, this is still unstable released version.
+
+## Changlogs
+- [build: update gitlab url to github](https://github.com/ptsgrn/patsabot/commit/49894d786f7764d50334f1153fc73eb195544d75) - @ptsgrn
+- [v0.2.1](https://github.com/ptsgrn/patsabot/commit/59ed319f704b8389cb08e395ecffe7ad38bf3510) - @ptsgrn
+- [v0.2.0](https://github.com/ptsgrn/patsabot/commit/09b870ba6f7d13cc49aa981fc28cbdb7245f4421) - @ptsgrn
+- [feat: create afc category page creator](https://github.com/ptsgrn/patsabot/commit/bc8741ea33a5869b25946819b1d1fb89afd0d243) - @ptsgrn
+- [feat: add scheduler](https://github.com/ptsgrn/patsabot/commit/ef1fa3099c7551017562b72ddb87f09c5629d5e1) - @ptsgrn
+- [build: install node-cron](https://github.com/ptsgrn/patsabot/commit/1fb131b6754c83175bca82c564753da1c1befd36) - @ptsgrn
+- [feat: include version from package.json](https://github.com/ptsgrn/patsabot/commit/ae23a200751543ea155ae5cbbbff5c87edb8bec0) - @ptsgrn
+- [fix: unexepted await](https://github.com/ptsgrn/patsabot/commit/436d07cdeb9d5d6892d3f24dbdabab249e50ac51) - @ptsgrn
+- [feat: moved api to its file](https://github.com/ptsgrn/patsabot/commit/1dcb87775320c02d6239e77d3b93e3d8fd56e285) - @ptsgrn
+- [v0.1.7](https://github.com/ptsgrn/patsabot/commit/b3d9835a3ed9e23e91cf6801dcd7b7d2fd34ca6f) - @ptsgrn
+- [feat: add apierror level](https://github.com/ptsgrn/patsabot/commit/cb1aaec6da30e6a12038e1ff218325f0411811eb) - @ptsgrn
+- [feat: add async query Api](https://github.com/ptsgrn/patsabot/commit/ba2b5fd9fc547d214e3e6a3b3b5c50ed48b217f1) - @ptsgrn
+- [feat: add parser](https://github.com/ptsgrn/patsabot/commit/e1a47b819c14218904515216b80fb4a70621407b) - @ptsgrn
+- [docs: move todos](https://github.com/ptsgrn/patsabot/commit/c3d07e6e26017cdeba326375d77f3adad912d8d0) - @ptsgrn
+- [docs: move to /scripts](https://github.com/ptsgrn/patsabot/commit/775acc4613e562b855f3dd0f6efcc8eeccdc3d3c) - @ptsgrn
+- [feat: add wikiapi and CeJS](https://github.com/ptsgrn/patsabot/commit/3326c42bebb209ebf689e014d485ad49aef0281a) - @ptsgrn
+- [feat: add parser function from CeJS](https://github.com/ptsgrn/patsabot/commit/5ef24a9e568018c1cfb2e647e15607dc4e2ada52) - @ptsgrn
+- [feat: add script name in json log](https://github.com/ptsgrn/patsabot/commit/dbbedab521411a685aced30a8b3323dbeb97e607) - @ptsgrn
+- [fix: use value from config in loggerDir](https://github.com/ptsgrn/patsabot/commit/a9bc547684d1a10a667c8ef882532a127bd0ddee) - @ptsgrn
+- [Merge branch 'main' of github.com:ptsgrn/ainalbot into main](https://github.com/ptsgrn/patsabot/commit/ac74a0b34fce3cf43bbb6aab6560337a1e4b9994) - @ptsgrn
+- [feat(logger): to many dirup](https://github.com/ptsgrn/patsabot/commit/4f0fed2f4bfef44594bb53016924ab8b71d812e2) - @ptsgrn
+- [ci: update pnpm-lock.yaml](https://github.com/ptsgrn/patsabot/commit/5962be24929880d230fbb0f1e8434d8d8f599e86) - @ptsgrn
+- [feat: reslove error](https://github.com/ptsgrn/patsabot/commit/7c902a46fe7e6f28e284e816045f6e86fe86c257) - @ptsgrn
+- [build: update eslint config for esm supporting](https://github.com/ptsgrn/patsabot/commit/7aa3d7db4eb777759133c47ca66fb8b82906bd04) - @ptsgrn
+- [build: using es module and dump to v0.1.5](https://github.com/ptsgrn/patsabot/commit/423a9e441327e146c344f4e45cc6e8e0076b12c9) - @ptsgrn
+- [feat: install lowdb](https://github.com/ptsgrn/patsabot/commit/cedc010fe2a7b4e1e0c728f8dbec830a49037d5e) - @ptsgrn
+- [feat(subster):  using dictionary to store page that have to edit](https://github.com/ptsgrn/patsabot/commit/d9a6d002489a04d10e71e40aae1f159ae1aa28c9) - @ptsgrn
+- [build: dalete tsc options as unused](https://github.com/ptsgrn/patsabot/commit/9ffca68038f69f13f75b3f91b96383693764944b) - @ptsgrn
+- [add scriptrun logging](https://github.com/ptsgrn/patsabot/commit/747b7e8fde3658eb6f2135a44ab3a6abeac24b1e) - @ptsgrn
+- [feat(index.js): add workid using cuid()](https://github.com/ptsgrn/patsabot/commit/6553c5ed763124f416b25832caa4248b87552a75) - @ptsgrn
+- [feat(runner): make script usable with command line in arg 1 and create custom error and logging](https://github.com/ptsgrn/patsabot/commit/9894fb5b9d55804c0c56c1da99dc9bdc6515985f) - @ptsgrn
+- [Merge branch 'main' of https://github.com/ptsgrn/ainalbot into main](https://github.com/ptsgrn/patsabot/commit/c4a99841203a5b6d28ae3aa0ea56287ac894bcd2) - @ptsgrn
+- [build(packages): audit and move to using pnpm](https://github.com/ptsgrn/patsabot/commit/b9f14b5551f61f71f56ca84cae5c8fdb30a32cf4) - @ptsgrn
+- [Update README.md and remove yarn lo](https://github.com/ptsgrn/patsabot/commit/5b39b4b3a9a1f1edec8b1e82887994116268f305) - @ptsgrn
+- [update](https://github.com/ptsgrn/patsabot/commit/7729c1b24bfcac3c1b99019a38f58e8369e686e3) - @ptsgrn
+- [chore(dependencies): remove and audited unused packages](https://github.com/ptsgrn/patsabot/commit/7dfb6c5eca8e894ccc76d844f68e4bfa9fa734dc) - @ptsgrn
+- [reset to use js instead](https://github.com/ptsgrn/patsabot/commit/148325585fe059573edc6ebe9536a4dc942b8f95) - @ptsgrn
+- [add cz config option](https://github.com/ptsgrn/patsabot/commit/86b64282529e864775f702cb9c92168e5e0cba13) - @ptsgrn
+- [update](https://github.com/ptsgrn/patsabot/commit/a043df182a55469f14a467da7dff071ace0fea15) - @ptsgrn
+- [Migrate to function base (#2)](https://github.com/ptsgrn/patsabot/commit/2561c06b1d2f7a48372e97e14acf586618d9ecfa) - @ptsgrn
+- [fixed markup in README](https://github.com/ptsgrn/patsabot/commit/2fa3cc6f4656b5fdf42451a15a9860b138ec5d33) - @ptsgrn
+- [update README](https://github.com/ptsgrn/patsabot/commit/b472385228def93ed05e6d93046632a3d96ee5b4) - @ptsgrn
+- [update](https://github.com/ptsgrn/patsabot/commit/c6f75f3b35800b280678725e77d695270b4639ee) - @ptsgrn
+- [update](https://github.com/ptsgrn/patsabot/commit/4714fe4e7513f2de21be69cd47ee740dab1d8404) - @ptsgrn
+- [update](https://github.com/ptsgrn/patsabot/commit/5197bbe316c4fb61dbcf99cc55d5a9b11536c119) - @ptsgrn
+- [create logger.ts work with Debug](https://github.com/ptsgrn/patsabot/commit/deb697e702d16e19e676b787c712c94eb7260254) - @ptsgrn
+- [update](https://github.com/ptsgrn/patsabot/commit/ab0490f30a2f4c8208f4bc2b78a846bf050eeb01) - @ptsgrn
+- [uninstall some unuesd packages](https://github.com/ptsgrn/patsabot/commit/330e404eaeef396c84e8c3379e89f381b3ba9f74) - @ptsgrn
+- [include `(including the next paragraph)` to show there is no warranty](https://github.com/ptsgrn/patsabot/commit/ac5b7aa95ab5c826b3cd0968601c0170cc1b0ead) - @ptsgrn
+- [unused, from previous gitlab repo](https://github.com/ptsgrn/patsabot/commit/e632e35ac40beb5a18ae345a96bb29a21b753b3a) - @ptsgrn
+- [Merge pull request #1 from ptsgrn/set-sast-config-1](https://github.com/ptsgrn/patsabot/commit/911d20c0ea5da0880365baff25dd742ec56f5525) - @ptsgrn
+- [Set .gitlab-ci.yml to enable or configure SAST](https://github.com/ptsgrn/patsabot/commit/d3b0fd34df52ea0930b2b9654bc099d7041ea787) - undefined
+- [update](https://github.com/ptsgrn/patsabot/commit/4a4ed72ec872153c77e92abe097a95bb9fa62be3) - @ptsgrn
+- [update](https://github.com/ptsgrn/patsabot/commit/2cd42e9dd3ba8f5a503a82995eb59b96cc244728) - @ptsgrn
+- [imporve and migrate from JavaScript to TypeScript](https://github.com/ptsgrn/patsabot/commit/c7d640d23710dd3adf2285be665d683a526bd3e7) - @ptsgrn
+- [migrate from JavaScript to TypeScript](https://github.com/ptsgrn/patsabot/commit/273aeca8a2702862d972bcc036db845ce188999b) - @ptsgrn
+- [improve ainalbot/config.js and fix some bugs](https://github.com/ptsgrn/patsabot/commit/dd0274b6a7b6024a2c068f5fca3348e62ed6e2a7) - @ptsgrn
+- [เพิ่มจัด task + อัปเดต config](https://github.com/ptsgrn/patsabot/commit/8e9e7156958a858757cccda0658741ff8472b733) - @ptsgrn
+- [add CONTRIBUTING.md](https://github.com/ptsgrn/patsabot/commit/e614c7bc8733aa0e2d17ab67c6314905ae3b2705) - @ptsgrn
+- [add new todo to README](https://github.com/ptsgrn/patsabot/commit/ba4f0ef99da24040d22f5b79756b20bd340e7405) - @ptsgrn
+- [fotgot to delete test](https://github.com/ptsgrn/patsabot/commit/bd25bb94c0baf48c669955db1327721ca6eba3b0) - @ptsgrn
+- [Merge branch 'master' of gitlab.com:ptsgrn/ainalbot](https://github.com/ptsgrn/patsabot/commit/8de012e556459b39a41b39c9312863c2fc29c448) - @ptsgrn
+- [updates](https://github.com/ptsgrn/patsabot/commit/03f6057e9978ce9b3deb80dc0a759ce011fd6d2f) - @ptsgrn
+- [Update README.md](https://github.com/ptsgrn/patsabot/commit/ba662db14275985cdcd664ab8e734020c111a638) - undefined
+- [uninstall loglevel and use winston](https://github.com/ptsgrn/patsabot/commit/32717a7f4fd86b1361647f494e983f0e0dad2a97) - @ptsgrn
+- [update README with some botlink and TODOs](https://github.com/ptsgrn/patsabot/commit/f7f42ed992b71591966890cc981601d3fb2ebd02) - @ptsgrn
+- [Edit year in LICENSE](https://github.com/ptsgrn/patsabot/commit/c173b734cc248208e502e718e0fd3bc5d1e3988a) - @ptsgrn
+- [make logger to have own log on each module](https://github.com/ptsgrn/patsabot/commit/b21441d90f9b3e814243a1c97f523117e1af035e) - @ptsgrn
+- [update](https://github.com/ptsgrn/patsabot/commit/9f5fd062bad434cd082c90b67d3626ebdad8d8e1) - @ptsgrn
+- [updated](https://github.com/ptsgrn/patsabot/commit/976921427808929d69e377092e9ce4fc4c0fbe52) - @ptsgrn
+- [Update package.json and package-lock.json](https://github.com/ptsgrn/patsabot/commit/602652299f7341325314d8851f1ef5e6d8475d29) - @ptsgrn
+- [per https://npmjs.com/advisories/1594](https://github.com/ptsgrn/patsabot/commit/7ba1ae9f2eadd77ec09e8c636623560d00c31780) - @ptsgrn
+- [Add .gitlab-ci.yml](https://github.com/ptsgrn/patsabot/commit/298a61299cf0513c25190246a2130fdaf88e371d) - undefined
+- [Preparing](https://github.com/ptsgrn/patsabot/commit/e48fe23e365e39505301448d6a6644ac47dd9743) - undefined
+- [Add LICENSE](https://github.com/ptsgrn/patsabot/commit/7b129ed6215252cd545d1bd470273fe1940a0a42) - undefined
+
+**Full Changelog**: https://github.com/ptsgrn/patsabot/compare/v0.2.0...v0.2.1
