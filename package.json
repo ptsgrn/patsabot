@@ -3,13 +3,14 @@
   "version": "0.0.1",
   "private": "true",
   "description": "NodeJS bot to go with Thai wikipedia",
-  "main": "index.js",
+  "main": "dist/index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "lint": "eslint .",
     "lint:fix": "eslint . --fix",
-    "log:rm": "rm -rf ./logs/",
-    "logs": "ls ./logs/"
+    "start": "tsc && node .",
+    "build": "tsc",
+    "dev": "tsc --watch false && node dist/index.js"
   },
   "repository": {
     "type": "git",
@@ -18,7 +19,7 @@
   "author": "Patsagorn Y.",
   "license": "MIT",
   "bugs": {
-    "url": "https://gitlab.com/ptsgrn/ainalbot/issues"
+    "url": "https://gitlab.com/ptsgrn/ainalbot/-/issues"
   },
   "homepage": "https://gitlab.com/ptsgrn/ainalbot#readme",
   "dependencies": {
