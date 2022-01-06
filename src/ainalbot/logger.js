@@ -1,13 +1,27 @@
-const { createLogger, format, transports } = require('winston')
+const { createLogger, format, transports, addColors } = require('winston')
 const { loggerDir } = require('./config')
 require('winston-daily-rotate-file')
 
+addColors({
+  done: 'green',
+  scriptdone: 'bold green'
+})
 const logger = createLogger({
+  levels: {
+    emerg: 0, 
+    alert: 1, 
+    crit: 2, 
+    error: 3, 
+    warning: 4, 
+    notice: 5, 
+    info: 6, 
+    debug: 7,
+    done: 6,
+    scriptdone: 5
+  },
   level: 'info',
   format: format.combine(
-    format.timestamp({
-      format: 'YYYY-MM-DD HH:mm:ss'
-    }),
+    format.timestamp(),
     format.errors({ stack: true }),
     format.splat(),
     format.json()

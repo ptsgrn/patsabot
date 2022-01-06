@@ -3,12 +3,11 @@
 // This software is released under the MIT License.
 // https://opensource.org/licenses/MIT
 
-const bot = require('../ainalbot/bot')
+let category = 'หมวดหมู่:แม่แบบที่ควรรวมผ่านเสมอ'
+let templateslist = []
 
-let category = 'แม่แบบที่ควรรวมผ่านเสมอ'
-
-async function main() {
-  let templateslist = []
+async function main({bot, log}) {
+  log.log('info', 'start')
   for await (let json of bot.continuedQueryGen({
     'action': 'query',
     'format': 'json',
@@ -16,14 +15,14 @@ async function main() {
     'cmtitle': category,
     'cmlimit': 'max'
   })) {
-    let templates = json.query.categorymembers.map((tem) => tem.title)
-    templateslist = templateslist.concat(templates)
-    console.log(templateslist)
+    templateslist = templateslist.concat(json.query.categorymembers.map((tem) => tem.title))
+    log.log('info', 'end')
   }
 }
 
 module.exports = {
+  id: 'subster',
+  name: 'auto subster',
   desc: `subst: แม่แบบที่อยู่ในหมวดหมู่ ${category} โดยอัตโนมัติหากไม่ได้ทำ`,
-  excluderegex: false,//i,
   run: main
 }
