@@ -10,6 +10,7 @@ specifiers:
   jsonfile: ^6.1.0
   lowdb: ^3.0.0
   mwn: ^0.9.1
+  node-cron: ^3.0.0
   ontime: ^0.0.8
   wikiapi: ^1.18.0
   winston: ^3.3.3
@@ -24,6 +25,7 @@ dependencies:
   jsonfile: 6.1.0
   lowdb: 3.0.0
   mwn: 0.9.1
+  node-cron: 3.0.0
   ontime: 0.0.8
   wikiapi: 1.18.0
   winston: 3.3.3
@@ -1262,6 +1264,12 @@ packages:
   /minimist/1.2.5:
     resolution: {integrity: sha512-FM9nNUYrRBAELZQT3xeZQ7fmMOBg6nWNmJKTcgsJeaLstP/UODVpGsr5OhXhhXg6f+qtJ8uiZ+PUxkDWcgIXLw==}
 
+  /moment-timezone/0.5.34:
+    resolution: {integrity: sha512-3zAEHh2hKUs3EXLESx/wsgw6IQdusOT8Bxm3D9UrHPQR7zlMmzwybC8zHEM1tQ4LJwP7fcxrWr8tuBg05fFCbg==}
+    dependencies:
+      moment: 2.29.1
+    dev: false
+
   /moment/2.29.1:
     resolution: {integrity: sha512-kHmoybcPV8Sqy59DwNDY3Jefr64lK/by/da0ViFcuA4DH0vQg5Q6Ze5VimxkfQNSC+Mls/Kx53s7TjP1RhFEDQ==}
     dev: false
@@ -1299,6 +1307,13 @@ packages:
   /natural-compare/1.4.0:
     resolution: {integrity: sha1-Sr6/7tdUHywnrPspvbvRXI1bpPc=}
     dev: true
+
+  /node-cron/3.0.0:
+    resolution: {integrity: sha512-DDwIvvuCwrNiaU7HEivFDULcaQualDv7KoNlB/UU1wPW0n1tDEmBJKhEIE6DlF2FuoOHcNbLJ8ITL2Iv/3AWmA==}
+    engines: {node: '>=6.0.0'}
+    dependencies:
+      moment-timezone: 0.5.34
+    dev: false
 
   /oauth-1.0a/2.2.6:
     resolution: {integrity: sha512-6bkxv3N4Gu5lty4viIcIAnq5GbxECviMBeKR3WX/q87SPQ8E8aursPZUtsXDnxCs787af09WPRBLqYrf/lwoYQ==}
