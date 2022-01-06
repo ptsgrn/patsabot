@@ -10,4 +10,3 @@ const job = new CronJob('* * * * * *', function () {
     log.error('At Ten Minutes:', d);
 });
 log.info('After job instantiation');
-job.start();

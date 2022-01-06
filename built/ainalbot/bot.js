@@ -1,19 +1,20 @@
 "use strict";
-const { mwn } = require('mwn');
-const { getSiteScriptUrl } = require('./config');
-const { consumer_token, consumer_secret, access_token, access_secret } = require('../config').userInfo();
-const bot = mwn.init({
-    apiUrl: `${getSiteScriptUrl}/api.php`,
+Object.defineProperty(exports, "__esModule", { value: true });
+const mwn_1 = require("mwn");
+const config_1 = require("./config");
+const config_2 = require("../config");
+const bot = mwn_1.mwn.init({
+    apiUrl: `${config_1.getSiteScriptUrl}/api.php`,
     OAuthCredentials: {
-        consumerToken: consumer_token,
-        consumerSecret: consumer_secret,
-        accessToken: access_token,
-        accessSecret: access_secret,
+        consumerToken: config_2.consumer_token,
+        consumerSecret: config_2.consumer_secret,
+        accessToken: config_2.access_token,
+        accessSecret: config_2.access_secret,
     }
 });
 console.log(`
-		consumerToken: ${consumer_token},
-		consumerSecret: ${consumer_secret},
-		accessToken: ${access_token},
-		accessSecret: ${access_secret},
+		consumerToken: ${config_2.consumer_token},
+		consumerSecret: ${config_2.consumer_secret},
+		accessToken: ${config_2.access_token},
+		accessSecret: ${config_2.access_secret},
 `);

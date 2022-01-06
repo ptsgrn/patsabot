@@ -1,10 +1,10 @@
-const { mwn } = require('mwn')
-const { getSiteScriptUrl } = require('./config')
-const { consumer_token,
+import { mwn } from 'mwn'
+import { getSiteScriptUrl } from './config'
+import { consumer_token,
   consumer_secret,
   access_token,
   access_secret
-} = require('../config').userInfo()
+} from '../config'
 
 const bot = mwn.init({
 	apiUrl: `${getSiteScriptUrl}/api.php`,
