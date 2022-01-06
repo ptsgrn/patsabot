@@ -50,5 +50,5 @@ export const id = 1 // task id
 export const name = 'Create AfC Daily category'
 export const desc = 'This script is base on https://github.com/earwig/earwigbot-plugins/blob/develop/tasks/afc_dailycats.py and adapted to javascript.'
 export const excluderegex = false
-export const schedule = '0 0 * * *'
+export const schedule = '5 0 * * *'
 export const run = main
