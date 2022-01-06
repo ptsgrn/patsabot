@@ -1,15 +1,65 @@
 {
   "site": {
-    "_default": "thwiki",
-    "thwiki": "th.wikipedia.org",
-    "thwikisource": "th.wikisource.org",
-    "thwiktionary": "th.wiktionary.org",
-    "enwiki": "en.wikipedia.org",
-    "wikidatawiki": "wikidata.org",
-    "testwikidatawiki": "test.wikidata.org",
-    "wikicommons": "commons.wikimedia.org",
-    "testwiki": "test.wikipedia.org",
-    "test2wiki": "test2.wikipedia.org"
+    "_default": [
+      "http:",
+      "localhost:8004",
+      "/",
+      "/index.php?title="
+    ],
+    "thwiki": [
+      "https:",
+      "th.wikipedia.org",
+      "/w",
+      "/wiki"
+    ],
+    "thwikisource": [
+      "https:",
+      "th.wikisource.org",
+      "/w",
+      "/wiki"
+    ],
+    "thwiktionary": [
+      "https:",
+      "th.wiktionary.org",
+      "/w",
+      "/wiki"
+    ],
+    "enwiki": [
+      "https:",
+      "en.wikipedia.org",
+      "/w",
+      "/wiki"
+    ],
+    "wikidatawiki": [
+      "https:",
+      "wikidata.org",
+      "/w",
+      "/wiki"
+    ],
+    "testwikidatawiki": [
+      "https:",
+      "test.wikidata.org",
+      "/w",
+      "/wiki"
+    ],
+    "wikicommons": [
+      "https:",
+      "commons.wikimedia.org",
+      "/w",
+      "/wiki"
+    ],
+    "testwiki": [
+      "https:",
+      "test.wikipedia.org",
+      "/w",
+      "/wiki"
+    ],
+    "test2wiki": [
+      "https:",
+      "test.wikipedia.org",
+      "/w",
+      "/wiki"
+    ]
   },
   "config": {
     "credentials": "./credentials.json",

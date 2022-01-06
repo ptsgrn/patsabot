@@ -3,13 +3,13 @@ const { combine, timestamp, label, printf } = winston.format
 
 const config = require('./config.js')
 const myFormat = printf(({ level, message, label, timestamp }) => {
-  return `${timestamp} [${label}] ${level}: ${message}`
+  return `${timestamp} [${level}] ${label}: ${message}`
 })
 
 
 module.exports = exports = function (args) {
   const modulename = args
-  const prefix = config.isDebug ? config.configFile().log.debugdir : config.configFile().log.logdir 
+  const prefix = config.isDebug ? config.getConfigFile().log.debugdir : config.getConfigFile().log.logdir 
   const logger = winston.createLogger({
     level: 'info',
     format: myFormat,
