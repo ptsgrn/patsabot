@@ -11,8 +11,6 @@ specifiers:
   moment: ^2.29.1
   mwn: ^0.9.1
   node-cron: ^3.0.0
-  ontime: ^0.0.8
-  wikiapi: ^1.18.0
   winston: ^3.3.3
   winston-daily-rotate-file: ^4.5.5
   yargs: ^17.2.1
@@ -26,8 +24,6 @@ dependencies:
   moment: 2.29.1
   mwn: 0.9.1
   node-cron: 3.0.0
-  ontime: 0.0.8
-  wikiapi: 1.18.0
   winston: 3.3.3
   winston-daily-rotate-file: 4.5.5_winston@3.3.3
   yargs: 17.2.1
@@ -356,11 +352,6 @@ packages:
 
   /cejs/4.3.0:
     resolution: {integrity: sha512-CvScgQzNPTz482Ej4itf+YGXV9h3LhEo2Ux61zjVcaV57aESrBUnbb3m39QI/WgrNrF7jDxw6c/g3oQiXAsgfw==}
-    engines: {node: '>=0.10'}
-    dev: false
-
-  /cejs/4.4.2:
-    resolution: {integrity: sha512-InSTzTkmA/15j6XvaWHgHl8JMkEKxFWEfXQJ8DRIaPUKaqLlvSLlTKyjrDS6WxXIDqRXMLe6cspmmKh16mTP/A==}
     engines: {node: '>=0.10'}
     dev: false
 
@@ -1341,11 +1332,6 @@ packages:
       mimic-fn: 1.2.0
     dev: true
 
-  /ontime/0.0.8:
-    resolution: {integrity: sha512-WgYot8wk4d+biaeXtCDUHXHrjPkJTQPhiqhobp3D+8Sv4/fB3ISBZITUC8Z/vvD2MYTmbR5FVAYI3Qctuaw83g==}
-    engines: {node: '>=4.9.1'}
-    dev: false
-
   /optionator/0.9.1:
     resolution: {integrity: sha512-74RlY5FCnhq4jRxVUPKDaRwrVNXMqsGsiW6AJw4XK8hmtm10wC0ypZBLw5IIp85NZMr91+qd1RvvENwg7jjRFw==}
     engines: {node: '>= 0.8.0'}
@@ -1852,13 +1838,6 @@ packages:
     dependencies:
       isexe: 2.0.0
     dev: true
-
-  /wikiapi/1.18.0:
-    resolution: {integrity: sha512-lWJHFqwNPTBAZ6dr321Y0K0AtxpB1kE+v8zYr5x2yUAsW9IaXh8TP11cofRGI/i9XTGKSHbpiCKByJ7IMsQW4A==}
-    engines: {node: '>=12.0'}
-    dependencies:
-      cejs: 4.4.2
-    dev: false
 
   /winston-daily-rotate-file/4.5.5_winston@3.3.3:
     resolution: {integrity: sha512-ds0WahIjiDhKCiMXmY799pDBW+58ByqIBtUcsqr4oDoXrAI3Zn+hbgFdUxzMfqA93OG0mPLYVMiotqTgE/WeWQ==}
