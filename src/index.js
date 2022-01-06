@@ -37,18 +37,19 @@ try {
   throw new ScriptNotFound(`script "${args._[0]}" might be not existed.`)
 }
 const script = require(resolve(__dirname, `./scripts/${args._[0]}.js`))
-const startRun = new bot.date()
 const workid = cuid()
-log.log('scriptrun', `script ${script.id} (workid:${workid}) starting at ${startRun}`)
+log.log('scriptrun', 'script.runner.start', { workid })
 script.run({
   bot, 
   log: log.child({ 
     script: script.id || 'UNKNOWN',
     workid
   })
-}).then(() => {
-  log.log('scriptdone',`script ${script.id} (workid:${workid}) done in ${dayjs(new bot.date()).diff(startRun)}ms`)
-}).catch((err) => {
-  log.error(err)
-  throw err
 })
+  .finally(() => {
+    log.log('scriptdone', 'script.runner.done', { workid })
+  })
+  .catch((err) => {
+    log.error(err)
+    throw err
+  })
