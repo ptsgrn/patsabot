@@ -1,5 +1,3 @@
-import fs from 'fs'
-import jsonfile from 'jsonfile'
 import yargs from 'yargs/yargs'
 
 interface PackageJsonFile {
@@ -81,47 +79,7 @@ const argv: any = yargs(process.argv.slice(2))
   })
   .group(['config', 'credential'], 'Bot\'s Autherization')
   .epilogue('Running to any issue? File a bug at <https://gitlab.com/ptsgrn/ainalbot/-/issues> or contact the owner at <https://w.wiki/JSB>')
+  .command('add <taskname>','Add new task to tasks list',(yargs) => {})
   .argv
 
-class Site {
-  constructor() {
-    // It's nothing here (for now)
-  }
-  getSiteApiUrl() {
-    let s: any = argv._site[argv.site] ?? argv._site._default
-    return `${s[0]}//${s[1] + s[2]}/api.php` as string
-  }
-}
-
-class User {
-  getKeyOf (key:string) {
-    let keys:any =  argv[argv.config.user]
-    return keys[key] as string
-  }
-  getUserAgent (pkgfile:string = '../../package.json'):string {
-    let pkg: PackageJsonFile = jsonfile.readFileSync(pkgfile)
-    let ret:string = ''
-    ret += pkg.name + '/'
-    ret += pkg.version + ' '
-    ret += '('
-    ret += 'by [[m:User talk:' + pkg.author + ']]; '
-    ret += pkg.bugs.url +'; '
-    ret += '[[w:th:User:AinalBOT/shutoff]];'
-    ret += ') '
-    Object.entries(pkg.dependencies).forEach(([pack, version]) => {
-      ret += `${pack}/${version} `
-    })
-    return ret
-  }
-}
-
-class Page {
-}
-
 export default argv
-export {
-  Site,
-  User,
-  Page,
-  PackageJsonFile,
-}
