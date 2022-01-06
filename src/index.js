@@ -3,13 +3,13 @@
 // This software is released under the MIT License.
 // https://opensource.org/licenses/MIT
 
+import { ScriptNotFound } from './ainalbot/errorfactory.js'
 import { accessSync } from 'node:fs'
 import bot from './ainalbot/bot.js'
-import log from './ainalbot/logger.js'
-import { ScriptNotFound } from './ainalbot/errorfactory.js'
-import yargs from 'yargs'
-import { hideBin } from 'yargs/helpers'
 import cuid from 'cuid'
+import { hideBin } from 'yargs/helpers'
+import log from './ainalbot/logger.js'
+import yargs from 'yargs'
 
 let args = yargs(hideBin(process.argv))
   .command('node . [script]', 'run script', (_args) => {
@@ -34,17 +34,16 @@ let args = yargs(hideBin(process.argv))
   const workid = cuid()
   log.log('scriptrun', 'script.runner.start', {script: args._[0], workid })
   script.run({
-    bot, 
+    bot,
     log: log.child({ 
       script: script.id || 'UNKNOWN',
       workid
     })
   })
-    .finally(() => {
-      log.log('scriptdone', 'script.runner.done', {script: args._[0], workid })
-    })
     .catch((err) => {
       log.error(err)
-      throw err
+    })
+    .finally(() => {
+      log.log('scriptdone', 'script.runner.done', {script: args._[0], workid })
     })
 })()
