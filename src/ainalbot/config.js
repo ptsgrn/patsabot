@@ -12,7 +12,7 @@ import {fileURLToPath} from 'node:url'
 /**
  * processing current user informations
  */
-export const loggerDir = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '../../../logs/')
+export const loggerDir = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '../../logs/')
 export const user = {
   OAuthCredentials: {
     ...credentials
