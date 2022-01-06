@@ -2,7 +2,7 @@ const winston = require('winston')
 const { combine, timestamp, label, printf } = winston.format
 
 const config = require('./config.js')
-const myFormat = winston.format.printf(({ level, message, label, timestamp }) => {
+const myFormat = printf(({ level, message, label, timestamp }) => {
   return `${timestamp} [${label}] ${level}: ${message}`
 })
 
@@ -18,11 +18,20 @@ module.exports = exports = function (args) {
       new winston.transports.File({ 
         filename: `${prefix}error.log`, 
         level: 'error', 
-        format: combine(label({label: modulename}), timestamp(), myFormat),
+        format: combine(
+          label({label: modulename}), 
+          timestamp(), 
+          myFormat
+        ),
       }),
       new winston.transports.File({
         filename: `${prefix + modulename}.log`, 
-        level: 'info'
+        level: 'info',
+        format: combine(
+          label({label: modulename}),
+          timestamp(),
+          myFormat
+        ),
       }),
       new winston.transports.Console({
         format: combine(
