@@ -3,8 +3,8 @@
 // This software is released under the MIT License.
 // https://opensource.org/licenses/MIT
 
-import { getApiQueryLists } from '../patsabot/apis.js'
-import { isArray } from 'util'
+// import { getApiQueryLists } from '../patsabot/apis.js'
+// import { isArray } from 'util'
 
 const pageLayout = `; {{abbr|ข้อมูลเมื่อ|เวลาที่เข้าถึงข้อมูล}}: <<dated>> {{Time ago|<<dated>>|tz_offset=yes}}
 {{tocright}}
@@ -43,7 +43,7 @@ let config = {
   pageLayout
 }
 
-async function main({ bot, log }) {
+async function main() {
   // get list of sysop in th.wikipedia.org
 
 }
@@ -152,7 +152,7 @@ function getLogSqlParts({ requestedActions }) {
  * @see https://github.com/x-tools/xtools/blob/5aae044f81115bd8c2a111f8a2dd3f85d8ff5a56/src/AppBundle/Repository/AdminStatsRepository.php#L38
  * @returns {string} sql query
  */
-function getSql() {
+function _getSql() {
   let actorTable = 'actor'
   let loggingTable = 'logging'
   const requestedActions = [
