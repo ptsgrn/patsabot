@@ -4,6 +4,7 @@ require('winston-daily-rotate-file')
 
 addColors({
   done: 'green',
+  scriptrun: 'bold green',
   scriptdone: 'bold green'
 })
 const logger = createLogger({
@@ -17,6 +18,7 @@ const logger = createLogger({
     info: 6, 
     debug: 7,
     done: 6,
+    scriptrun: 5,
     scriptdone: 5
   },
   level: 'info',
