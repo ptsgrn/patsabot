@@ -1,17 +1,6 @@
-module.exports = {
-  id: 'task2',
-  name: 'test task 2',
-  run: function _run({bot, log}) { 
-    bot.request({
-      'action': 'query',
-      'format': 'json',
-      'meta': 'userinfo',
-    })
-      .then(data => {
-        log.log('info', data.query)
-      })
-      .catch(err => {
-        log.log('error', err)
-      })
-  }
+import { getPageTranscluding } from '../patsabot/apis.js'
+export const id = 'task2'
+export const name = 'test task 2'
+export const run = async function _run() {
+  console.log(await getPageTranscluding('แม่แบบ:uw-ublock'))
 }

@@ -14,7 +14,7 @@ const bot = new mwn({
     ...user.OAuthCredentials
   },
   // Set your user agent (required for WMF wikis, see https://meta.wikimedia.org/wiki/User-Agent_policy):
-  userAgent: `AinalBOT/${version} ([[m:User:Patsagorn Y.]]) mwn/${mwnVersion}`,
+  userAgent: `PatsaBot/${version} ([[m:User:Patsagorn Y.]]) mwn/${mwnVersion}`,
   defaultParams: {
     assert: 'user' // ensure we're logged in
   },
