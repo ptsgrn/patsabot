@@ -14,14 +14,20 @@ const credentials = readFileSync('credentials.json')
  */
 export const loggerDir = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '../../logs/')
 export const user = {
+  username: credentials.username,
+  password: credentials.password,
   OAuthCredentials: {
-    ...credentials
+    'consumerToken': credentials.consumerToken,
+    'consumerSecret':  credentials.consumerSecret,
+    'accessToken': credentials.accessToken,
+    'accessSecret':  credentials.accessSecret
   }
 }
 export const site = {
   /**
    * internet URL of site
    * @type {String}
-   */
+  */
+  // TODO: make a new cli option to overide this
   siteUrl: 'https://th.wikipedia.org/w/api.php'
 }
