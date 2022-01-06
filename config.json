@@ -69,7 +69,7 @@
   },
   "log": {
     "logdir": "./logs/",
-    "debug": false,
+    "debug": true,
     "debugprefix": "",
     "debugdir": "./logs/debug/",
     "log": true,
