@@ -9,7 +9,7 @@ const myFormat = printf(({ level, message, label, timestamp }) => {
 
 module.exports = exports = function (args) {
   const modulename = args
-  const prefix = config.isDebug ? config.getConfigFile().log.debugdir : config.getConfigFile().log.logdir 
+  const prefix = './logs/'
   const logger = winston.createLogger({
     level: 'info',
     format: myFormat,
@@ -41,7 +41,7 @@ module.exports = exports = function (args) {
         ),
       })
     ],
-    silent: !!config.isSilent,
+    // silent: !!config.isSilent,
   }) 
 
 

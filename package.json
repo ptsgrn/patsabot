@@ -27,6 +27,8 @@
     "cron": "^1.8.2",
     "diff": "^5.0.0",
     "express": "^4.17.1",
+    "load-json-file": "^6.2.0",
+    "lodash": "^4.17.21",
     "minimist": "^1.2.5",
     "mwn": "^0.9.1",
     "wikiapi": "github:kanasimi/wikiapi",
