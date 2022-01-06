@@ -1,5 +1,5 @@
-import log from './logger.js'
 import bot from './bot.js'
+import log from './logger.js'
 
 /**
  * Get page transcluding.
@@ -78,7 +78,7 @@ export function getApiQueryLists(list, options = {}) {
   }
   let results = []
   try {
-    for await (let json of bot.continuedQueryGen({
+    for (let json of bot.continuedQueryGen({
       action: 'query',
       list,
       ...options,
