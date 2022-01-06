@@ -1,17 +1,13 @@
-import { workerData } from 'worker_threads'
-import debug from '../ainalbot/logger'
-const log = debug.extend('task2')
-import bot from '../ainalbot/bot'
-
+const bot = require('../ainalbot/bot')
 bot.request({
-	"action": "query",
-	"format": "json",
-	"meta": "userinfo",
+  'action': 'query',
+  'format': 'json',
+  'meta': 'userinfo',
 })
   .then(data => {
-    log('data: %o', data.query)
+    console.log(data.query)
   })
   .catch(err=>{
-    log(err)
+    console.log(err)
   })
 
