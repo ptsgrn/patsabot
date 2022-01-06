@@ -37,7 +37,7 @@
     }
   },
   "dependencies": {
-    "bthreads": "^0.5.1",
+    "cuid": "^2.1.8",
     "dayjs": "^1.10.7",
     "jsonfile": "^6.1.0",
     "mwn": "^0.9.1",

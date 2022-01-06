@@ -11,6 +11,7 @@ const { ScriptNotFound } = require('./ainalbot/errorfactory')
 const yargs = require('yargs/yargs')
 const { hideBin } = require('yargs/helpers')
 const dayjs = require('dayjs')
+const cuid = require('cuid')
 
 let args = yargs(hideBin(process.argv))
   .command('node . [script]', 'run script', (yargs) => {
@@ -19,8 +20,13 @@ let args = yargs(hideBin(process.argv))
         describe: 'script to run',
         normalize: true
       })
-  }, () => {})
-  .parse()
+  })
+  .help('help')
+  .alias('help', 'h')
+  .epilog('MIT License by Patsagorn Y. 2020-2021')
+  .argv
+console.log(args)
+if (args.help) throw args.help()
 try {
   accessSync(resolve(__dirname, `./scripts/${args._[0]}.js`)) 
 } catch {
@@ -28,14 +34,16 @@ try {
 }
 const script = require(resolve(__dirname, `./scripts/${args._[0]}.js`))
 const startRun = new bot.date()
+const workid = cuid()
+log.log('scriptrun', `script ${script.id} (workid:${workid}) starting at ${startRun}`)
 script.run({
   bot, 
   log: log.child({ 
     script: script.id || 'UNKNOWN',
-    startRun
+    workid
   })
 }).then(()=>{
-  log.log('scriptdone',`script ${script.id} done in ${dayjs(new bot.date()).diff(startRun)}ms`)
+  log.log('scriptdone',`script ${script.id} (workid:${workid}) done in ${dayjs(new bot.date()).diff(startRun)}ms`)
 }).catch((err)=>{
   log.error(err)
   throw err
