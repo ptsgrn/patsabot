@@ -14,3 +14,4 @@ export const parse = CeL.wiki.parser
 export const parser = CeL.wiki.parse
 moment.locale('th')
 export const DateTime = moment()
+export const mm = moment

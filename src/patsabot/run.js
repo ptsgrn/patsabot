@@ -49,7 +49,8 @@ let args = yargs(hideBin(process.argv))
       log: log.child({
         script: script.id || 'UNKNOWN',
         workid
-      })
+      }),
+      args
     })
       .catch((err) => {
         log.error(err)
@@ -67,7 +68,8 @@ let args = yargs(hideBin(process.argv))
           id: script.id || 'UNKNOWN',
           script: args._[0],
           workid
-        })
+        }),
+        args
       })
         .catch((err) => {
           log.error(err)

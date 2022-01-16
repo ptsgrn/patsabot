@@ -1,12 +1,12 @@
 // Copyright (c) 2021 Patsagorn Y.
 // 
 // This software is released under the MIT License.
-// https://opensource.org/licenses/MI
+// https://opensource.org/licenses/MIT
 
-import { DateTime } from '../patsabot/utils.js'
+import { mm } from '../patsabot/utils.js'
 
-async function savePage({ bot, log }) {
-  const tomorrowDate = DateTime.format('DD MMMM yyyy')
+async function savePage({ bot, log, args }) {
+  const tomorrowDate = mm(args._[1] ?? undefined).format('DD MMMM yyyy')
   log.log('debug', 'script.main.prepare', { data: `หมวดหมู่:ฉบับร่างเรียงตามวันที่ส่ง/${tomorrowDate}` })
   try {
     return bot.save(
@@ -24,7 +24,7 @@ async function savePage({ bot, log }) {
   }
 }
 
-async function main({ bot, log }) {
+async function main({ bot, log, args }) {
   // shutoff option
   bot.enableEmergencyShutoff({
     // The name of the page to check
@@ -43,12 +43,12 @@ async function main({ bot, log }) {
       // process.exit(0)
     }
   })
-  return savePage({ bot, log })
+  return savePage({ bot, log, args})
 }
 
 export const id = 1 // task id
 export const name = 'Create AfC Daily category'
 export const desc = 'This script is base on https://github.com/earwig/earwigbot-plugins/blob/develop/tasks/afc_dailycats.py and adapted to javascript.'
 export const excluderegex = false
-export const schedule = '5 0 * * *'
+// export const schedule = '20 0 * * *'
 export const run = main
