@@ -39,8 +39,8 @@ const logger = createLogger({
   transports: [
     new transports.DailyRotateFile({
       dirname: loggerDir,
-      frequency: '24h',
-      filename: process.env.NODE_ENV === 'production' ? 'prod-%DATE%.log' : '%DATE%.log',
+      frequency: '48h',
+      filename: process.env.NODE_ENV === 'production' ? 'prod.log' : '%DATE%.log',
       maxSize: '1mb',
       maxFiles: '15d',
       utc: true,
