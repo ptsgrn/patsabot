@@ -9,14 +9,16 @@ async function savePage({ bot, log, args }) {
   const tomorrowDate = mm(args._[1] ?? undefined).format('DD MMMM yyyy')
   log.log('debug', 'script.main.prepare', { data: `หมวดหมู่:ฉบับร่างเรียงตามวันที่ส่ง/${tomorrowDate}` })
   try {
-    return bot.save(
-      `หมวดหมู่:ฉบับร่างเรียงตามวันที่ส่ง/${tomorrowDate}`, // page title
-      '{{AfC submission category header}}', // content
-      'สร้างหมวดหมู่ฉบับร่าง ([[user:PatsaBot/task/1|Task #1]])', // summary
-      {
-        // do not edit the page if it already exists
-        'createonly': 1
-      })
+    if (!args['simulate']) {
+      return bot.save(
+        `หมวดหมู่:ฉบับร่างเรียงตามวันที่ส่ง/${tomorrowDate}`, // page title
+        '{{AfC submission category header}}', // content
+        'สร้างหมวดหมู่ฉบับร่าง ([[user:PatsaBot/task/1|Task #1]])', // summary
+        {
+           // do not edit the page if it already exists
+          'createonly': 1
+        })
+    }
   } catch (e) {
     log.error('script.main.error', { data: e })
   } finally {
