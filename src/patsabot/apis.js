@@ -1,6 +1,7 @@
 import bot from './bot.js'
 import log from './logger.js'
 
+
 /**
  * Get page transcluding.
  * @param {string} page Pages to get transcludings.

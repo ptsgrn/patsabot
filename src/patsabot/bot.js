@@ -24,4 +24,6 @@ const bot = new mwn({
 bot.initOAuth()
 bot.getTokensAndSiteInfo()
 
+
+
 export default bot
