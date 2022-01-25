@@ -4,86 +4,66 @@
 // This software is released under the MIT License.
 // https://opensource.org/licenses/MIT
 
-import { ScriptNotFound } from './errorfactory.js'
-import _cron from 'node-cron'
-import { accessSync } from 'node:fs'
-import bot from './bot.js'
-import cuid from 'cuid'
-import { hideBin } from 'yargs/helpers'
-import log from './logger.js'
-import yargs from 'yargs'
-const { schedule, validate } = _cron
+import { spawn } from 'child_process'
+import { resolve, dirname } from 'path'
+import chalk from 'chalk'
+import { version } from './version.js'
+import fs from 'fs'
+import { fileURLToPath } from 'url';
 
+const argv = process.argv.splice(2)
+const script_path = resolve(dirname(fileURLToPath(import.meta.url)), '../scripts/')
 
-let args = yargs(hideBin(process.argv))
-  .command('node . [script]', 'run script', (_args) => {
-    return _args
-      .positional('script', {
-        describe: 'script to run',
-        normalize: true
-      })
-  })
-  .help('help')
-  .alias('help', 'h')
-  .epilog('MIT License by Patsagorn Y. 2020-2021')
-  .parse();
+if (argv.length === 0) {
+  fs.readdir(script_path, function (err, files) {
+    if (err) {
+      return console.log(chalk.red.bold('Unable to scan directory: ' + err));
+    }
+    let scripts = files
+      .filter(f => f.endsWith('.js'))
+      .map(f => f.replace('.js', ''))
+    console.log(`
+  For show help, use:
+    $ ${chalk.green('patsabot')} --help
 
-(async function() {
-  try {
-    accessSync(new URL(`../scripts/${args._[0]}.js`, import.meta.url)) 
-  } catch {
-    return new ScriptNotFound(`script "${args._[0]}" might be not existed.`)
-  }
-  const script = await import(`../scripts/${args._[0]}.js`)
-  const workid = cuid()
-  log.log('scriptrun', 'script.runner.start', {
-    script: args._[0],
-    id: script.id,
-    workid
-  })
-  // check if script has schedule inside
-  // TODO: make a new cli option to overide this
-  if (!script.schedule) {
-    script.run({
-      bot,
-      log: log.child({
-        script: script.id || 'UNKNOWN',
-        workid
-      }),
-      args
+  ${chalk.green.bold('Available scripts:')}
+${scripts.map(s => `    ${chalk.green(s)}`).join('\n')}
+
+  For more usage and information about each script, see:
+    $ ${chalk.green('patsabot')} <script> --help`)
+    process.exit(0)
+  });
+}
+
+if (argv[0] === '--help' || argv[0] === '-h') {
+  console.log(`
+  ${chalk.blueBright(`PatsaBot v${ version }`)}
+
+  ${chalk.white.bold('Usage')}
+    $ ${chalk.green('patsabot')} <script> [options]
+    script: Script to run. Must be in the src/scripts/ folder.
+    options: Options to pass to the script.
+
+    --help, -h: Show this help.
+    You can also run ${chalk.green('patsabot')} with no arguments to see a list of scripts 
+    and use --help to see the help of a script.
+
+  Examples
+    $ ${chalk.green('patsabot')} afccat --help
+      See the help of the afccat script.
+    
+  (c) MIT License 2020-21 Patsagorn Y.`)
+  process.exit(0)
+}
+
+if (argv[0] !== undefined && (argv[0] != '--help' || argv[0] != '-h')) {
+  const ls = spawn(
+    'node',
+    [resolve(`./src/scripts/${argv[0]}.js`), ...argv.splice(1)],
+    {
+      stdio: 'inherit'
     })
-      .catch((err) => {
-        log.error(err)
-      })
-      .finally(() => {
-        log.log('scriptdone', 'script.runner.done', { script: args._[0], workid })
-      })
-  } else {
-    if (typeof script.schedule !== 'string') return new Error('schedule must be a string')
-    if (!validate(script.schedule)) return new Error(`schedule (${script.schedule}) is not valid`)
-    schedule(script.schedule, () => {
-      script.run({
-        bot,
-        log: log.child({
-          id: script.id || 'UNKNOWN',
-          script: args._[0],
-          workid
-        }),
-        args
-      })
-        .catch((err) => {
-          log.error(err)
-        })
-        .finally(() => {
-          log.log('scriptdone', 'script.runner.done', {
-            script: args._[0],
-            id: script.id || 'UNKNOWN',
-            workid
-          })
-        })
-    }, {
-      scheduled: true,
-      timezone: 'Asia/Bangkok'
-    })
-  }
-})()
+  ls.on('close', (code) => {
+    console.log(chalk.black[code === 0 ? 'bgGreenBright' : 'bgRed'](`  script process exited with code ${chalk.bold(code)}  `))
+  })
+}
