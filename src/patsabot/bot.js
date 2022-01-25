@@ -5,7 +5,7 @@
 
 import { mwnVersion, version } from './version.js'
 import { site, user } from './config.js'
-
+import log from './logger.js'
 import { mwn } from 'mwn'
 
 const bot = new mwn({
@@ -17,13 +17,11 @@ const bot = new mwn({
   userAgent: `PatsaBot/${version} ([[m:User:Patsagorn Y.]]) mwn/${mwnVersion}`,
   defaultParams: {
     assert: 'user' // ensure we're logged in
-  },
-  exclusionRegex: /\{\{nobots\}\}/i
+  }
 })
 
 bot.initOAuth()
 bot.getTokensAndSiteInfo()
-
-
+bot.log = mwn.log
 
 export default bot

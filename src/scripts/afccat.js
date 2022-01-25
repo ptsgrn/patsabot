@@ -3,54 +3,87 @@
 // This software is released under the MIT License.
 // https://opensource.org/licenses/MIT
 
-import { mm } from '../patsabot/utils.js'
+import bot from '../patsabot/bot.js'
+import moment from 'moment'
+import meow from 'meow'
+import { mwn } from 'mwn'
 
-async function savePage({ bot, log, args }) {
-  const tomorrowDate = mm(args._[1] ?? undefined).format('DD MMMM yyyy')
-  log.log('debug', 'script.main.prepare', { data: `หมวดหมู่:ฉบับร่างเรียงตามวันที่ส่ง/${tomorrowDate}` })
-  try {
-    if (!args['simulate']) {
-      return bot.save(
-        `หมวดหมู่:ฉบับร่างเรียงตามวันที่ส่ง/${tomorrowDate}`, // page title
-        '{{AfC submission category header}}', // content
-        'สร้างหมวดหมู่ฉบับร่าง ([[user:PatsaBot/task/1|Task #1]])', // summary
+const cli = meow(`
+	Usage
+	  $ patsabot afccat [options]
+
+	Options
+	  --date, -d	Date to create the category. (default: today)
+		--dry-run, -n	Do not actually create the category, just test.
+
+	Examples
+	  $ patsabot afccat -d 2020-01-01 -d 2020-01-02 -d 2020-01-03
+		Create categories for 2020-01-01, 2020-01-02, and 2020-01-03.
+`, {
+  importMeta: import.meta,
+  booleanDefault: undefined,
+  flags: {
+    date: {
+      type: 'string',
+      default: [moment().format('DD MMMM yyyy')],
+      alias: 'd',
+      isMultiple: true
+    },
+    dryRun: {
+      type: 'boolean',
+      default: false,
+      alias: 'n',
+    },
+  }
+})
+
+moment.locale('th')
+let categories = cli.flags.date.map(date => {
+  if (!moment(date, 'YYYY-MM-DD').isValid()) return null
+  return `หมวดหมู่:ฉบับร่างเรียงตามวันที่ส่ง/${moment(date).format('DD MMMM yyyy')}`
+})
+
+cli.flags.date.forEach(date => {
+  if (!moment(date, 'YYYY-MM-DD').isValid()) return null
+  categories.push(moment(date).format('MMMM yyyy'))
+})
+
+// no null and unique
+categories = categories
+  .filter(c => c !== null)
+  .filter((c, i, a) => a.indexOf(c) === i)
+
+if (isNaN(categories.length) || categories.length === 0) {
+  bot.log('[W] No categories to create.')
+  process.exit(0)
+}
+
+bot.log('[I] Categories to create: ' + categories.join(', '))
+
+bot.batchOperation(
+  categories,
+  (page) => {
+    return new Promise((resolve, reject) => {
+      if (cli.flags.dryRun) return resolve('dry run')
+      bot.save(
+        page,
+        '{{AfC submission category header}}',
+        'สร้างหมวดหมู่ฉบับร่าง ([[user:PatsaBot/task/1|Task #1]])',
         {
           // do not edit the page if it already exists
           'createonly': 1
-        })
-    }
-  } catch (e) {
-    log.error('script.main.error', { data: e })
-  } finally {
-    log.log('debug', 'script.main.done', { data: `หมวดหมู่:ฉบับร่างเรียงตามวันที่ส่ง/${tomorrowDate}` })
-  }
+        }
+			)
+				.then(resolve)
+				.catch(reject)
+    })
+  },
+  1,
+  1
+).then(() => {
+  bot.log('[I] Done.')
+})
+
+export default {
+	desc: 'Create categories for AfC submissions.'
 }
-
-async function main({ bot, log, args }) {
-  // shutoff option
-  bot.enableEmergencyShutoff({
-    // The name of the page to check
-    page: 'User:PatsaBot/shutoff/1',
-
-    // check shutoff page every 5 seconds
-    intervalDuration: 5000,
-
-    // function to determine whether the bot should continue to run or not
-    condition: (pagetext) => pagetext === 'on',
-    // function to trigger when shutoff is activated
-    onShutoff: function (pagetext) {
-      log.error('bot.shutoff', {pagetext})
-      // let's just exit, though we could also terminate
-      // any open connections, close files, etc.
-      // process.exit(0)
-    }
-  })
-  return savePage({ bot, log, args})
-}
-
-export const id = 1 // task id
-export const name = 'Create AfC Daily category'
-export const desc = 'This script is base on https://github.com/earwig/earwigbot-plugins/blob/develop/tasks/afc_dailycats.py and adapted to javascript.'
-export const excluderegex = false
-// export const schedule = '20 0 * * *'
-export const run = main
