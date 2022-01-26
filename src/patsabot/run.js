@@ -59,7 +59,7 @@ if (argv[0] === '--help' || argv[0] === '-h') {
 if (argv[0] !== undefined && (argv[0] != '--help' || argv[0] != '-h')) {
   const ls = spawn(
     'node',
-    [resolve(`./src/scripts/${argv[0]}.js`), ...argv.splice(1)],
+    [resolve(dirname(fileURLToPath(import.meta.url)),`../scripts/${argv[0]}.js`), ...argv.splice(1)],
     {
       stdio: 'inherit'
     })
