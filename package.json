@@ -41,7 +41,6 @@
     "patsabot": "./src/patsabot/run.js"
   },
   "dependencies": {
-    "@types/lowdb": "^1.0.11",
     "@types/node": "^16.11.4",
     "cejs": "^4.3.0",
     "chalk": "^5.0.0",
@@ -52,8 +51,7 @@
     "mwn": "^0.9.1",
     "node-cron": "^3.0.0",
     "winston": "^3.3.3",
-    "winston-daily-rotate-file": "^4.5.5",
-    "yargs": "^17.2.1"
+    "winston-daily-rotate-file": "^4.5.5"
   },
   "devDependencies": {
     "cz-conventional-changelog": "^3.3.0",
