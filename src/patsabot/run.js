@@ -9,7 +9,7 @@ import { resolve, dirname } from 'path'
 import chalk from 'chalk'
 import { version } from './version.js'
 import fs from 'fs'
-import { fileURLToPath } from 'url';
+import { fileURLToPath } from 'url'
 
 const argv = process.argv.splice(2)
 const script_path = resolve(dirname(fileURLToPath(import.meta.url)), '../scripts/')
@@ -17,7 +17,7 @@ const script_path = resolve(dirname(fileURLToPath(import.meta.url)), '../scripts
 if (argv.length === 0) {
   fs.readdir(script_path, function (err, files) {
     if (err) {
-      return console.log(chalk.red.bold('Unable to scan directory: ' + err));
+      return console.log(chalk.red.bold('Unable to scan directory: ' + err))
     }
     let scripts = files
       .filter(f => f.endsWith('.js'))
@@ -32,7 +32,7 @@ ${scripts.map(s => `    ${chalk.green(s)}`).join('\n')}
   For more usage and information about each script, see:
     $ ${chalk.green('patsabot')} <script> --help`)
     process.exit(0)
-  });
+  })
 }
 
 if (argv[0] === '--help' || argv[0] === '-h') {

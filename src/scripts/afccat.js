@@ -6,14 +6,13 @@
 import bot from '../patsabot/bot.js'
 import moment from 'moment'
 import meow from 'meow'
-import { mwn } from 'mwn'
 
 const cli = meow(`
 	Usage
 	  $ patsabot afccat [options]
 
 	Options
-	  --date, -d	Date to create the category. (default: today)
+	  --date, -d	Date to create the category.
 		--dry-run, -n	Do not actually create the category, just test.
 
 	Examples
@@ -44,8 +43,8 @@ let categories = cli.flags.date.map(date => {
 })
 
 cli.flags.date.forEach(date => {
-  if (!moment(date, 'YYYY-MM-DD').isValid()) return null
-  categories.push(moment(date).format('MMMM yyyy'))
+  categories.push(`หมวดหมู่:ฉบับร่างเรียงตามวันที่ส่ง/${moment(date).format('MMMM yyyy')}`)
+  categories.push(`หมวดหมู่:ฉบับร่างเรียงตามวันที่ส่ง/${moment(date).format('yyyy')}`)
 })
 
 // no null and unique
@@ -73,9 +72,9 @@ bot.batchOperation(
           // do not edit the page if it already exists
           'createonly': 1
         }
-			)
-				.then(resolve)
-				.catch(reject)
+      )
+        .then(resolve)
+        .catch(reject)
     })
   },
   1,
@@ -85,5 +84,5 @@ bot.batchOperation(
 })
 
 export default {
-	desc: 'Create categories for AfC submissions.'
+  desc: 'Create categories for AfC submissions.'
 }
