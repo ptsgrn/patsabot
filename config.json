@@ -62,7 +62,7 @@
     ]
   },
   "config": {
-    "user": "AinalBOT",
+    "user": "PatsaBot",
     "credentials": "./credentials.json",
     "simulate": false,
     "disabled": []
@@ -75,5 +75,11 @@
     "log": true,
     "autolog": [],
     "excludes": []
+  },
+  "replica": {
+    "provider": "mysql",
+    "host": "127.0.0.1",
+    "port": 3306,
+    "database": "thwiki_p"
   }
 }

@@ -63,7 +63,11 @@ bot.batchOperation(
   categories,
   (page) => {
     return new Promise((resolve, reject) => {
-      if (cli.flags.dryRun) return resolve('dry run')
+      if (cli.flags.dryRun) {
+        bot.log('[W] Dry run, not creating category: ' + page)
+        resolve()
+      }
+      if (page.indexOf('หมวดหมู่:ฉบับร่างเรียงตามวันที่ส่ง/') === -1 || page ===  'หมวดหมู่:ฉบับร่างเรียงตามวันที่ส่ง/Invalid date') return reject()
       bot.save(
         page,
         '{{AfC submission category header}}',
