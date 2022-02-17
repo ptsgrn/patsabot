@@ -20,8 +20,8 @@ const bot = new mwn({
   }
 })
 
-bot.initOAuth()
-bot.getTokensAndSiteInfo()
+await bot.initOAuth()
+await bot.getTokensAndSiteInfo()
 bot.log = mwn.log
 
 export default bot

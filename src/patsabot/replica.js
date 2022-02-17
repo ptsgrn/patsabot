@@ -1,4 +1,11 @@
-import { parseJsonFile, resolveRelativePath } from './utils.js';
-import { replicaCredentials, replicaConfig } from './config.js';
 
-import { log } from 'mwn'
+import {
+  replicaConfig
+} from './config.js'
+import {
+  Sequelize
+} from 'sequelize'
+
+const sequelize = new Sequelize(replicaConfig.dbURL)
+
+export default replica
