@@ -8,6 +8,7 @@ specifiers:
   cz-conventional-changelog: ^3.3.0
   eslint: ^7.19.0
   jsonfile: ^6.1.0
+  matrix-org-irc: ^1.2.0
   meow: ^10.1.2
   moment: ^2.29.1
   mwn: ^0.9.1
@@ -26,6 +27,7 @@ dependencies:
   chalk: 5.0.0
   cuid: 2.1.8
   jsonfile: 6.1.0
+  matrix-org-irc: 1.2.0
   meow: 10.1.2
   moment: 2.29.1
   mwn: 0.9.1
@@ -440,6 +442,10 @@ packages:
   /chardet/0.7.0:
     resolution: {integrity: sha512-mT8iDcrh03qDGRRmoA2hmBJnxpllMR+0/0qlzjqZES6NdiWDcZkCNAk4rPFZ9Q85r27unkiNNg8ZOiwZXBHwcA==}
     dev: true
+
+  /chardet/1.4.0:
+    resolution: {integrity: sha512-NpwMDdSIprbYx1CLnfbxEIarI0Z+s9MssEgggMNheGM+WD68yOhV7IEA/3r6tr0yTRgQD0HuZJDw32s99i6L+A==}
+    dev: false
 
   /cli-color/2.0.1:
     resolution: {integrity: sha512-eBbxZF6fqPUNnf7CLAFOersUnyYzv83tHFLSlts+OAHsNendaqv2tHCq+/MO+b3Y+9JeoUlIvobyxG/Z8GNeOg==}
@@ -1274,6 +1280,11 @@ packages:
       through: 2.3.8
     dev: true
 
+  /irc-colors/1.5.0:
+    resolution: {integrity: sha512-HtszKchBQTcqw1DC09uD7i7vvMayHGM1OCo6AHt5pkgZEyo99ClhHTMJdf+Ezc9ovuNNxcH89QfyclGthjZJOw==}
+    engines: {node: '>=6'}
+    dev: false
+
   /is-arrayish/0.2.1:
     resolution: {integrity: sha1-d8mYQFJ6qOyxqLppe4BkWnqSap0=}
 
@@ -1505,6 +1516,16 @@ packages:
     engines: {node: '>=8'}
     dev: false
 
+  /matrix-org-irc/1.2.0:
+    resolution: {integrity: sha512-RnfeR9FimJJD/iOWw0GiV7NIPRmBJobvFasUgjVmGre9A4qJ9klHIDOlQ5vXIoPPMjzG8XXuAf4WHgMCNBfZkQ==}
+    engines: {node: '>=12.0.0'}
+    dependencies:
+      chardet: 1.4.0
+      iconv-lite: 0.6.3
+      irc-colors: 1.5.0
+      utf-8-validate: 5.0.8
+    dev: false
+
   /memoizee/0.4.15:
     resolution: {integrity: sha512-UBWmJpLZd5STPm7PMUlOw/TSy972M+z8gcyQ5veOnSDRREz/0bmpyTfKt3/51DhEBqCZQn1udM/5flcSPYhkdQ==}
     dependencies:
@@ -1681,6 +1702,11 @@ packages:
     engines: {node: '>=6.0.0'}
     dependencies:
       moment-timezone: 0.5.34
+    dev: false
+
+  /node-gyp-build/4.3.0:
+    resolution: {integrity: sha512-iWjXZvmboq0ja1pUGULQBexmxq8CV4xBhX7VDOTbL7ZR4FOowwY/VOtRxBN/yKxmdGoIp4j5ysNT4u3S2pDQ3Q==}
+    hasBin: true
     dev: false
 
   /nopt/5.0.0:
@@ -2463,6 +2489,14 @@ packages:
     dependencies:
       querystringify: 2.2.0
       requires-port: 1.0.0
+    dev: false
+
+  /utf-8-validate/5.0.8:
+    resolution: {integrity: sha512-k4dW/Qja1BYDl2qD4tOMB9PFVha/UJtxTc1cXYOe3WwA/2m0Yn4qB7wLMpJyLJ/7DR0XnTut3HsCSzDT4ZvKgA==}
+    engines: {node: '>=6.14.2'}
+    requiresBuild: true
+    dependencies:
+      node-gyp-build: 4.3.0
     dev: false
 
   /util-deprecate/1.0.2:
