@@ -32,7 +32,6 @@ const client = new Client(ircConfig.server, 'patsabot[bot]', {
 })
 
 client.on('message#patsabot-console', (nick, text, meta) => {
-
   console.log(`${nick}: ${text}`)
   if (text.startsWith('!log')) {
     client.say('#patsabot-log', `${nick}: ${text.substring(4)}`)
@@ -48,20 +47,26 @@ client.on('message#patsabot-console', (nick, text, meta) => {
   }
   if (text.startsWith('!run')) {
     const runid = cuid()
-    const [_bin, ...cmd] = text.substring(4).split(' ')
-    client.say('#patsabot-console', `${nick}: ${runid} - ${cmd.join(' ')}`)
+    const [_bin, ...cmd] = text.split(' ')
+    console.log('#patsabot-console', `${nick}: [${runid}] ${cmd.join(' ')}`)
     const child = spawn('patsabot', cmd)
     child.stdout.setEncoding('utf8');
     child.stdout.on('data', (data) => {
-      client.say('#patsabot-log', `[${runid}] ${data.toString()}`)
+      data.split('\n').forEach(line => {
+        queue.push({ channel: '#patsabot-log', text: `[${runid}] ${line}` })
+      })
     })
     child.stderr.setEncoding('utf8');
     child.stderr.on('data', (data) => {
-      client.say('#patsabot-log', `[${runid}] ${data.toString()}`)
+      data.split('\n').forEach(line => {
+        queue.push({ channel: '#patsabot-console', text: `[${runid}] ${line}` })
+      })
     })
     child.on('close', (code) => {
-      client.say('#patsabot-console', `${nick}: [${runid}] exited with code ${code}`)
-      client.say('#patsabot-log', `[${runid}] exited with code ${code}`)
+      queue.forEach(async ({ channel, text }) => {
+        console.log(`${channel}: ${text}`)
+        await new Promise(resolve => setTimeout(resolve, 500)) // dont so hurry
+      })
     })
   }
 })
