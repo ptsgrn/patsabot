@@ -24,7 +24,7 @@ const cli = meow(`
   flags: {
     date: {
       type: 'string',
-      default: [moment().format('DD MMMM yyyy')],
+      default: [],
       alias: 'd',
       isMultiple: true
     },
@@ -38,11 +38,13 @@ const cli = meow(`
 
 moment.locale('th')
 let categories = cli.flags.date.map(date => {
+  if (date === 'today') date = moment().format('YYYY-MM-DD')
   if (!moment(date, 'YYYY-MM-DD').isValid()) return null
   return `หมวดหมู่:ฉบับร่างเรียงตามวันที่ส่ง/${moment(date).format('DD MMMM yyyy')}`
 })
 
 cli.flags.date.forEach(date => {
+  if (date === 'today') date = moment().format('YYYY-MM-DD')
   categories.push(`หมวดหมู่:ฉบับร่างเรียงตามวันที่ส่ง/${moment(date).format('MMMM yyyy')}`)
   categories.push(`หมวดหมู่:ฉบับร่างเรียงตามวันที่ส่ง/${moment(date).format('yyyy')}`)
 })
