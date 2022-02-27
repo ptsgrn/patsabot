@@ -12,7 +12,7 @@ import { resolve, dirname, isAbsolute } from 'path'
 import { fileURLToPath } from 'url'
 import { readFileSync } from 'node:fs'
 
-// Only god know why it alternately named
+// Only god know why this is necessary.
 export const parse = CeL.wiki.parser
 export const parser = CeL.wiki.parse
 moment.locale('th')
@@ -40,4 +40,13 @@ export function parseJsonFile(absolutePath) {
   } catch (error) {
     return {}
   }
+}
+
+/**
+ * 
+ * @param {*} array array to flatten
+ * @returns flattened array
+ */
+export function flattenArray(array) {
+  return [].concat(...array)
 }
