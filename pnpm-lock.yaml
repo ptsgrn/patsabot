@@ -9,6 +9,7 @@ specifiers:
   diff: ^5.0.0
   eslint: ^7.19.0
   jsonfile: ^6.1.0
+  lodash: ^4.17.21
   matrix-org-irc: ^1.2.0
   meow: ^10.1.2
   moment: ^2.29.1
@@ -19,7 +20,6 @@ specifiers:
   sequelize: ^6.15.1
   sequelize-auto: ^0.8.8
   sequelize-cli: ^6.4.1
-  synchronized-promise: ^0.3.1
   winston: ^3.3.3
   winston-daily-rotate-file: ^4.5.5
 
@@ -30,6 +30,7 @@ dependencies:
   cuid: 2.1.8
   diff: 5.0.0
   jsonfile: 6.1.0
+  lodash: 4.17.21
   matrix-org-irc: 1.2.0
   meow: 10.1.2
   moment: 2.29.1
@@ -39,7 +40,6 @@ dependencies:
   node-cron: 3.0.0
   sequelize: 6.15.1_mysql2@2.3.3
   sequelize-auto: 0.8.8_sequelize@6.15.1
-  synchronized-promise: 0.3.1
   winston: 3.3.3
   winston-daily-rotate-file: 4.5.5_winston@3.3.3
 
@@ -358,12 +358,6 @@ packages:
     resolution: {integrity: sha512-t/OYhhJ2SD+YGBQcjY8GzzDHEk9f3nerxjtfa6tlMXfe7frs/WozhvCNoGvpM0P3bNf3Gq5ZRMlGr5f3r4/N8A==}
     dev: false
 
-  /bindings/1.5.0:
-    resolution: {integrity: sha512-p2q/t/mhvuOj/UeLlV6566GD/guowlr0hHxClI0W9m7MWYkL1F0hLo+0Aexs9HSPCtR1SXQ0TD3MMKrXZajbiQ==}
-    dependencies:
-      file-uri-to-path: 1.0.0
-    dev: false
-
   /bluebird/3.7.2:
     resolution: {integrity: sha512-XpNj6GDQzdfW+r2Wnn7xiSAd7TM3jzkxGXBGTtWKuSXv1xUV+azxAm8jdWZN06QTQk+2N2XB9jRDkvbmQmcRtg==}
     dev: true
@@ -644,15 +638,6 @@ packages:
       es5-ext: 0.10.53
       type: 1.2.0
     dev: true
-
-  /deasync/0.1.24:
-    resolution: {integrity: sha512-i98vg42xNfRZCymummMAN0rIcQ1gZFinSe3btvPIvy6JFTaeHcumeKybRo2HTv86nasfmT0nEgAn2ggLZhOCVA==}
-    engines: {node: '>=0.11.0'}
-    requiresBuild: true
-    dependencies:
-      bindings: 1.5.0
-      node-addon-api: 1.7.2
-    dev: false
 
   /debug/4.3.2:
     resolution: {integrity: sha512-mOp8wKcvj7XxC78zLgw/ZA+6TSgkoE2C/ienthhRD298T7UNwAg9diBpLRxC0mOezLl4B0xV7M0cCO6P/O0Xhw==}
@@ -1008,10 +993,6 @@ packages:
     resolution: {integrity: sha512-VYb3HZ/GiAGUCrfeakO8Mp54YGswNUHvL7P09WQcXAJNSj3iQ5QraYSp3cIn1MUyw6uzfgN/EFOarCNa4JvUHQ==}
     dependencies:
       moment: 2.29.1
-    dev: false
-
-  /file-uri-to-path/1.0.0:
-    resolution: {integrity: sha512-0Zt+s3L7Vf1biwWZ29aARiVYLx7iMGnEUl9x33fbB/j3jR81u/O2LbqK+Bm1CDSNDKVtJ/YjwY7TUd5SkeLQLw==}
     dev: false
 
   /fill-range/7.0.1:
@@ -1725,10 +1706,6 @@ packages:
     resolution: {integrity: sha512-CXdUiJembsNjuToQvxayPZF9Vqht7hewsvy2sOWafLvi2awflj9mOC6bHIg50orX8IJvWKY9wYQ/zB2kogPslQ==}
     dev: true
 
-  /node-addon-api/1.7.2:
-    resolution: {integrity: sha512-ibPK3iA+vaY1eEjESkQkM0BbCqFOaZMiXRTtdB0u7b4djtY6JnsjvPdUHVMg6xQt3B8fpTTWHI9A+ADjM9frzg==}
-    dev: false
-
   /node-cron/3.0.0:
     resolution: {integrity: sha512-DDwIvvuCwrNiaU7HEivFDULcaQualDv7KoNlB/UU1wPW0n1tDEmBJKhEIE6DlF2FuoOHcNbLJ8ITL2Iv/3AWmA==}
     engines: {node: '>=6.0.0'}
@@ -2369,13 +2346,6 @@ packages:
     resolution: {integrity: sha512-ot0WnXS9fgdkgIcePe6RHNk1WA8+muPa6cSjeR3V8K27q9BB1rTE3R1p7Hv0z1ZyAc8s6Vvv8DIyWf681MAt0w==}
     engines: {node: '>= 0.4'}
     dev: true
-
-  /synchronized-promise/0.3.1:
-    resolution: {integrity: sha512-Iy+JzrERSUrwpOHUDku8HHIddk8V6iLG9bPIzboP2i5RYkn2eSmRB8waSaX7Rc/+DUUsnFsoOHrmniwOp9BOgw==}
-    engines: {node: '>=4.2.0'}
-    dependencies:
-      deasync: 0.1.24
-    dev: false
 
   /table/6.7.2:
     resolution: {integrity: sha512-UFZK67uvyNivLeQbVtkiUs8Uuuxv24aSL4/Vil2PJVtMgU8Lx0CYkP12uCGa3kjyQzOSgV1+z9Wkb82fCGsO0g==}

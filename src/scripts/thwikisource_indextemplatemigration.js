@@ -81,7 +81,6 @@ Promise.all([
 let pagesInCat = await bot.getPagesInCategory('ดัชนีที่ใช้ช่องเล่ม')
 
 async function pageProcess(page, id) {
-  console.log(page)
   return new Promise(async (resolve, reject) => {
     let content = (await bot.read(page)).revisions[0].content
     let parsed = parse(content)
@@ -95,7 +94,7 @@ async function pageProcess(page, id) {
       // # "เล่ม" ถ้าเป็นราชกิจจานุเบกษา (มาแนว '''ราชกิจจานุเบกษา, เล่ม ''ลลล'', ตอน ''ตตต'', หน้า ''นน'', ''วว ดดดดดด ปปปป''''') ให้ย้ายไป "จากวารสาร"
       if (isRKJ(getparam(token, 'เล่ม'))) {
         setparam(token, 'จากวารสาร', getparam(token, 'เล่ม'), {
-          insertAt: 19
+          putAfter: 'ARC'
         })
         setparam(token, 'เล่ม', '')
       }
@@ -109,25 +108,46 @@ async function pageProcess(page, id) {
         // 3 = พิสูจน์อักษรแล้ว (เหลือง)
         // 4 = ตรวจสอบแล้ว (เขียว)
         let profreadspagestatus = uniq(await checkPagesInIndex(page))
+        let profreadpagesprofreadstatus = profreadspagestatus.map(p => p.status)
+        let profreadpagesprofreadtranscluded = profreadspagestatus.map(p => p.isTranscluded)
         //   #* บางหน้ายังไม่ได้สร้าง ให้ลงช่อง "ความคืบหน้า" ว่า "C"
         //   #* สร้างหน้าแค่บางส่วน ให้ลงช่อง "ความคืบหน้า" ว่า "C"
         //   #* สร้างหมดแล้ว แต่บางหน้ายังเป็นสถานะ "รอพิสูจน์อักษร" ให้ลงช่อง "ความคืบหน้า" ว่า "C"
         // แปลได้ว่า หากมีหน้าที่ยังไม่สร้าง หรือมีหน้ายังไม่พิสูจอักษรแม้แต่หน้าเดียว จะลงช่อง "ความคืบหน้า" ว่า "C"
-        if (profreadspagestatus.includes(-1) || profreadspagestatus.includes(1)) {
+        if (profreadpagesprofreadstatus.includes(-1) || profreadpagesprofreadstatus.includes(1)) {
           setparam(token, 'ความคืบหน้า', 'C')
         }
         //   #* สร้างหมดแล้ว หน้าทั้งหมดเป็นสถานะ "พิสูจน์อักษรแล้ว" กับ "ไม่มีข้อความ" ให้ลงช่อง "ความคืบหน้า" ว่า "V"
         //   #* สร้างหมดแล้ว หน้าทั้งหมดเป็นสถานะ "พิสูจน์อักษรแล้ว" "ไม่มีข้อความ" กับ "ตรวจสอบแล้ว" ให้ลงช่อง "ความคืบหน้า" ว่า "V"
         // แปลได้ว่า มีเฉพาะพิสูจน์อักษรแล้ว ไม่มีข้อความ ตรวจสอบแล้ว จะลงช่อง "ความคืบหน้า" ว่า "V"
         // ตรงนี้ใช้การ Invert เอาแทน
-        if (!profreadspagestatus.includes(-1) && !profreadspagestatus.includes(1) && !profreadspagestatus.includes(2)) {
+        if (!profreadpagesprofreadstatus.includes(-1) && !profreadpagesprofreadstatus.includes(1) && !profreadpagesprofreadstatus.includes(2)) {
           setparam(token, 'ความคืบหน้า', 'V')
         }
         //   #* สร้างหมดแล้ว หน้าทั้งหมดเป็นสถานะ "ตรวจสอบแล้ว" กับ "ไม่มีข้อความ" ให้ลงช่อง "ความคืบหน้า" ว่า "T"
         // แปลได้ว่า มีเฉพาะตรวจสอบแล้ว หรือไม่มีข้อความ จะลงช่อง "ความคืบหน้า" ว่า "T"
-        if (!profreadspagestatus.includes(-1) && !profreadspagestatus.includes(1) && !profreadspagestatus.includes(2) && !profreadspagestatus.includes(3)) {
+        if (!profreadpagesprofreadstatus.includes(-1) && !profreadpagesprofreadstatus.includes(1) && !profreadpagesprofreadstatus.includes(2) && !profreadpagesprofreadstatus.includes(3)) {
           setparam(token, 'ความคืบหน้า', 'T')
         }
+        //   #* no-ns0 only or not & "ความคืบหน้า" is ["MS","OCR","L","X","C"]      "การผสานหน้า" = "no"
+        //   #* "ความคืบหน้า" is ["V", "T"]                                         "การผสานหน้า" = "check" (เนื่องจากว่าเป็นได้ทั้งมีหน้า "ไม่มีข้อความ" และเป็น "notadv" หรือ "notimg")
+        //   #* ns0ed only but "ความคืบหน้า" is ["V", "T"]                          "การผสานหน้า" = "yes"
+        // ignore include status, and check param status only
+        if (["V", "T"].includes(getparam(token, 'ความคืบหน้า'))) setparam(token, 'การผสานหน้า', 'check')
+        // okay, check include status (for overwrite above statement) and check param status
+        if (profreadpagesprofreadtranscluded.includes(false) || ["MS", "OCR", "L", "X", "C"].includes(getparam(token, 'ความคืบหน้า'))) setparam(token, 'การผสานหน้า', 'no')
+        // overwrite both above statement, and check param status and include status
+        if (!profreadpagesprofreadtranscluded.includes(false) && ["V", "T"].includes(getparam(token, 'ความคืบหน้า'))) setparam(token, 'การผสานหน้า', 'yes')
+        //   # ลบ {{tl|ดัชนีที่ผสานแล้ว}} / {{tl|index transcluded}} / {{tl|ดัชนีรวมข้าม}} ออกจากหน้าดัชนี
+        token = token.map(child => {
+          if (child.type === 'template' && (child.name === 'ดัชนีที่ผสานแล้ว' || child.name === 'index transcluded' || child.name === 'ดัชนีรวมข้าม')) {
+            return null
+          } else {
+            return child
+          }
+        })
+        //   # ตรวจสอบเบื้องต้นว่าถ้าข้อมูลจากช่องอื่นสามารถนำมาใส่ใน "ชุดเล่ม" ได้ เช่น https://th.wikisource.org/w/index.php?title=ดัชนี%3ABKK_Rec_vol_1a.pdf&type=revision&diff=172173&oldid=158015
+
       }
     })
     compareandprint(content, parsed.toString())
@@ -140,12 +160,17 @@ function isRKJ(value) {
 
 function setparam(token, params, value, options = {}) {
   let index = token.index_of[params]
+  token.parameters[params] = value
   if (index === undefined || token[index].key !== params) {
-    if (options?.insertAt) return token.splice(options.insertAt, 0, `${params}=${value}\n`)
+    if (options?.putAfter) {
+      return token.splice((token.index_of[options.putAfter] ?? token.length) + 1, 0, `${params}=${value}\n`)
+    }
+    if (options?.insertAt) {
+      return token.splice(options.insertAt, 0, `${params}=${value}\n`)
+    }
     return token.push(`${params}=${value}\n`)
   }
   token[index][2] = value
-  token = token
   return token
 }
 /**
