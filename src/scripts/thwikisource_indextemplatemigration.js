@@ -14,7 +14,8 @@ import { version, mwnVersion } from '../patsabot/version.js'
 import { site, user } from '../patsabot/config.js'
 import { flattenArray, parse } from '../patsabot/utils.js'
 import { diffLines } from 'diff'
-import sp from 'synchronized-promise'
+import chunk from 'lodash/chunk.js'
+import uniq from 'lodash/uniq.js'
 import chalk from 'chalk'
 
 // These are requirments from request for reference.
@@ -80,10 +81,11 @@ Promise.all([
 let pagesInCat = await bot.getPagesInCategory('ดัชนีที่ใช้ช่องเล่ม')
 
 async function pageProcess(page, id) {
+  console.log(page)
   return new Promise(async (resolve, reject) => {
     let content = (await bot.read(page)).revisions[0].content
     let parsed = parse(content)
-    parsed.each('transclusion', async (token, index, parent) => {
+    await parsed.each('transclusion', async (token, index, parent) => {
       // only work in MediaWiki:Proofreadpage index template
       if (token.name !== 'MediaWiki:Proofreadpage index template') return
       // # ตรวจสอบว่าถ้าเป็นงานจากราชกิจจานุเบกษา ให้เปลี่ยนประเภทเป็นวารสาร
@@ -100,35 +102,38 @@ async function pageProcess(page, id) {
       //   # ตรวจจำนวนหน้าในไฟล์และสถานะของแต่ละหน้า ถ้า
       //   #* ช่อง "ความคืบหน้า" เป็น "MS" "OCR" "L" หรือ "X" ให้คงไว้ตามเดิม
       if (!['MS', 'OCR', 'L', 'X'].includes(getparam(token, 'ความคืบหน้า'))) {
-        let data = await bot.continuedQuery({
-          "action": "query",
-          "format": "json",
-          "list": "proofreadpagesinindex",
-          "utf8": 1,
-          "formatversion": "2",
-          "prppiiprop": "title",
-          "prppiititle": page,
-        })
-        let proofreadpagesinindex = flattenArray(data.map(entry => entry.query.proofreadpagesinindex)).map(entry => entry.title)
-
+        // -1 = ไม่มีหน้า
         // 0 = ไม่มีข้อความ (ขาว)
         // 1 = ยังไม่พิสูจน์อักษร (แดง)
         // 2 = เป็นปัญหา (ม่วง)
         // 3 = พิสูจน์อักษรแล้ว (เหลือง)
         // 4 = ตรวจสอบแล้ว (เขียว)
+        let profreadspagestatus = uniq(await checkPagesInIndex(page))
         //   #* บางหน้ายังไม่ได้สร้าง ให้ลงช่อง "ความคืบหน้า" ว่า "C"
         //   #* สร้างหน้าแค่บางส่วน ให้ลงช่อง "ความคืบหน้า" ว่า "C"
         //   #* สร้างหมดแล้ว แต่บางหน้ายังเป็นสถานะ "รอพิสูจน์อักษร" ให้ลงช่อง "ความคืบหน้า" ว่า "C"
+        // แปลได้ว่า หากมีหน้าที่ยังไม่สร้าง หรือมีหน้ายังไม่พิสูจอักษรแม้แต่หน้าเดียว จะลงช่อง "ความคืบหน้า" ว่า "C"
+        if (profreadspagestatus.includes(-1) || profreadspagestatus.includes(1)) {
+          setparam(token, 'ความคืบหน้า', 'C')
+        }
         //   #* สร้างหมดแล้ว หน้าทั้งหมดเป็นสถานะ "พิสูจน์อักษรแล้ว" กับ "ไม่มีข้อความ" ให้ลงช่อง "ความคืบหน้า" ว่า "V"
         //   #* สร้างหมดแล้ว หน้าทั้งหมดเป็นสถานะ "พิสูจน์อักษรแล้ว" "ไม่มีข้อความ" กับ "ตรวจสอบแล้ว" ให้ลงช่อง "ความคืบหน้า" ว่า "V"
+        // แปลได้ว่า มีเฉพาะพิสูจน์อักษรแล้ว ไม่มีข้อความ ตรวจสอบแล้ว จะลงช่อง "ความคืบหน้า" ว่า "V"
+        // ตรงนี้ใช้การ Invert เอาแทน
+        if (!profreadspagestatus.includes(-1) && !profreadspagestatus.includes(1) && !profreadspagestatus.includes(2)) {
+          setparam(token, 'ความคืบหน้า', 'V')
+        }
         //   #* สร้างหมดแล้ว หน้าทั้งหมดเป็นสถานะ "ตรวจสอบแล้ว" กับ "ไม่มีข้อความ" ให้ลงช่อง "ความคืบหน้า" ว่า "T"
-        console.log(proofreadpagesinindex)
+        // แปลได้ว่า มีเฉพาะตรวจสอบแล้ว หรือไม่มีข้อความ จะลงช่อง "ความคืบหน้า" ว่า "T"
+        if (!profreadspagestatus.includes(-1) && !profreadspagestatus.includes(1) && !profreadspagestatus.includes(2) && !profreadspagestatus.includes(3)) {
+          setparam(token, 'ความคืบหน้า', 'T')
+        }
       }
     })
+    compareandprint(content, parsed.toString())
   })
 }
 
-// #region helpfunctions
 function isRKJ(value) {
   return /ราชกิจจานุเบกษา, .*? ([0-9๐-๙]?[0-9๐-๙] (มกราคม|กุมภาพันธ์|มีนาคม|เมษายน|พฤษภาคม|มิถุนายน|กรกฎาคม|สิงหาคม|กันยายน|ตุลาคม|พฤศจิกายน|ธันวาคม) [0-9๐-๙]{4}|\{\{วส\|\|[0-9๐-๙]{1,2}|[0-9๐-๙]{1,2}|[0-9๐-๙]{4}\|\|\|\}\})/.test(value)
 }
@@ -160,12 +165,45 @@ function compareandprint(before, after) {
   });
   process.stdout.write('\n')
 }
-// #endregion
 
-await pageProcess(pagesInCat[5], 0)
+async function checkPagesInIndex(indexname) {
+  return new Promise(async (resolve, reject) => {
+    let proofreadpagesinindex = await bot.continuedQuery({
+      "action": "query",
+      "format": "json",
+      "list": "proofreadpagesinindex",
+      "utf8": 1,
+      "formatversion": "2",
+      "prppiiprop": "title",
+      "prppiititle": indexname,
+    }).catch(reject)
+    proofreadpagesinindex = flattenArray(proofreadpagesinindex.map(entry => entry.query.proofreadpagesinindex)).map(entry => entry.title)
+    let pagesinindexstatus = []
+    for (let payloads of chunk(proofreadpagesinindex, 100)) {
+      let pagesinindex = await bot.continuedQuery({
+        "action": "query",
+        "prop": "proofread|transcludedin",
+        "titles": payloads.join('|'),
+	      "tinamespace": "0"
+      }).catch(reject)
+      pagesinindex.map(entry => {
+        let page = entry.query.pages.map(profreadpage => {
+          return {
+            status: profreadpage?.missing ? -1 : profreadpage.proofread.quality,
+            isTranscluded: profreadpage?.transcludedin?.length > 0
+          }
+        })
+        pagesinindexstatus = pagesinindexstatus.concat(page)
+      })
+    }
+    resolve(pagesinindexstatus)
+  })
+}
+
+await pageProcess(pagesInCat[5], 0).catch(console.error)
 // this mean: on each of pagesInCat, run pageProcess for it, do it in parallel 5 pages at a time,
 // if error, retry another 1 time (it count the first run too, so 2 is mean retry 1 time)
 // bot.batchOperation(pagesInCat, pageProcess, 1, 2)
 
 // just in case
-process.on("unhandledRejection", console.error)
+process.on("unhandledRejection", () => { })
