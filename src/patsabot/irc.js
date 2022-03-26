@@ -50,13 +50,13 @@ client.on('message#patsabot-console', (nick, text, meta) => {
     const [_bin, ...cmd] = text.split(' ')
     console.log('#patsabot-console', `${nick}: [${runid}] ${cmd.join(' ')}`)
     const child = spawn('patsabot', cmd)
-    child.stdout.setEncoding('utf8');
+    child.stdout.setEncoding('utf8')
     child.stdout.on('data', (data) => {
       data.split('\n').forEach(line => {
         queue.push({ channel: '#patsabot-log', text: `[${runid}] ${line}` })
       })
     })
-    child.stderr.setEncoding('utf8');
+    child.stderr.setEncoding('utf8')
     child.stderr.on('data', (data) => {
       data.split('\n').forEach(line => {
         queue.push({ channel: '#patsabot-console', text: `[${runid}] ${line}` })

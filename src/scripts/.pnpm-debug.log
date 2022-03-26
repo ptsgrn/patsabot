@@ -1,0 +1,14 @@
+{
+  "0 debug pnpm:scope": {
+    "selected": 1
+  },
+  "1 error pnpm": {
+    "code": "ERR_PNPM_NO_IMPORTER_MANIFEST_FOUND",
+    "err": {
+      "name": "pnpm",
+      "message": "No package.json (or package.yaml, or package.json5) was found in \"/home/mose/wikimedia/patsabot/src/scripts\".",
+      "code": "ERR_PNPM_NO_IMPORTER_MANIFEST_FOUND",
+      "stack": "pnpm: No package.json (or package.yaml, or package.json5) was found in \"/home/mose/wikimedia/patsabot/src/scripts\".\n    at readProjectManifest (/home/mose/.nvm/versions/node/v14.18.1/pnpm-global/5/node_modules/.pnpm/pnpm@6.28.0/node_modules/pnpm/dist/pnpm.cjs:19793:13)\n    at async Object.readProjectManifestOnly (/home/mose/.nvm/versions/node/v14.18.1/pnpm-global/5/node_modules/.pnpm/pnpm@6.28.0/node_modules/pnpm/dist/pnpm.cjs:19797:28)\n    at async readProjectManifestOnly (/home/mose/.nvm/versions/node/v14.18.1/pnpm-global/5/node_modules/.pnpm/pnpm@6.28.0/node_modules/pnpm/dist/pnpm.cjs:43611:24)\n    at async Object.handler [as prune] (/home/mose/.nvm/versions/node/v14.18.1/pnpm-global/5/node_modules/.pnpm/pnpm@6.28.0/node_modules/pnpm/dist/pnpm.cjs:122361:24)\n    at async /home/mose/.nvm/versions/node/v14.18.1/pnpm-global/5/node_modules/.pnpm/pnpm@6.28.0/node_modules/pnpm/dist/pnpm.cjs:181595:21\n    at async run (/home/mose/.nvm/versions/node/v14.18.1/pnpm-global/5/node_modules/.pnpm/pnpm@6.28.0/node_modules/pnpm/dist/pnpm.cjs:181569:34)\n    at async runPnpm (/home/mose/.nvm/versions/node/v14.18.1/pnpm-global/5/node_modules/.pnpm/pnpm@6.28.0/node_modules/pnpm/dist/pnpm.cjs:181780:5)\n    at async /home/mose/.nvm/versions/node/v14.18.1/pnpm-global/5/node_modules/.pnpm/pnpm@6.28.0/node_modules/pnpm/dist/pnpm.cjs:181772:7"
+    }
+  }
+}

@@ -147,7 +147,6 @@ async function pageProcess(page, id) {
           }
         })
         //   # ตรวจสอบเบื้องต้นว่าถ้าข้อมูลจากช่องอื่นสามารถนำมาใส่ใน "ชุดเล่ม" ได้ เช่น https://th.wikisource.org/w/index.php?title=ดัชนี%3ABKK_Rec_vol_1a.pdf&type=revision&diff=172173&oldid=158015
-
       }
     })
     compareandprint(content, parsed.toString())
@@ -231,4 +230,5 @@ await pageProcess(pagesInCat[5], 0).catch(console.error)
 // bot.batchOperation(pagesInCat, pageProcess, 1, 2)
 
 // just in case
-process.on("unhandledRejection", () => { })
+process.on('unhandledRejection', console.error)
+process.on('uncaughtException', console.error)
