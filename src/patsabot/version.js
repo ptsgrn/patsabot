@@ -10,5 +10,7 @@ const readJson = (path) => {
 }
 const path = (path) => new URL(path, import.meta.url).pathname
 
+/** @type {string} */
 export const version = readJson(path('../../package.json')).version
+/** @type {string} */
 export const mwnVersion = readJson(path('../../package.json')).dependencies.mwn

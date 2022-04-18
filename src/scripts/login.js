@@ -34,7 +34,7 @@ bot.request({
   ${chalk.green('User groups:')} ${userinfo.groups.join(', ')}
   ${chalk.green('User groups membership:')} ${userinfo.groupmembership ? userinfo.groupmembership.join(', ') : '-'}
   ${chalk.green('Unreaded messages:')} ${userinfo.messages ? chalk.grey.bgBlueBright(userinfo.messages.black.join(', ')) : '-'}
-  ${chalk.green('Unseen watchlist sount:')} ${userinfo.unreadcount ? userinfo.unreadcount : '-'} 
+  ${chalk.green('Unseen watchlist count:')} ${userinfo.unreadcount ? userinfo.unreadcount : '-'}
 
   ${chalk.white.underline('SITE INFO')}
   ${chalk.green('Site name:')} ${siteinfo.sitename}
