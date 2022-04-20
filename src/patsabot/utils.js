@@ -30,8 +30,8 @@ export const mm = moment
 /**
  * Get relative path and return absolute path of file from current file
  * @param {ImportMeta} importMeta - import.meta.url
- * @param {string | string[]} path relative path to file
- * @returns {string} absolute path to file
+ * @param {string | string[]} path relative path to destination
+ * @returns {string} absolute path to destination
  */
 export function resolveRelativePath(importMeta, path) {
   return resolve(dirname(fileURLToPath(importMeta ??
@@ -58,4 +58,13 @@ export function parseJsonFile(absolutePath) {
  */
 export function flatten(array) {
   return array.reduce((a, b) => a.concat(Array.isArray(b) ? flatten(b) : b), [])
+}
+
+/**
+ * Clone object
+ * @param {Object} obj object to clone
+ * @returns {Object} cloned object
+ */
+export function clone(obj) {
+  return JSON.parse(JSON.stringify(obj))
 }
