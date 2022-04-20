@@ -1,0 +1,89 @@
+@hostname = localhost
+@port = 3000
+@host = {{hostname}}:{{port}}
+@version = v1
+@baseUrl = http://{{host}}/{{version}}
+@authToken = {{$processEnv ACCESS_TOKEN}}
+
+###
+GET http://{{host}}/
+# Get help text
+
+###
+GET {{baseUrl}}/config
+# Get configs for Bree. See Bree docs for more information.
+
+###
+GET {{baseUrl}}/jobs
+# Get jobs including status.
+# @param name Name of jobs
+# @param status Status of jobs
+
+###
+POST {{baseUrl}}/jobs
+# Add new jobs or duplicate existing jobs.
+Content-Type: application/json
+
+{
+  "jobs": [
+    {
+      "name": "afccat",
+      "path": "afccat",
+      "cron": "0 0 * * *"
+    }
+  ],
+  "copy": true
+}
+
+###
+POST {{baseUrl}}/jobs
+# Add new jobs or duplicate existing jobs.
+Content-Type: application/json
+
+{
+  "jobs": [
+    {
+      "name": "jobstest",
+      "cron": "0 0 * * *"
+    }
+  ],
+  "copy": true
+} 
+###
+POST {{baseUrl}}/start
+# start all jobs
+
+###
+POST {{baseUrl}}/start/afccat
+# start a job
+
+###
+POST {{baseUrl}}/stop
+# stop all jobs
+
+###
+POST {{baseUrl}}/stop/afccat
+# stop a job
+
+###
+POST {{baseUrl}}/stop/jobstest
+
+###
+POST {{baseUrl}}/run/afccat
+# run a job
+
+###
+POST {{baseUrl}}/run/jobstest
+
+###
+POST {{baseUrl}}/delete/afccat(1)
+# delete a job
+
+###
+POST {{host}}/login
+# login to the server without token
+
+###
+POST {{host}}/login
+Authorization: Bearer {{authToken}}
+# login to the server with token
