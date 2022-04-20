@@ -227,7 +227,10 @@ v1.post('/delete/:jobName', (req, res) => {
 
 v1.all('/login', (req, res) => {
   if (!req.user.admin) return res.status(401).send({ error: 'unauthorized' })
-  return res.send({ status: 'ok' })
+  return res.send({
+    status: 'ok',
+    username: req.user.username
+  })
 })
 
 server.use('/v1',
@@ -272,5 +275,5 @@ server.use((err, _req, res, next) => {
 
 server.listen(PORT, () => {
   logger.info(`Server started on port ${PORT}`)
-  console.log(`your token is ${jwt.sign({ 'admin': true }, process.env.AUTH_TOKEN)}`)
+  console.log(`your token is ${jwt.sign({ 'admin': true, username: `#${process.env.USER}@bothost` }, process.env.AUTH_TOKEN)}`)
 })
