@@ -1,9 +1,7 @@
 import 'winston-daily-rotate-file'
-
-import _winston from 'winston'
 import { loggerDir } from './config.js'
-
-const { createLogger, format, transports, addColors } = _winston
+import winston from 'winston'
+const { createLogger, format, transports, addColors } = winston
 
 addColors({
   done: 'green',

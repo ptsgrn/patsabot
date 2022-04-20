@@ -6,6 +6,13 @@
 import bot from '../patsabot/bot.js'
 import moment from 'moment'
 import meow from 'meow'
+import baseLogger from '../patsabot/logger.js'
+import cuid from 'cuid'
+
+const logger = baseLogger.child({
+  script: 'afccat',
+  runId: `run-${cuid()}`
+})
 
 const cli = meow(`
 	Usage
@@ -36,7 +43,10 @@ const cli = meow(`
   }
 })
 
+logger.debug('script parameters', cli.flags)
+
 moment.locale('th')
+if (cli.flags.date.length === 0) cli.flags.date = [moment().format('YYYY-MM-DD')]
 let categories = cli.flags.date.map(date => {
   if (date === 'today') date = moment().format('YYYY-MM-DD')
   if (!moment(date, 'YYYY-MM-DD').isValid()) return null
@@ -60,6 +70,7 @@ if (isNaN(categories.length) || categories.length === 0) {
 }
 
 bot.log('[I] Categories to create: ' + categories.join(', '))
+bot.log('debug', 'categories', categories)
 
 bot.batchOperation(
   categories,
@@ -87,6 +98,7 @@ bot.batchOperation(
   1
 ).then(() => {
   bot.log('[I] Done.')
+  logger.log('debug', 'done')
 })
 
 export default {
