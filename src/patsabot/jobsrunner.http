@@ -3,7 +3,7 @@
 @host = {{hostname}}:{{port}}
 @version = v1
 @baseUrl = http://{{host}}/{{version}}
-@authToken = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhZG1pbiI6dHJ1ZSwiaWF0IjoxNjUwNDQzOTk5fQ.lrJXALgLo5KgPpgnUzW2sJ6wnE3eqvtuuVsAbW6wFoU
+@authToken = {{$processEnv ACCESS_TOKEN}}
 
 ###
 GET http://{{host}}/
