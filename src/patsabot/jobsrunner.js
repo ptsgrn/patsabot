@@ -13,6 +13,7 @@ import bodyParser from 'body-parser'
 import cuid from 'cuid'
 import expressJwt from 'express-jwt'
 import jwt from 'jsonwebtoken'
+import cors from 'cors'
 
 const logger = baseLogger.child({
   component: 'jobsrunner'
@@ -50,9 +51,11 @@ jobs.on('worker deleted', (name) => {
 
 jobs.start()
 
+server.use(cors())
 v1.use(bodyParser.json())
+
 v1.use((req, res, next) => {
-  logger.log('info', {
+  logger.log('info', `apir-${cuid()}`, {
     reqId: `apir-${cuid()}`,
     method: req.method,
     url: req.url,
@@ -76,6 +79,7 @@ POST /v1/stop          - stop all jobs.    (known issue: jobs will not stop)
 POST /v1/stop/:name    - stop a job.       (known issue: jobs will not stop)
 POST /v1/run/:name     - run a jobs.
 POST /v1/delete/:name  - delete a job.
+POST /v1/login         - login.
 
 PatsaBot (c) MIT 2022 Patsagorn Y.
 </pre>
@@ -121,7 +125,8 @@ v1.get('/jobs', (_req, res) => {
   })
 
   res.send({
-    jobs: jobinfo
+    jobs: jobinfo,
+    status: 'ok'
   })
 })
 
@@ -144,7 +149,8 @@ v1.get('/jobs/:jobName', (req, res) => {
     }
   })
   return res.send({
-    jobs: jobsInfo
+    jobs: jobsInfo,
+    status: 'ok'
   })
 })
 
@@ -186,7 +192,8 @@ v1.post('/jobs', (req, res) => {
     }
   }
   return res.send({
-    jobs: newJobs
+    jobs: newJobs,
+    status: 'ok'
   })
 })
 
