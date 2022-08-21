@@ -11,7 +11,7 @@ const bree = new Bree({
   jobs: [
     {
       name: 'afccat',
-      cron: '* * * * *',
+      cron: '0 0 * * *',
     }
   ]
 })
