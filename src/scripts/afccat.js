@@ -44,7 +44,7 @@ const cli = meow(`
 })
 
 logger.debug('script parameters', cli.flags)
-
+process.env.TZ = 'Asia/Bangkok'
 moment.locale('th')
 if (cli.flags.date.length === 0) cli.flags.date = [moment().format('YYYY-MM-DD')]
 let categories = cli.flags.date.map(date => {
