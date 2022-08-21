@@ -35,25 +35,21 @@ const logger = createLogger({
   ),
   defaultMeta: { service: 'patsabot' },
   transports: [
-    new transports.DailyRotateFile({
-      dirname: loggerDir,
-      frequency: '48h',
-      filename: process.env.NODE_ENV === 'production' ? 'prod.log' : '%DATE%.log',
-      maxSize: '1mb',
-      maxFiles: '15d',
-      utc: true,
-      createSymlink: true,
-      symlinkName: '_current.log'
+    new transports.File({
+      filename: `${loggerDir}/logs.log`,
     }),
     new transports.Console({
       format: format.combine(
         format.colorize(),
-        format.simple()
+        format.printf(info => `${info.timestamp} ${info.level}: ${info.message}`)
       )
     })
   ],
   exceptionHandlers: [
-    new transports.File({ filename: `${loggerDir}/exceptions.log` })
+    new transports.File({
+      filename: `${loggerDir}/exceptions.log`,
+      maxsize: '1mb',
+    })
   ]
 })
 

@@ -41,35 +41,35 @@
     "patsabot": "./src/patsabot/run.js"
   },
   "dependencies": {
-    "cejs": "^4.3.0",
-    "chalk": "^5.0.0",
+    "cejs": "^4.5.3",
+    "chalk": "^5.0.1",
     "cron": "^2.1.0",
     "cuid": "^2.1.8",
-    "diff": "^5.0.0",
+    "diff": "^5.1.0",
     "jsonfile": "^6.1.0",
     "lodash": "^4.17.21",
-    "matrix-org-irc": "^1.2.0",
-    "meow": "^10.1.2",
-    "moment": "^2.29.1",
-    "mwn": "^0.9.1",
+    "matrix-org-irc": "^1.2.1",
+    "meow": "^10.1.3",
+    "moment": "^2.29.4",
+    "mwn": "^1.11.4",
     "mysql": "^2.18.1",
     "mysql2": "^2.3.3",
-    "node-cron": "^3.0.0",
+    "node-cron": "^3.0.2",
     "sanitize-filename": "^1.6.3",
-    "winston": "^3.3.3",
-    "winston-daily-rotate-file": "^4.5.5"
+    "winston": "^3.8.1",
+    "winston-daily-rotate-file": "^4.7.1"
   },
   "optionalDependencies": {
     "body-parser": "^1.20.0",
-    "bree": "^8.0.3",
+    "bree": "^9.1.2",
     "cors": "^2.8.5",
     "cz-conventional-changelog": "^3.3.0",
-    "eslint": "^7.32.0",
-    "express": "^4.17.3",
-    "express-jwt": "^6.1.1",
+    "eslint": "^8.22.0",
+    "express": "^4.18.1",
+    "express-jwt": "^7.7.5",
     "jsonwebtoken": "^8.5.1"
   },
   "devDependencies": {
-    "dotenv": "^16.0.0"
+    "dotenv": "^16.0.1"
   }
 }

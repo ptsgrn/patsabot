@@ -1,4 +1,5 @@
 /* eslint-disable no-undef */
+/* @ts-ignore */
 // Copyright (c) 2021 Patsagorn Y.
 // 
 // This software is released under the MIT License.
