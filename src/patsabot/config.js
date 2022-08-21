@@ -37,36 +37,36 @@ export const ircConfig = {
    * IRC server address
    * @type {String}
    */
-  server: credentials.irc.server ?? 'irc.libera.chat',
+  server: credentials?.irc?.server ?? 'irc.libera.chat',
   /**
    * IRC server port
    * @type {Number}
    * @default 6667
    * @example 6667
    */
-  port: credentials.irc.port ?? 6667,
+  port: credentials?.irc?.port ?? 6667,
   /**
    * IRC user's username
    * @type {String}
    */
-  userName: credentials.irc.userName,
+  userName: credentials?.irc?.userName,
   /**
    * IRC user's password
    * @type {String}
    * @default ''
    */
-  password: credentials.irc.password ?? '',
+  password: credentials?.irc?.password ?? '',
   /**
    * IRC user's real name
    * @type {String}
    * @example 'PatsaBot by Patsagorn Y. (link to github)'
    */
-  realName: credentials.irc.realName,
+  realName: credentials?.irc?.realName,
   /**
    * IRC user's nickname
    * @type {String}
    */
-  nickName: credentials.irc.nickName,
+  nickName: credentials?.irc?.nickName,
 }
 
 export const replicaCredentials = {
