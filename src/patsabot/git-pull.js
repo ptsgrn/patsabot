@@ -5,7 +5,8 @@ import express from 'express'
 import bodyParser from 'body-parser'
 
 function isSigOk(request, secret) {
-  const signature = request.headers['X-Hub-Signature-256']
+  const signature = request.headers['x-hub-signature-256']
+
   if (!signature) {
     return false
   }
@@ -20,14 +21,17 @@ function isSigOk(request, secret) {
 }
 
 let server = express()
-server.use(bodyParser.raw())
+server.use(bodyParser.json())
 console.assert(process.env.HOOK_SECRET, 'HOOK_SECRET is not set: '+ process.env.HOOK_SECRET)
 server.post('/hook', (req, res) => {
   console.log(req.body)
   if (isSigOk(req, process.env.HOOK_SECRET)) {
-    console.log('ok')
-    execSync('git pull')
-    res.send('ok')
+    console.log('ok, let\'s pull...')
+    let output = 'git pull>>>'
+    output += execSync('git pull').toString()
+    output += 'npm install>>>'
+    output += execSync('npm install').toString()
+    res.send(`${output}`)
     return
   }
   res.status(401).send('forbidden')
