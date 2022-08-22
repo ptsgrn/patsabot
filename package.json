@@ -14,7 +14,7 @@
     "lint:fix": "eslint . --fix",
     "setup": "echo \">> This process will add 'patsabot' as a global command.\" && npm install -g .",
     "postsetup": ">> Done! You can now run 'patsabot' to start the bot.",
-    "git-observer": "node ./src/patsabot/git-pull.js"
+    "start": "node ./src/patsabot/git-pull.js"
   },
   "repository": {
     "type": "git",

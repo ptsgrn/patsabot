@@ -3,10 +3,10 @@ import { createHmac, timingSafeEqual } from 'crypto'
 const PORT = 3000
 import express from 'express'
 import bodyParser from 'body-parser'
+import 'dotenv/config'
 
 function isSigOk(request, secret) {
   const signature = request.headers['x-hub-signature-256']
-
   if (!signature) {
     return false
   }

@@ -3,3 +3,4 @@ logs/
 credentials.json
 configstore/
 .*.sw*
+.env
