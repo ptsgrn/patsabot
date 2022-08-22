@@ -1,9 +1,11 @@
 import { execSync } from 'child_process'
+import { existsSync } from 'fs'
 import { createHmac, timingSafeEqual } from 'crypto'
 const PORT = 3000
 import express from 'express'
 import bodyParser from 'body-parser'
 import 'dotenv/config'
+const isToolforge = existsSync('/etc/wmcs-project')
 
 function isSigOk(request, secret) {
   const signature = request.headers['x-hub-signature-256']
@@ -28,13 +30,13 @@ server.post('/hook', (req, res) => {
   if (isSigOk(req, process.env.HOOK_SECRET)) {
     console.log('ok, let\'s pull...')
     let output = 'git pull>>>'
-    output += execSync('git pull').toString()
+    output += execSync(isToolforge ? 'git -C ~/bot pull' : 'git pull').toString()
     if (output.includes('Already up-to-date.')) {
-      output = 'Already up-to-date.'
+      output = 'git: Already up-to-date.'
     }
     if (req.body['head_unit']['modified'].includes('package.json')) {
       output += '\n\npackage.json modified, let\'s npm install...'
-      output += execSync('npm install').toString()
+      output += execSync(isToolforge ? 'npm -C ~/bot install' : 'npm install').toString()
     }
     res.send(`${output}`)
     return
