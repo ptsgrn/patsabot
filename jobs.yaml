@@ -1,0 +1,7 @@
+# https://wikitech.wikimedia.org/wiki/Help:Toolforge/Jobs_framework
+- name: afccat
+  command: node ./src/scripts/afccat.js
+  image: tf-node16
+  no-filelog: true
+  schedule: "0 0 * * *"
+  emails: onfailure
