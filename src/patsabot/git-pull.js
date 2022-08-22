@@ -1,36 +1,38 @@
-import { createServer } from 'http'
 import { execSync } from 'child_process'
-import { createHmac } from 'crypto'
+import { createHmac, timingSafeEqual } from 'crypto'
 const PORT = 3000
+import express from 'express'
+import bodyParser from 'body-parser'
 
-// server create
-const server = createServer((req, res) => {
-  res.writeHead(200, { 'Content-Type': 'text/plain' })
-  if (req.url !== '/hook') return res.end('Not found')
+function isSigOk(request, secret) {
+  const signature = request.headers['X-Hub-Signature-256']
+  if (!signature) {
+    return false
+  }
+  const expectedSignature = 'sha256=' +
+        createHmac('sha256', secret)
+          .update(JSON.stringify(request.body))
+          .digest('hex')
+  console.log(expectedSignature)
+  const a = Buffer.from(signature)
+  const b = Buffer.from(expectedSignature)
+  return timingSafeEqual(a, b)
+}
 
-  const { headers, method, url } = req
-  let body = []
-  req.on('error', (err) => {
-    console.error(err)
-  }).on('data', (chunk) => {
-    body.push(chunk)
-  }).on('end', () => {
-    body = Buffer.concat(body).toString()
-    // BEGINNING OF NEW STUFF
-    res.on('error', (err) => {
-      console.error(err)
-    })
-    res.statusCode = 200
-    const hmac = createHmac('sha1', 'secret')
-    hmac.update(JSON.stringify(body))
-    const digest = hmac.digest('hex')
-    if (headers['x-hub-signature'] !== `sha1=${digest}`) {
-      res.statusCode = 403
-      res.end('forbidden')
-      return
-    }
-    res.end(execSync('git pull ').toString())
-  })
+let server = express()
+server.use(bodyParser.raw())
+console.assert(process.env.HOOK_SECRET, 'HOOK_SECRET is not set: '+ process.env.HOOK_SECRET)
+server.post('/hook', (req, res) => {
+  console.log(req.body)
+  if (isSigOk(req, process.env.HOOK_SECRET)) {
+    console.log('ok')
+    execSync('git pull')
+    res.send('ok')
+    return
+  }
+  res.status(401).send('forbidden')
 })
-server.listen(PORT)
-console.log(`Server is running on PORT: ${PORT}`)
+
+server.listen(PORT, () => {
+  console.log(`Server started on port ${PORT}`)
+})
