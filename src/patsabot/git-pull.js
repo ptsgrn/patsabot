@@ -29,8 +29,13 @@ server.post('/hook', (req, res) => {
     console.log('ok, let\'s pull...')
     let output = 'git pull>>>'
     output += execSync('git pull').toString()
-    output += 'npm install>>>'
-    output += execSync('npm install').toString()
+    if (output.includes('Already up-to-date.')) {
+      output = 'Already up-to-date.'
+    }
+    if (req.body['head_unit']['modified'].includes('package.json')) {
+      output += '\n\npackage.json modified, let\'s npm install...'
+      output += execSync('npm install').toString()
+    }
     res.send(`${output}`)
     return
   }
