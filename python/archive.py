@@ -1,11 +1,12 @@
-#!/data/project/sigma/bots/venv/bin/python
+#!/usr/bin/python3
 # -*- coding: utf-8 -*-
 # LGPLv2+ license, look it up
 # specifically for Thai Wiki(s)
 
 import builtins
-import sys
 import collections
+import sys
+from collections import abc, OrderedDict
 import re
 import time
 import locale
@@ -100,7 +101,7 @@ def make_key(title, target):
     return sha256sum.hexdigest()
 
 
-class RedoableIterator(collections.Iterator):
+class RedoableIterator(abc.Iterator):
     """
     Put a value back in the top of the stack of the generator.
     In Perl, you would do:
@@ -127,19 +128,19 @@ class RedoableIterator(collections.Iterator):
 
 
 '''
-class OrderedDefaultdict(collections.defaultdict, collections.OrderedDict):
+class OrderedDefaultdict(abc.defaultdict, abc.OrderedDict):
     def __init__(self, default_factory, *args, **kwargs):
-        collections.defaultdict.__init__(self, default_factory)
-        collections.OrderedDict.__init__(self, *args, **kwargs)
+        abc.defaultdict.__init__(self, default_factory)
+        abc.OrderedDict.__init__(self, *args, **kwargs)
 '''  # Both implemented in Python so you get a TypeError
 
 # https://stackoverflow.com/a/6190500
-class OrderedDefaultdict(collections.OrderedDict):
+class OrderedDefaultdict(OrderedDict):
     # Source: http://stackoverflow.com/a/6190500/562769
     def __init__(self, default_factory=None, *a, **kw):
         if (default_factory is not None and
             not callable(default_factory)):
-            #not isinstance(default_factory, collections.Callable)):
+            #not isinstance(default_factory, abc.Callable)):
             raise TypeError('first argument must be callable')
         super().__init__(*a, **kw)
         self.default_factory = default_factory
