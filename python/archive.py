@@ -1,6 +1,7 @@
 #!/data/project/sigma/bots/venv/bin/python
 # -*- coding: utf-8 -*-
 # LGPLv2+ license, look it up
+# specifically for Thai Wiki(s)
 
 import builtins
 import sys
@@ -10,6 +11,7 @@ import time
 import locale
 import traceback
 import hashlib
+# from typing import OrderedDict
 
 import twiggy
 from arrow import Arrow
@@ -17,23 +19,30 @@ from datetime import timedelta
 from ceterach.api import MediaWiki
 from ceterach.page import Page
 from ceterach import exceptions as exc
-from passwords import lcsb3
+import json
 
 import mwparserfromhell as mwp
 
-API_URL = "https://en.wikipedia.org/w/api.php"
-LOGIN_INFO = "Lowercase sigmabot III", lcsb3
-SHUTOFF = "User:Lowercase sigmabot III/Shutoff"
-ARCHIVE_TPL = "User:MiszaBot/config"
+API_URL = "https://th.wikipedia.org/w/api.php"
+LOGIN_INFO = "PatsaBot", json.load(open("../credentials.json", "rb"))["password"]
+SHUTOFF = u"ผู้ใช้:PatsaBot/shutoff/archive"
+ARCHIVE_TPL = u"แม่แบบ:เก็บอภิปรายอัตโนมัติ/ทดสอบ"
 FREQ = 30
 
 logger = twiggy.log.name("archivebot")
 locale.setlocale(locale.LC_ALL, "en_US.utf8")
-STAMP_RE = re.compile(r"\d\d:\d\d, \d{1,2} (\w*?) \d\d\d\d \(UTC\)")
+                     #   23:42, 14 พฤศจิกายน 2563 (+07)
+                     #   2 3: 4 2, 14      พฤศจิกายน 2563      (+07 )
+STAMP_RE = re.compile(r"\d\d:\d\d, \d{1,2} (มกราคม|กุมภาพันธ์|มีนาคม|เมษายน|พฤษภาคม|มิถุนายน|กรกฎาคม|สิงหาคม|กันยายน|ตุลาคม|พฤศจิกายน|ธันวาคม) (\d\d\d\d) \(\+07\)") # for thai-wiki
 THE_FUTURE = Arrow.utcnow() + timedelta(365)
-MONTHS = (None, "January", "February", "March", "April", "May", "June",
+MONTHS_ENGLISH = (None, "January", "February", "March", "April", "May", "June",
           "July", "August", "September", "October", "November", "December"
 )
+MONTHS = (None, "มกราคม", "กุมภาพันธ์", "มีนาคม", "เมษายน", "พฤษภาคม", "มิถุนายน",
+          "กรกฎาคม", "สิงหาคม", "กันยายน", "ตุลาคม", "พฤศจิกายน", "ธันวาคม"
+)
+MONTHS_SHORT = (None, "ม.ค.", "ก.พ.", "มี.ค.", "เม.ย.", "พ.ค.", "มิ.ย.",
+          "ก.ค.", "ส.ค.", "ก.ย.", "ต.ค.", "พ.ย.", "ธ.ค.")
 
 
 class ArchiveError(exc.CeterachError):
@@ -247,16 +256,17 @@ class DiscussionPage(Page):
                 section = section.get_sections(include_lead=False, flat=True)[0]
             d = {"header": "", "content": "",
                  ("header", "content"): "",
-                 "stamp": THE_FUTURE, "oldenough": False
+                 "stamp": THE_FUTURE,
+                 "oldenough": False
             }
             d['header'] = str(head)
             d['content'] = str(section[len(head):])
             d['header', 'content'] = str(section)
             self.threads.append(d)
             self.sections.append(section)
-        self.parse_stamps()  # Modify this if the wiki has a weird stamp format
+        self.parse_stamps()  # Modify this if the wiki has a weird stamp format - yes, we're
 
-    def parse_stamps(self, expr=STAMP_RE, fmt='%H:%M, %d %B %Y (%Z)'):
+    def parse_stamps(self, expr=STAMP_RE, fmt='%H:%M, %d %B %Y (%z)'):
         stamps = []
         algo = self.archiver.config['algo']
         try:
@@ -272,9 +282,18 @@ class DiscussionPage(Page):
             for stamp in expr.finditer(thread['content']):
                 # This for loop can probably be optimised, but ain't nobody
                 # got time fo' dat
-                #if stamp.group(1) in MONTHS:
+                _stamp = stamp.group(0)
+                # this will be parse by Arrow.strptime() below so preprocess it
+                # replace Thai month with English month
+                for index, month_en in enumerate(MONTHS_ENGLISH):
+                    if month_en is None:
+                        continue
+                    _stamp = _stamp.replace(MONTHS[index], month_en)
+                # replace Thai BE year
+                _stamp = _stamp.replace(stamp.group(2), str(int(stamp.group(2))-543))
+                _stamp = _stamp.replace("(+07)","(+0700)")
                 try:
-                    stamps.append(Arrow.strptime(stamp.group(0), fmt))
+                    stamps.append(Arrow.strptime(_stamp, fmt))
                 except ValueError:  # Invalid stamps should not be parsed, ever
                     continue
             if stamps:
@@ -315,7 +334,7 @@ class DiscussionPage(Page):
         # sections we removed from the page
         arch_thread_count = len([sect for sect in self.sections if not sect])
         # Fancier edit summary stuff
-        summ = "Archiving {0} discussion(s) to {1}) (bot"
+        summ = "เก็บ {0} การอภิปรายไปยัง {1}) (บอต"
         titles = "/dev/null"
         if archives_touched:
             titles = ", ".join("[[" + tit + "]]" for tit in archives_touched)
@@ -326,7 +345,7 @@ class DiscussionPage(Page):
             # This means this method was called by unarchive_threads()
             err = traceback.format_exception_only(*sys.exc_info()[:2])
             err = ''.join(err)
-            summ = "Archive failure: {}) (bot".format(err.strip())
+            summ = "เก็บลงกรุไม่สำเร็จ: {}) (บอต".format(err.strip())
             archives_touched = None  # unarchiving doesn't touch stuff
         if text != self.content:
             if not archives_touched and not maybe_error:
@@ -354,10 +373,10 @@ class DiscussionPage(Page):
 
 
 class Archiver:
-    def __init__(self, api: MediaWiki, title: str, tl="User:MiszaBot/config"):
+    def __init__(self, api: MediaWiki, title: str, tl="เก็บอภิปรายอัตโนมัติ/ทดสอบ"):
         self.config = {'algo': 'old(24h)',
                        'archive': '',
-                       'archiveheader': "{{Talk archive}}",
+                       'archiveheader': "{{กรุ}}",
                        'maxarchivesize': '1954K',
                        'minthreadsleft': 5,
                        'minthreadstoarchive': 2,
@@ -421,7 +440,7 @@ class Archiver:
                     'year': stamp.year,
                     'month': stamp.month,
                     'monthname': MONTHS[stamp.month],
-                    'monthnameshort': MONTHS[stamp.month][:3],
+                    'monthnameshort': MONTHS_SHORT[stamp.month],
                     'week': stamp.week,
             }
         keep_threads = self.config['minthreadsleft']
@@ -434,7 +453,7 @@ class Archiver:
         # Values should be the text to append, text should be matched to
         # corresponding key based on where the thread belongs
         # Then iterate over .items() and edit the pages
-        p = self.api.page("Coal ball")
+        p = self.api.page("ถ่านหิน")
         arch_pages = {p.title: p}  # Caching page titles to avoid API spam
         arch_thread_count, arch_size, text = 0, 0, ''  # This shuts up PyCharm
         # Archive the oldest threads first, not the highest threads
@@ -519,7 +538,7 @@ class Archiver:
         for title, content in archives_to_touch.items():
             page = arch_pages[title]  # Actually implement the caching
             arch_thread_count = len(mwp_parse(content).get_sections(levels=[2]))
-            summ = "Archiving {0} discussion(s) from [[{1}]]) (bot"
+            summ = "เก็บ {0} การอภิปรายลงกรุจาก [[{1}]]) (บอต"
             summ = summ.format(arch_thread_count, self.page.title)
             try:
                 if page.exists:
@@ -608,7 +627,7 @@ class TestShit(unittest.TestCase):
     def setUp(self):
         self.config = {'algo': 'old(24h)',
                        'archive': '',
-                       'archiveheader': "{{Talk archive}}",
+                       'archiveheader': "{{กรุ}}",
                        'maxarchivesize': '1000M',
                        'minthreadsleft': 5,
                        'minthreadstoarchive': 2,
@@ -701,7 +720,8 @@ class TestShit(unittest.TestCase):
         self.assertRaises(ValueError, lambda: str2time(s).total_seconds())
 
 if __name__ == "__main__":
-    #unittest.main(verbosity=2)
+    # unittest.main(verbosity=2)
+    # exit(0)
     import itertools
 
     def grouper(iterable, n, fillvalue=None):
@@ -720,22 +740,23 @@ if __name__ == "__main__":
 
     generic_func = lambda *pgs: pgs
 
-    ut = page_gen_dec("User talk")(generic_func)
-    t = page_gen_dec("Talk")(generic_func)
-    wp = page_gen_dec("Wikipedia")(generic_func)
-    wt = page_gen_dec("Wikipedia talk")(generic_func)
+    ut = page_gen_dec("คุยกับผู้ใช้")(generic_func)
+    t = page_gen_dec("พูดคุย")(generic_func)
+    wp = page_gen_dec("วิกิพีเดีย")(generic_func)
+    wt = page_gen_dec("คุยเรื่องวิกิพีเดีย")(generic_func)
 
     twiggy_setup()
 
     api = MediaWiki(API_URL, config={"retries": 9, "sleep": 9, "maxlag": 9, "throttle": 0.5})
     api.login(*LOGIN_INFO)
+    logger.info('Logged in.')
     #api.login("throwaway", "aoeui")
     #api.login("my password is literally just password", "password")
     api.set_token("edit")
     shutoff_page = api.page(SHUTOFF)
     victims = itertools.chain((x['title'] for x in api.iterator(list='embeddedin',
                                                                 eititle=ARCHIVE_TPL,
-                                                                #einamespace=[3,4],
+                                                                einamespace=[3,4],
                                                                 #eititle="Template:Experimental archiving",
                                                                 eilimit=500)),
                               # wp("Administrators' noticeboard/Edit warring",
