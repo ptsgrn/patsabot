@@ -71,7 +71,6 @@
     "logdir": "./logs/",
     "debug": true,
     "debugprefix": "",
-    "debugdir": "./logs/debug/",
     "log": true,
     "autolog": [],
     "excludes": []

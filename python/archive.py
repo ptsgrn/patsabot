@@ -93,7 +93,7 @@ def ucfirst(s: str):
 
 def make_key(title, target):
     """echo -en "${salt}\n${title}\n${target}" | sha256sum"""
-    sha256sum = hashlib.new("sha256", open("salt", "rb").read())
+    sha256sum = hashlib.new("sha256", json.load(open("../credentials.json", "rb"))["scripts"]["archive"]["key_salt"])
     sha256sum.update(b'\n')
     sha256sum.update(title.encode("utf8"))
     sha256sum.update(b'\n')

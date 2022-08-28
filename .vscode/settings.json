@@ -1,0 +1,14 @@
+{
+  "sshfs.configs": [
+    {
+      "name": "toolforge-patsabot",
+      "label": "Toolforge Remote",
+      "host": "dev.toolforge.org",
+      "root": "/data/project/patsabot",
+      "agent": "$SSH_AUTH_SOCK",
+      "username": "mpy",
+      "privateKeyPath": "/home/mose/.ssh/id_rsa",
+      "newFileMode": "0o664"
+    }
+  ]
+}
