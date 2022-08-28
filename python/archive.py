@@ -779,7 +779,7 @@ if __name__ == "__main__":
         except exc.ApiError:
             # We'll survive another $FREQ pages
             pass
-        if shutoff_page.content.lower() != "true":
+        if shutoff_page.content.lower() != "on":
             logger.info("Check the shutoff page, exiting.")
             break
         api.set_token("edit")
