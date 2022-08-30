@@ -377,7 +377,7 @@ class Archiver:
     def __init__(self, api: MediaWiki, title: str, tl="เก็บอภิปรายอัตโนมัติ/ทดสอบ"):
         self.config = {'algo': 'old(24h)',
                        'archive': '',
-                       'archiveheader': "{{กรุ}}",
+                       'archiveheader': "{{กรุ}}{{กล่องกรุ/หน้าใน}}",
                        'maxarchivesize': '1954K',
                        'minthreadsleft': 5,
                        'minthreadstoarchive': 2,
@@ -438,7 +438,9 @@ class Archiver:
         """Move the threads from the talk page to the archives."""
         def make_params():
             return {'counter': self.config['counter'],
-                    'year': stamp.year,
+                    'year': stamp.year + 543,
+                    'ceyear': stamp.year,
+                    'quarter': (stamp.month-1)//3 + 1,
                     'month': stamp.month,
                     'monthname': MONTHS[stamp.month],
                     'monthnameshort': MONTHS_SHORT[stamp.month],
