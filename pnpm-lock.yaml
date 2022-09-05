@@ -1,4 +1,4 @@
-lockfileVersion: 5.4
+lockfileVersion: 5.3
 
 specifiers:
   body-parser: ^1.20.0
@@ -129,7 +129,7 @@ packages:
       '@types/node': 18.7.8
       chalk: 4.1.2
       cosmiconfig: 7.0.1
-      cosmiconfig-typescript-loader: 2.0.2_itmtyrrie7wpjnrpwbb5uqyzwa
+      cosmiconfig-typescript-loader: 2.0.2_44d93c462827ecf4b62fb043da4319b0
       lodash: 4.17.21
       resolve-from: 5.0.0
       typescript: 4.7.4
@@ -525,7 +525,7 @@ packages:
     dev: false
     optional: true
 
-  /axios-cookiejar-support/1.0.1_d5ro6erz6y6tkhgscfmsiej47y:
+  /axios-cookiejar-support/1.0.1_1f62ef1239f63d351cd2115924113cfe:
     resolution: {integrity: sha512-IZJxnAJ99XxiLqNeMOqrPbfR7fRyIfaoSLdPUf4AMQEGkH8URs0ghJK/xtqBsD+KsSr3pKl4DEQjCn834pHMig==}
     engines: {node: '>= 10.0.0'}
     peerDependencies:
@@ -588,8 +588,6 @@ packages:
       raw-body: 2.5.1
       type-is: 1.6.18
       unpipe: 1.0.0
-    transitivePeerDependencies:
-      - supports-color
     dev: false
     optional: true
 
@@ -897,7 +895,7 @@ packages:
     dev: false
     optional: true
 
-  /cosmiconfig-typescript-loader/2.0.2_itmtyrrie7wpjnrpwbb5uqyzwa:
+  /cosmiconfig-typescript-loader/2.0.2_44d93c462827ecf4b62fb043da4319b0:
     resolution: {integrity: sha512-KmE+bMjWMXJbkWCeY4FJX/npHuZPNr9XF9q9CIQ/bpFwi1qHfCmSiKarrCcRa0LO4fWjk93pVoeRtJAkTGcYNw==}
     engines: {node: '>=12', npm: '>=6'}
     peerDependencies:
@@ -906,7 +904,7 @@ packages:
     dependencies:
       '@types/node': 18.7.8
       cosmiconfig: 7.0.1
-      ts-node: 10.9.1_itmtyrrie7wpjnrpwbb5uqyzwa
+      ts-node: 10.9.1_44d93c462827ecf4b62fb043da4319b0
       typescript: 4.7.4
     transitivePeerDependencies:
       - '@swc/core'
@@ -984,11 +982,6 @@ packages:
 
   /debug/2.6.9:
     resolution: {integrity: sha512-bC7ElrdJaJnPbAP+1EotYvqZsb3ecl5wi6Bfi6BJTUcNowp6cvspg0jXznRTKDjm/E7AdgFBVeAPVMNcKGsHMA==}
-    peerDependencies:
-      supports-color: '*'
-    peerDependenciesMeta:
-      supports-color:
-        optional: true
     dependencies:
       ms: 2.0.0
     dev: false
@@ -1349,8 +1342,6 @@ packages:
       type-is: 1.6.18
       utils-merge: 1.0.1
       vary: 1.1.2
-    transitivePeerDependencies:
-      - supports-color
     dev: false
     optional: true
 
@@ -1443,8 +1434,6 @@ packages:
       parseurl: 1.3.3
       statuses: 2.0.1
       unpipe: 1.0.0
-    transitivePeerDependencies:
-      - supports-color
     dev: false
     optional: true
 
@@ -2367,7 +2356,7 @@ packages:
       '@types/node': 14.18.24
       '@types/tough-cookie': 4.0.2
       axios: 0.21.4
-      axios-cookiejar-support: 1.0.1_d5ro6erz6y6tkhgscfmsiej47y
+      axios-cookiejar-support: 1.0.1_1f62ef1239f63d351cd2115924113cfe
       chalk: 1.1.3
       eventsource: 1.1.2
       form-data: 3.0.1
@@ -2918,8 +2907,6 @@ packages:
       on-finished: 2.4.1
       range-parser: 1.2.1
       statuses: 2.0.1
-    transitivePeerDependencies:
-      - supports-color
     dev: false
     optional: true
 
@@ -2935,8 +2922,6 @@ packages:
       escape-html: 1.0.3
       parseurl: 1.3.3
       send: 0.18.0
-    transitivePeerDependencies:
-      - supports-color
     dev: false
     optional: true
 
@@ -3168,7 +3153,7 @@ packages:
       utf8-byte-length: 1.0.4
     dev: false
 
-  /ts-node/10.9.1_itmtyrrie7wpjnrpwbb5uqyzwa:
+  /ts-node/10.9.1_44d93c462827ecf4b62fb043da4319b0:
     resolution: {integrity: sha512-NtVysVPkxxrwFGUUxGYhfux8k78pQB3JqYBXlLRZgdGUqTO5wU/UyHop5p70iEbGhB7q5KmiZiU0Y3KlJrScEw==}
     hasBin: true
     peerDependencies:
