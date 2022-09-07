@@ -27,7 +27,7 @@ import mwparserfromhell as mwp
 API_URL = "https://th.wikipedia.org/w/api.php"
 LOGIN_INFO = "PatsaBot", json.load(open("../credentials.json", "rb"))["password"]
 SHUTOFF = u"ผู้ใช้:PatsaBot/shutoff/archive"
-ARCHIVE_TPL = u"แม่แบบ:เก็บอภิปรายอัตโนมัติ/ทดสอบ"
+ARCHIVE_TPL = u"แม่แบบ:เก็บอภิปรายอัตโนมัติ"
 FREQ = 30
 
 logger = twiggy.log.name("archivebot")
@@ -381,7 +381,7 @@ class DiscussionPage(Page):
 
 
 class Archiver:
-    def __init__(self, api: MediaWiki, title: str, tl="เก็บอภิปรายอัตโนมัติ/ทดสอบ", simulate=False):
+    def __init__(self, api: MediaWiki, title: str, tl="เก็บอภิปรายอัตโนมัติ", simulate=False):
         self.config = {'algo': 'old(24h)',
                        'archive': '',
                        'archiveheader': "{{กรุ}}{{กล่องกรุ/หน้าใน}}",
