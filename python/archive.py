@@ -226,12 +226,13 @@ def str2size(s: str):
 
 
 class DiscussionPage(Page):
-    def __init__(self, api: MediaWiki, title: str, archiver):
+    def __init__(self, api: MediaWiki, title: str, archiver, simulate: bool):
         super().__init__(api, title)
         self.archiver = archiver
         self.talkhead = ""
         self.threads = []
         self.sections = []
+        self.simulate = simulate
 
     def reset(self):
         self.threads = []
@@ -353,7 +354,10 @@ class DiscussionPage(Page):
                 # The talk page was changed, but nothing was archived
                 raise ArchiveError("Nothing moved to archives")
             try:
-                logger.info("{}", self.edit(text, summ, minor=True, bot=True))
+                if self.simulate:
+                    logger.info("SIMULATE: {} {}", summ, text)
+                else:
+                    logger.info("{}", self.edit(text, summ, minor=True, bot=True))
             except exc.SpamFilterError as e:
                 if e.code == 'spamblacklist':
                     # The only way to override the spam blacklist is to nowiki it
@@ -365,7 +369,10 @@ class DiscussionPage(Page):
                             url.url = url.url.join(nul)
                     text = str(code)
                     del code
-                    logger.info("{}", self.edit(text, summ, minor=True, bot=True))
+                    if self.simulate:
+                        logger.info("SIMULATE: {} {}", summ, text)
+                    else:
+                        logger.info("{}", self.edit(text, summ, minor=True, bot=True))
             return
         if not archives_touched:
             return  # The talk page was not changed, and nothing was archived
@@ -374,7 +381,7 @@ class DiscussionPage(Page):
 
 
 class Archiver:
-    def __init__(self, api: MediaWiki, title: str, tl="เก็บอภิปรายอัตโนมัติ/ทดสอบ"):
+    def __init__(self, api: MediaWiki, title: str, tl="เก็บอภิปรายอัตโนมัติ/ทดสอบ", simulate=False):
         self.config = {'algo': 'old(24h)',
                        'archive': '',
                        'archiveheader': "{{กรุ}}{{กล่องกรุ/หน้าใน}}",
@@ -389,7 +396,7 @@ class Archiver:
         self.tl = tl
         self.archives_touched = frozenset()
         self.indexes_in_archives = collections.defaultdict(list)
-        self.page = DiscussionPage(api, title, self)
+        self.page = DiscussionPage(api, title, self, simulate=simulate)
 
     def generate_config(self):
         """Extracts options from the archive template."""
@@ -772,8 +779,10 @@ if __name__ == "__main__":
                               #    "Twinkle",
                               # ),
     )
+    issimmulate = False
     if len(sys.argv) > 1:
         victims = sys.argv[1:]
+        issimmulate = '--simulate' in sys.argv
     for subvictims in grouper(victims, FREQ, None):
         subvictims = RedoableIterator(subvictims)
         # To not spam the API, only check the shutoff page every $FREQ archives.
@@ -790,7 +799,7 @@ if __name__ == "__main__":
             if victim is None:
                 # TODO: Convert this part into iter(func, sentinel=None)
                 break
-            bot = Archiver(api, victim)
+            bot = Archiver(api, victim, simulate=issimmulate)
             try:
                 logger.fields(p=victim).info("Beginning to work")
                 bot.run()

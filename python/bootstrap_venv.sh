@@ -15,5 +15,6 @@ pip install -U pip wheel
 # install packages
 pip install twiggy
 pip install arrow
+pip install mwparserfromhell
 pip install git+https://github.com/Riamse/ceterach.git#egg=ceterach
 
