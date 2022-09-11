@@ -8,18 +8,18 @@ import chalk from 'chalk'
 import bot from '../patsabot/bot.js'
 import moment from 'moment'
 
-await bot.getSiteInfo()
-let userinfo = await bot.userinfo()
-bot.request({
-  'action': 'query',
-  'format': 'json',
-  'meta': 'siteinfo|userinfo',
-  'siprop': 'general',
-  'uiprop': '*'
-}).then((data) => {
-  let userinfo = data.query.userinfo
-  let siteinfo = data.query.general
-  console.info(`
+(async () => { 
+  await bot.getSiteInfo()
+  bot.request({
+    'action': 'query',
+    'format': 'json',
+    'meta': 'siteinfo|userinfo',
+    'siprop': 'general',
+    'uiprop': '*'
+  }).then((data) => {
+    let userinfo = data.query.userinfo
+    let siteinfo = data.query.general
+    console.info(`
   ${chalk.white.underline.bold(`Patsabot v${version}`)}                                         ${chalk.grey.bgBlueBright('      ')}
                                                           ${chalk.grey.bgBlueBright(' PTS  ')}
   ${chalk.white.underline('USER INFO')}                                               ${chalk.grey.bgBlueBright('  GRN ')}
@@ -43,4 +43,5 @@ bot.request({
   ${chalk.green('Server Time:')} ${siteinfo.time}
   ${chalk.green('Time zone:')} ${siteinfo.timezone} (UTC${(siteinfo.timeoffset >= 0 ? '+':'-') + siteinfo.timeoffset/60})
 `)
-})
+  })
+})()
