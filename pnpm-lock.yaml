@@ -1,9 +1,9 @@
 lockfileVersion: 5.4
 
 specifiers:
+  axios: ^0.27.2
   body-parser: ^1.20.0
   bree: ^9.1.2
-  cejs: ^4.5.3
   chalk: ^5.0.1
   cors: ^2.8.5
   cron: ^2.1.0
@@ -29,7 +29,7 @@ specifiers:
   winston-daily-rotate-file: ^4.7.1
 
 dependencies:
-  cejs: 4.5.3
+  axios: 0.27.2
   chalk: 5.0.1
   cron: 2.1.0
   cuid: 2.1.8
@@ -548,6 +548,15 @@ packages:
       - debug
     dev: false
 
+  /axios/0.27.2:
+    resolution: {integrity: sha512-t+yRIyySRTp/wua5xEr+z1q60QmLq8ABsS5O9Me1AsE5dfKqgnCFzwiCZZ/cGNd1lq4/7akDWMxdhVlucjmnOQ==}
+    dependencies:
+      follow-redirects: 1.15.1
+      form-data: 4.0.0
+    transitivePeerDependencies:
+      - debug
+    dev: false
+
   /balanced-match/1.0.2:
     resolution: {integrity: sha512-3oSeUO0TMV67hN1AmbXsK4yaqU7tjiHlbxRDZOpH0KW9+CeX4bRAaX0Anxt0tx2MrpRpWwQaPwIlISEJhYU5Pw==}
     dev: false
@@ -684,11 +693,6 @@ packages:
   /camelcase/6.3.0:
     resolution: {integrity: sha512-Gmy6FhYlCY7uOElZUSbxo2UCDH8owEk996gkbrpsgGtrJLM3J7jGxl9Ic7Qwwj4ivOE5AWZWRMecDdF7hqGjFA==}
     engines: {node: '>=10'}
-    dev: false
-
-  /cejs/4.5.3:
-    resolution: {integrity: sha512-sWp8T096ZrrX7n2bdvI2QQ+O5EZ3UFpKwgWwv7ZOWjaRnUeUQpXFYdeqcpipEuK/NXVDpHWmE1AHoRgOI63GFw==}
-    engines: {node: '>=0.10'}
     dev: false
 
   /chalk/1.1.3:
@@ -1510,6 +1514,15 @@ packages:
 
   /form-data/3.0.1:
     resolution: {integrity: sha512-RHkBKtLWUVwd7SqRIvCZMEvAMoGUp0XU+seQiZejj0COz3RI3hWP4sCv3gZWWLjJTd7rGwcsF5eKZGii0r/hbg==}
+    engines: {node: '>= 6'}
+    dependencies:
+      asynckit: 0.4.0
+      combined-stream: 1.0.8
+      mime-types: 2.1.35
+    dev: false
+
+  /form-data/4.0.0:
+    resolution: {integrity: sha512-ETEklSGi5t0QMZuiXoA/Q6vcnxcLQP5vdugSpuAyi6SVGi2clPPp+xgEhuMaHC+zGgn31Kd235W35f7Hykkaww==}
     engines: {node: '>= 6'}
     dependencies:
       asynckit: 0.4.0

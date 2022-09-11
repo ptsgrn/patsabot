@@ -42,7 +42,7 @@
     "patsabot": "./src/patsabot/run.js"
   },
   "dependencies": {
-    "cejs": "^4.5.3",
+    "axios": "^0.27.2",
     "chalk": "^5.0.1",
     "cron": "^2.1.0",
     "cuid": "^2.1.8",

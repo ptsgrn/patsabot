@@ -5,8 +5,6 @@
 // This software is released under the MIT License.
 // https://opensource.org/licenses/MIT
 
-import 'cejs'
-import 'cejs/application/net/wiki/parser.js'
 import moment from 'moment'
 import 'moment/locale/th.js'
 import {
@@ -20,10 +18,10 @@ import {
   readFileSync
 } from 'node:fs'
 
-// Only god know why this is necessary.
-/** @type {Promise<?>} */
-export const parse = CeL.wiki.parser
-export const parser = CeL.wiki.parse
+// // Only god know why this is necessary.
+// /** @type {Promise<?>} */
+// export const parse = CeL.wiki.parser
+// export const parser = CeL.wiki.parse
 moment.locale('th')
 export const DateTime = moment()
 export const mm = moment
