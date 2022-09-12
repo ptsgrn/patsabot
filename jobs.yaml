@@ -7,6 +7,6 @@
   emails: onfailure
 - name: archivebot
   command:  ~/pyvenv/bin/python ~/bot/python/archive.py
-  schedule: "0 18 * * *"
+  schedule: "15 17 * * *"
   emails: onfailure
   image: tf-python37-DEPRECATED
