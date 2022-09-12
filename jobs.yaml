@@ -6,7 +6,7 @@
   schedule: "0 17 * * *"
   emails: onfailure
 - name: archivebot
-  command: ./bot/python/pyvenv/bin/python3 ./bot/python/archive.py
+  command:  ~/pyvenv/bin/python ~/bot/python/archive.py
   schedule: "0 18 * * *"
   emails: onfailure
   image: tf-python37-DEPRECATED
