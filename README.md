@@ -1,5 +1,5 @@
 # PatsaBot
-[![Automated Release Notes by gren](https://img.shields.io/badge/%F0%9F%A4%96-release%20notes-00B2EE.svg?style=flat-square)](https://github-tools.github.io/github-release-notes/) [![Bot flags status](https://img.shields.io/static/v1?style=flat-square&logo=wikipedia&label=Bot%20flags&message=Unapproved&color=gray)][botuserpage]
+[![Automated Release Notes by gren](https://img.shields.io/badge/%F0%9F%A4%96-release%20notes-00B2EE.svg?style=flat-square)](https://github-tools.github.io/github-release-notes/) [![Bot flags status](https://img.shields.io/static/v1?style=flat-square&logo=wikipedia&label=Bot%20flags&message=Approved&color=darkgreen)][botuserpage]
 
 **[ผู้ใช้:PatsaBot][botuserpage]** ([คุย][botusertalk] | [ส่วนร่วม][botcontribs])
 
