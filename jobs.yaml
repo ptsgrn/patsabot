@@ -10,3 +10,8 @@
   schedule: "15 17 * * *"
   emails: onfailure
   image: tf-python37-DEPRECATED
+- name: topedit
+  command: node ./bot/src/patsabot/run.js topedtis
+  image: tf-node16
+  schedule: "0 1 */6 * *"
+  emails: onfailure

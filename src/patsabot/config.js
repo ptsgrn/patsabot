@@ -87,11 +87,13 @@ export const replicaConfig = {
   /**
    * database table host
    * @type {String}
+   * @default '127.0.0.1'
    */
   dbHost: config?.replica?.host ?? '127.0.0.1',
   /**
    * database table port
    * @type {Number}
+   * @default 3306
    */
   dbPort: config?.replica?.port ?? 3306,
   /**
@@ -103,7 +105,7 @@ export const replicaConfig = {
   /**
    * database provider
    * @type {String}
-   * @default 'mongodb'
+   * @default 'mysql'
    */
   dbProvider: config?.replica?.provider ?? 'mysql',
   /**
