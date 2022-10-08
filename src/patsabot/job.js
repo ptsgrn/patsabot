@@ -1,19 +1,12 @@
-import Bree from 'bree'
-import baseLogger from './logger.js'
-import { resolveRelativePath } from './utils.js'
-const logger = baseLogger.child({
-  component: 'jobrunner'
-})
-const bree = new Bree({
-  logger,
-  root: resolveRelativePath(import.meta.url, '../scripts'),
-  timezone: 'Asia/Bangkok',
-  jobs: [
-    {
-      name: 'afccat',
-      cron: '0 0 * * *',
-    }
-  ]
-})
-
-bree.start()
+import CronJobsManager from 'cron-job-manager';
+const jobs = new CronJobsManager('heartbeat', '0,15,30,45 * * * *', () => {
+    console.log('I\'m still alive!');
+}, {
+    start: true
+});
+jobs.add('afccat', '* * * * *', () => {
+    console.log('running!');
+}, {
+    start: true
+});
+console.log(`${jobs}`);

@@ -1,13 +1,8 @@
-var __classPrivateFieldGet = (this && this.__classPrivateFieldGet) || function (receiver, state, kind, f) {
-    if (kind === "a" && !f) throw new TypeError("Private accessor was defined without a getter");
-    if (typeof state === "function" ? receiver !== state || !f : !state.has(receiver)) throw new TypeError("Cannot read private member from an object whose class did not declare it");
-    return kind === "m" ? f : kind === "a" ? f.call(receiver) : f ? f.value : state.get(receiver);
-};
-var _TextContent_instances, _TextContent_subst, _AdminStats_instances, _AdminStats_start_get, _AdminStats_end_get;
-import meow from 'meow';
-import axios from 'axios';
-import bot from '../patsabot/bot.js';
-import Logger from '../patsabot/logger.js';
+import meow from 'meow'
+import axios from 'axios'
+import bot from '../patsabot/bot.js'
+import Logger from '../patsabot/logger.js'
+import { mwn } from 'mwn'
 const cli = meow(`
   Script to update admins stats at [[w:th:วิกิพีเดีย:ผู้ดูแลระบบ/สถิติ]]
 
@@ -17,19 +12,22 @@ const cli = meow(`
   Options
 		--dry-run, -n	    Do not actually update the page, print out the text instead.
 `, {
-    importMeta: import.meta,
-    flags: {
-        'dryRun': {
-            type: 'boolean',
-            alias: 'n',
-            default: false,
-        }
+  importMeta: import.meta,
+  flags: {
+    'dryRun': {
+      type: 'boolean',
+      alias: 'n',
+      default: false,
     }
-});
-cli.flags.dryRun = !cli.flags.dryRun;
+  }
+})
+
+cli.flags.dryRun = !cli.flags.dryRun
+
 const logger = Logger.child({
-    script: 'adminstats'
-});
+  script: 'adminstats'
+})
+
 let testText = `
 == วิกิพีเดีย (th.wikipedia.org) ==
 
@@ -325,102 +323,126 @@ Generated using [https://xtools.wmflabs.org/adminstats/th.wikipedia.org/2021-09-
 | {{FORMATNUM:0}}
 |-
 |}
-`;
+`
+
+
 class TextContent {
-    constructor(text) {
-        _TextContent_instances.add(this);
-        if (typeof text !== 'string')
-            throw new TypeError('Text must be a string.');
-        this.content = text;
-        this.content = this.cleanupdata().renameColumn().translate().content;
+  content
+  constructor(text) {
+    if (typeof text !== 'string') throw new TypeError('Text must be a string.')
+    this.content = text
+    this.content = this.cleanupdata().renameColumn().translate().content
+  }
+  static get content() {
+    return this.content
+  }
+  /**
+   * subst: template in content
+   * @param {string} templatename Template name
+   * @returns add subst: to template. Work for ParserFunction too.
+   */
+  #subst(templatename) {
+    this.content = this.content.replace(new RegExp(`{{ ?(${templatename}) ?([:\|])`, 'ig'), "{{subst:$1$2")
+    return this
+  }
+  cleanupdata() {
+    this.#subst('FORMATNUM')
+    this.content = this.content
+      .replace('== วิกิพีเดีย (th.wikipedia.org) ==', '')
+      .replace(/[\n\r]{3,}/ig, "\n")
+    return this
+  }
+  renameColumn() {
+    const columnnamemap = {
+      "Username": 'ชื่อผู้ใช้',
+      "User groups": 'กลุ่มผู้ใช้',
+      "Total": 'รวม',
+      "Delete": 'ลบ',
+      "Revision delete": 'ลบรุ่น',
+      "Log delete": 'ลบปูม',
+      "Restore": 'กู้คืน',
+      "(Re)block": '<abbr title="รวมการบล็อกซ้ำ (Reblock)">บล็อก</abbr>',
+      "Unblock": 'ปลดบล็อก',
+      "(Re)protect": '<abbr title="รวมการป้องกันซ้ำ (Reprotect)">ป้องกัน</abbr>',
+      "Unprotect": 'ปลดป้องกัน',
+      "Rights": 'แก้สิทธิ์',
+      "Merge": 'รวมประวัติ',
+      "Import": 'นำเข้า',
+      "AbuseFilter": 'แก้ตัวกรอง',
+      "Content model": 'แก้โมเดลหน้า',
     }
-    static get content() {
-        return this.content;
+    for (let col in columnnamemap) {
+      this.content = this.content.replace(`! ${col}`, `! ${columnnamemap[col]}`)
     }
-    cleanupdata() {
-        __classPrivateFieldGet(this, _TextContent_instances, "m", _TextContent_subst).call(this, 'FORMATNUM');
-        this.content = this.content
-            .replace('== วิกิพีเดีย (th.wikipedia.org) ==', '')
-            .replace(/[\n\r]{3,}/ig, "\n");
-        return this;
-    }
-    renameColumn() {
-        const columnnamemap = {
-            "Username": 'ชื่อผู้ใช้',
-            "User groups": 'กลุ่มผู้ใช้',
-            "Total": 'รวม',
-            "Delete": 'ลบ',
-            "Revision delete": 'ลบรุ่น',
-            "Log delete": 'ลบปูม',
-            "Restore": 'กู้คืน',
-            "(Re)block": '<abbr title="รวมการบล็อกซ้ำ (Reblock)">บล็อก</abbr>',
-            "Unblock": 'ปลดบล็อก',
-            "(Re)protect": '<abbr title="รวมการป้องกันซ้ำ (Reprotect)">ป้องกัน</abbr>',
-            "Unprotect": 'ปลดป้องกัน',
-            "Rights": 'แก้สิทธิ์',
-            "Merge": 'รวมประวัติ',
-            "Import": 'นำเข้า',
-            "AbuseFilter": 'แก้ตัวกรอง',
-            "Content model": 'แก้โมเดลหน้า',
-        };
-        for (let col in columnnamemap) {
-            this.content = this.content.replace(`! ${col}`, `! ${columnnamemap[col]}`);
-        }
-        return this;
-    }
-    translate() {
-        this.content = this.content
-            .replace("Generated using", "สร้างโดย")
-            .replace(/\] on /i, '] เมื่อ ')
-            .replace(/(\d{4})-(\d{2})-(\d{2}) (\d{2}):(\d{2})/i, (_date, year, month, day, hour, minute) => new Intl
-            .DateTimeFormat('th-TH', {
+    return this
+  }
+  translate() {
+    this.content = this.content
+      .replace("Generated using", "สร้างโดย")
+      .replace(/\] on /i, '] เมื่อ ')
+      .replace(/(\d{4})-(\d{2})-(\d{2}) (\d{2}):(\d{2})/i,
+        (_date, year, month, day, hour, minute) => new Intl
+          .DateTimeFormat('th-TH', {
             timeZone: 'Asia/Bangkok',
             dateStyle: 'full',
             timeStyle: 'full'
-        })
-            .format(Date.UTC(year, +month - 1, day, hour, minute)));
-        return this;
-    }
+          })
+          .format(Date.UTC(year, +month - 1, day, hour, minute))
+      )
+    return this
+  }
 }
-_TextContent_instances = new WeakSet(), _TextContent_subst = function _TextContent_subst(templatename) {
-    this.content = this.content.replace(new RegExp(`{{ ?(${templatename}) ?([:\|])`, 'ig'), "{{subst:$1$2");
-    return this;
-};
-class AdminStats {
-    constructor(config) {
-        _AdminStats_instances.add(this);
-        this.config = config;
-        this.bot = bot;
-    }
-    async run() {
-        const contentResponse = await axios.default.get(`https://xtools.wmflabs.org/adminstats/th.wikipedia.org/${__classPrivateFieldGet(this, _AdminStats_instances, "a", _AdminStats_start_get)}/${__classPrivateFieldGet(this, _AdminStats_instances, "a", _AdminStats_end_get)}?format=wikitext&actions=delete|revision-delete|log-delete|restore|re-block|unblock|re-protect|unprotect|rights|merge|import|abusefilter|contentmodel`);
-        let content = new TextContent(contentResponse.data).content;
-        content = `${this.config.header}\n: ข้อมูลระหว่างวันที่ ${__classPrivateFieldGet(this, _AdminStats_instances, "a", _AdminStats_start_get)} ถึง ${__classPrivateFieldGet(this, _AdminStats_instances, "a", _AdminStats_end_get)}` + content;
-        if (cli.flags.dryRun) {
-            logger.log('info', await this.bot.save(this.config.title, content, 'อัปเดตสถิติผู้ดูแลระบบ'));
-        }
-        else {
-            logger.log('info', 'DRYRUN');
-            logger.log('info', content);
-        }
-    }
+
+interface AdminStats {
+  config: Config;
+  bot: mwn;
+  get #start(): string;
+  get #end(): string
 }
-_AdminStats_instances = new WeakSet(), _AdminStats_start_get = function _AdminStats_start_get() {
-    const date = new Date();
+
+class AdminStats implements AdminStats {
+  constructor(config) {
+    this.config = config
+    this.bot = bot
+  }
+  get #start() {
+    const date = new Date()
     return new Intl.DateTimeFormat("fr-CA", {
-        year: "numeric",
-        month: "2-digit",
-        day: "2-digit",
-    }).format(new Date(`${date.getFullYear()}-${ /* yes start with 0 and js handle this */date.getMonth()}-${date.getDate()}`));
-}, _AdminStats_end_get = function _AdminStats_end_get() {
+      year: "numeric",
+      month: "2-digit",
+      day: "2-digit",
+    }).format(new Date(`${date.getFullYear()}-${/* yes start with 0 and js handle this */date.getMonth()}-${date.getDate()}`))
+  }
+  get #end() {
     return new Intl.DateTimeFormat("fr-CA", {
-        year: "numeric",
-        month: "2-digit",
-        day: "2-digit",
-    }).format(new Date());
-};
-const config = {
-    header: `{{/ส่วนหัว}}`,
-    title: 'วิกิพีเดีย:ผู้ดูแลระบบ/สถิติ'
-};
-new AdminStats(config).run();
+      year: "numeric",
+      month: "2-digit",
+      day: "2-digit",
+    }).format(new Date())
+  }
+  async run() {
+    const contentResponse: axios.AxiosResponse<string, string> = await axios.default.get(`https://xtools.wmflabs.org/adminstats/th.wikipedia.org/${this.#start}/${this.#end}?format=wikitext&actions=delete|revision-delete|log-delete|restore|re-block|unblock|re-protect|unprotect|rights|merge|import|abusefilter|contentmodel`)
+    let content = new TextContent(contentResponse.data).content
+    content = `${this.config.header}\n: ข้อมูลระหว่างวันที่ ${this.#start} ถึง ${this.#end}` + content
+    if (cli.flags.dryRun) {
+      logger.log('info', await this.bot.save(this.config.title, content, 'อัปเดตสถิติผู้ดูแลระบบ'))
+    } else {
+      logger.log('info', 'DRYRUN')
+      logger.log('info', content)
+    }
+  }
+}
+
+type Config = {
+  /** Header to be added for each run */
+  header: string;
+  /** Page name to save the statistics to */
+  title: string;
+}
+
+const config: Config = {
+  header: `{{/ส่วนหัว}}`,
+  title: 'วิกิพีเดีย:ผู้ดูแลระบบ/สถิติ'
+}
+
+new AdminStats(config).run()

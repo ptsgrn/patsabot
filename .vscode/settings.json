@@ -10,5 +10,13 @@
       "privateKeyPath": "/home/mose/.ssh/id_rsa",
       "newFileMode": "0o664"
     }
-  ]
+  ],
+  "files.exclude": {
+    "**/*.js": {
+      "when": "$(basename).ts"
+    },
+    "**/**.js": {
+      "when": "$(basename).tsx"
+    }
+  }
 }

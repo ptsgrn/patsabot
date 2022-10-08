@@ -4,3 +4,4 @@ credentials.json
 configstore/
 .*.sw*
 .env
+.tmp/
