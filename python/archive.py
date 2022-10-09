@@ -391,6 +391,7 @@ class Archiver:
                        'counter': 1,
                        'oldcounter': 1,  # For internal use by the bot
                        'key': '',
+                       'donetl': ''
         }
         self.api = api
         self.tl = tl
@@ -478,6 +479,9 @@ class Archiver:
                 break
             if not thread["oldenough"]:
                 continue  # Thread is too young to archive
+            if self.config['donetl'] != '':
+                if self.config['donetl'] not in thread['content']:
+                    continue
             stamp = thread['stamp']
             logger.info("{} is old enough ({})", thread['header'], stamp)
             params = make_params()
