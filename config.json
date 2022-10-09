@@ -1,8 +1,71 @@
 {
+  "_site": {
+    "_default": [
+      "http:",
+      "localhost:8004",
+      "/",
+      "/index.php?title="
+    ],
+    "thwiki": [
+      "https:",
+      "th.wikipedia.org",
+      "/w",
+      "/wiki"
+    ],
+    "thwikisource": [
+      "https:",
+      "th.wikisource.org",
+      "/w",
+      "/wiki"
+    ],
+    "thwiktionary": [
+      "https:",
+      "th.wiktionary.org",
+      "/w",
+      "/wiki"
+    ],
+    "enwiki": [
+      "https:",
+      "en.wikipedia.org",
+      "/w",
+      "/wiki"
+    ],
+    "wikidatawiki": [
+      "https:",
+      "wikidata.org",
+      "/w",
+      "/wiki"
+    ],
+    "testwikidatawiki": [
+      "https:",
+      "test.wikidata.org",
+      "/w",
+      "/wiki"
+    ],
+    "wikicommons": [
+      "https:",
+      "commons.wikimedia.org",
+      "/w",
+      "/wiki"
+    ],
+    "testwiki": [
+      "https:",
+      "test.wikipedia.org",
+      "/w",
+      "/wiki"
+    ],
+    "test2wiki": [
+      "https:",
+      "test.wikipedia.org",
+      "/w",
+      "/wiki"
+    ]
+  },
   "config": {
     "user": "PatsaBot",
     "credentials": "./credentials.json",
-    "simulate": false
+    "simulate": false,
+    "disabled": []
   },
   "log": {
     "logdir": "./logs/",
@@ -14,15 +77,15 @@
   },
   "replica": {
     "provider": "mysql",
-    "host": "127.0.0.1",
+    "host": "thwiki.analytics.db.svc.wikimedia.cloud",
     "port": 3306,
     "database": "thwiki_p"
   },
   "tasks": [
     {
-      "name": "test",
-      "script": "login",
-      "cron": "*/2 * * * *"
+      "name": "jobstest",
+      "script": "jobstest",
+      "cron": "* * * * *"
     }
   ]
 }
