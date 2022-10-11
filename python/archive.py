@@ -480,7 +480,13 @@ class Archiver:
             if not thread["oldenough"]:
                 continue  # Thread is too young to archive
             if self.config['donetl'] != '':
-                if self.config['donetl'] not in thread['content']:
+                # There are some "done template" to check.
+                # If it's not true then don't archive it.
+                donetl = self.config['donetl'].replace(
+                    '{{!}}', '|')  # yep, it is that simple
+                content = thread['content']
+                if not re.search(donetl, content):
+                    # validate with regex
                     continue
             stamp = thread['stamp']
             logger.info("{} is old enough ({})", thread['header'], stamp)
