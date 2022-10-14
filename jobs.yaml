@@ -1,17 +1,1 @@
 # https://wikitech.wikimedia.org/wiki/Help:Toolforge/Jobs_framework
-- name: afccat
-  command: node ./bot/src/patsabot/run.js afccat
-  image: tf-node16
-  no-filelog: false # i'm tired to debug without this
-  schedule: "0 17 * * *"
-  emails: onfailure
-- name: archivebot
-  command:  ~/pyvenv/bin/python ~/bot/python/archive.py
-  schedule: "15 17 * * *"
-  emails: onfailure
-  image: tf-python37-DEPRECATED
-- name: topedit
-  command: node ./bot/src/patsabot/run.js topedtis
-  image: tf-node16
-  schedule: "0 1 */6 * *"
-  emails: onfailure

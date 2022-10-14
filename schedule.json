@@ -7,7 +7,7 @@
   {
     "name": "archive",
     "crontab": "15 17 * * *",
-    "command": "~/pyvenv/bin/python ~/bot/python/archive.py",
+    "command": "~/pyvenv/bin/python ~/bot/python/archive.py"
   },
   {
     "name": "topedits",
