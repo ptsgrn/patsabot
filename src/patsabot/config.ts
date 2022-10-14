@@ -2,11 +2,69 @@
 // 
 // This software is released under the MIT License.
 // https://opensource.org/licenses/MIT
+import { JobOption } from './jobsmanager.js';
 import { resolveRelativePath, parseJsonFile} from './utils.js'
 
+
+interface ConfigTasksData {
+  "name": string;
+  "script": string;
+  "cron": string
+}
+interface ConfigFile {
+  "config": {
+    "user": string;
+    "credentials": string;
+    "simulate": boolean;
+    "siteUrl": string;
+  },
+  "log": {
+    "logdir": string;
+    "debug": boolean;
+    "debugprefix": string;
+    "log": boolean;
+    "autolog": string[];
+    "excludes": string[];
+  },
+  "replica": {
+    "provider": string[]
+    "host": string;
+    "port": number;
+    "database": string;
+  },
+  "tasks": ConfigTasksData[]
+}
+
+interface CreadentailFile {
+  "username": string;
+  "password": string
+  "consumerToken": string;
+  "consumerSecret": string;
+  "accessToken": string;
+  "accessSecret": string;
+  "replica": {
+    "username": string;
+    "password": string;
+  },
+  "irc": {
+    "nickName": string;
+    "username": string;
+    "password": string;
+    "realName": string;
+    "server": string;
+    "port": number;
+  },
+  "githooksecret": string;
+  "scripts": {
+    "archive": {
+      "key_salt": string;
+    }
+  }
+}
+
 // these are bad idea, but I will fix it as I now how ('=-=)
-export let credentials = parseJsonFile(resolveRelativePath(import.meta.url, '../../credentials.json'))
-export let config = parseJsonFile(resolveRelativePath(import.meta.url, '../../config.json'))
+export let credentials: CreadentailFile = parseJsonFile(resolveRelativePath(import.meta.url, '../../credentials.json'))
+export let config: ConfigFile = parseJsonFile(resolveRelativePath(import.meta.url, '../../config.json'))
 
 /**
  * processing current user informations
@@ -23,11 +81,7 @@ export const user = {
   }
 }
 export const site = {
-  /**
-   * internet URL of site
-   * @type {String}
-  */
-  siteUrl: config.siteUrl ?? 'https://th.wikipedia.org/w/api.php'
+  siteUrl: config.config.siteUrl ?? 'https://th.wikipedia.org/w/api.php'
 }
 
 export const ircConfig = {
@@ -47,7 +101,7 @@ export const ircConfig = {
    * IRC user's username
    * @type {String}
    */
-  userName: credentials?.irc?.userName,
+  userName: credentials?.irc?.username,
   /**
    * IRC user's password
    * @type {String}
@@ -68,16 +122,9 @@ export const ircConfig = {
 }
 
 export const replicaCredentials = {
-  /**
-   * database table username for autherization
-   * @type {String}
-   */
-  username: credentials?.replica?.username
-    ?? credentials?.replica?.user,
-  /**
-   * database table password for autherization
-   * @type {String}
-   */
+  /** database table username for autherization */
+  username: credentials?.replica?.username,
+  /** database table password for autherization */
   password: credentials?.replica?.password,
 }
 
@@ -112,3 +159,11 @@ export const replicaConfig = {
    */
   dbURL: `${config?.replica?.provider ?? 'mysql'}://${replicaCredentials.username}:${replicaCredentials.password}@${config?.replica?.host ?? '127.0.0.1'}:${config?.replica?.port ?? 3306}/${config?.replica?.database ?? 'thwiki_p'}`,
 }
+
+export const schedule: JobOption[] = [
+  {
+    "name": "test",
+    "crontab": "* * * * *",
+    "command": "node src/scripts/jobstest.js"
+  }
+]//parseJsonFile(resolveRelativePath(import.meta.url, '../../schedule.json'))

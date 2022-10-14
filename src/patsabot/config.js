@@ -1,7 +1,3 @@
-// Copyright (c) 2021 Patsagorn Y.
-// 
-// This software is released under the MIT License.
-// https://opensource.org/licenses/MIT
 import { resolveRelativePath, parseJsonFile } from './utils.js';
 // these are bad idea, but I will fix it as I now how ('=-=)
 export let credentials = parseJsonFile(resolveRelativePath(import.meta.url, '../../credentials.json'));
@@ -21,11 +17,7 @@ export const user = {
     }
 };
 export const site = {
-    /**
-     * internet URL of site
-     * @type {String}
-    */
-    siteUrl: config.siteUrl ?? 'https://th.wikipedia.org/w/api.php'
+    siteUrl: config.config.siteUrl ?? 'https://th.wikipedia.org/w/api.php'
 };
 export const ircConfig = {
     /**
@@ -44,7 +36,7 @@ export const ircConfig = {
      * IRC user's username
      * @type {String}
      */
-    userName: credentials?.irc?.userName,
+    userName: credentials?.irc?.username,
     /**
      * IRC user's password
      * @type {String}
@@ -64,16 +56,9 @@ export const ircConfig = {
     nickName: credentials?.irc?.nickName,
 };
 export const replicaCredentials = {
-    /**
-     * database table username for autherization
-     * @type {String}
-     */
-    username: credentials?.replica?.username
-        ?? credentials?.replica?.user,
-    /**
-     * database table password for autherization
-     * @type {String}
-     */
+    /** database table username for autherization */
+    username: credentials?.replica?.username,
+    /** database table password for autherization */
     password: credentials?.replica?.password,
 };
 export const replicaConfig = {
@@ -107,3 +92,10 @@ export const replicaConfig = {
      */
     dbURL: `${config?.replica?.provider ?? 'mysql'}://${replicaCredentials.username}:${replicaCredentials.password}@${config?.replica?.host ?? '127.0.0.1'}:${config?.replica?.port ?? 3306}/${config?.replica?.database ?? 'thwiki_p'}`,
 };
+export const schedule = [
+    {
+        "name": "test",
+        "crontab": "* * * * *",
+        "command": "node src/scripts/jobstest.js"
+    }
+]; //parseJsonFile(resolveRelativePath(import.meta.url, '../../schedule.json'))

@@ -1,14 +1,62 @@
-import CronJobsManager from 'cron-job-manager'
-import { config } from './index.js'
-const jobs = new CronJobsManager('heartbeat', '0,15,30,45 * * * *', () => {
-  console.log('I\'m still alive!')
-}, {
-  start: true
-})
-jobs.add('afccat', '* * * * *', () => {
-  console.log('running!')
-}, {
-  start: true
-})
+import { schedule } from './config.js'
+import baselogger from './logger.js'
+import { JobsManager } from './jobsmanager.js'
+import express from 'express'
 
-console.log(`${jobs}`)
+const logger = baselogger.child({
+  script: 'jobrunner'
+})
+if (!Array.isArray(schedule)) {
+  logger.log('error', '\'tasks\' is not define in schedule.json or not an array')
+}
+
+try {
+  const app = express()
+  const jobs = new JobsManager({
+    timezone: 'Asia/Bangkok',
+    ignoreError: true,
+    autostart: true,
+  })
+  jobs.addJobs(schedule)
+
+  app.get('/:jobname/:get', (req, res) => {
+    const { jobname, get } = req.params
+    const job = jobs.job(jobname)
+    if (!job || !['next', 'last'].includes(get)) return res.status(200).send({
+      "schemaVersion": 1,
+      "label": jobname,
+      "message": "not found",
+      "color": 'gray'
+    })
+    res.status(200).send({
+      "schemaVersion": 1,
+      "label": `${get} run`,
+      "message": get === 'next'
+        ? `${job.next.toRelative()} at ${job.next.toISO()}`
+        : `${job.last?.toISOString() ?? '<no data>'}`,
+      "color": job.running ? 'green' : 'gray'
+    })
+  })
+  app.get('/:jobname', (req, res) => {
+    const { jobname } = req.params
+    const job = jobs.job(jobname)
+    if (!job) return res.status(200).send({
+      "schemaVersion": 1,
+      "label": jobname,
+      "message": "not found",
+      "color": 'gray'
+    })
+    res.status(200).send({
+      "schemaVersion": 1,
+      "label": jobname,
+      "message": job.running ? 'active' : 'inactive',
+      "color": job.running ? 'green' : 'gray'
+    })
+  })
+
+  app.listen(process.env.PORT ?? 3000, () => {
+    console.log(`Example app listening on port ${process.env.PORT ?? 3000}`)
+  })
+} catch (err) {
+  logger.log('error', err)
+}
