@@ -160,10 +160,4 @@ export const replicaConfig = {
   dbURL: `${config?.replica?.provider ?? 'mysql'}://${replicaCredentials.username}:${replicaCredentials.password}@${config?.replica?.host ?? '127.0.0.1'}:${config?.replica?.port ?? 3306}/${config?.replica?.database ?? 'thwiki_p'}`,
 }
 
-export const schedule: JobOption[] = [
-  {
-    "name": "test",
-    "crontab": "* * * * *",
-    "command": "node src/scripts/jobstest.js"
-  }
-]//parseJsonFile(resolveRelativePath(import.meta.url, '../../schedule.json'))
+export const schedule: JobOption[] = parseJsonFile(resolveRelativePath(import.meta.url, '../../schedule.json'))

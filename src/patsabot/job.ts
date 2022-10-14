@@ -55,7 +55,7 @@ try {
   })
 
   app.listen(process.env.PORT ?? 3000, () => {
-    console.log(`Example app listening on port ${process.env.PORT ?? 3000}`)
+    console.log(`app listening on port ${process.env.PORT ?? 3000}`)
   })
 } catch (err) {
   logger.log('error', err)
