@@ -1,0 +1,17 @@
+[
+  {
+    "name": "afccat",
+    "crontab": "0 17 * * *",
+    "command": "node $HOME/bot/src/patsabot/run.js afccat"
+  },
+  {
+    "name": "archive",
+    "crontab": "15 17 * * *",
+    "command": "~/pyvenv/bin/python ~/bot/python/archive.py",
+  },
+  {
+    "name": "topedits",
+    "command": "node $HOME/bot/src/patsabot/run.js topedits",
+    "crontab": "0 18 * * *"
+  }
+]

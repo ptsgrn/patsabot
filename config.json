@@ -80,12 +80,5 @@
     "host": "thwiki.analytics.db.svc.wikimedia.cloud",
     "port": 3306,
     "database": "thwiki_p"
-  },
-  "tasks": [
-    {
-      "name": "jobstest",
-      "script": "jobstest",
-      "cron": "* * * * *"
-    }
-  ]
+  }
 }
