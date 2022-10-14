@@ -13,5 +13,10 @@
     "name": "topedits",
     "command": "node $HOME/bot/src/patsabot/run.js topedits",
     "crontab": "0 1 */7 * *"
+  },
+  {
+    "name": "timestamp",
+    "command": "node $HOME/bot/src/patsabot/run.js updatestatus",
+    "crontab": "0,30 * * * *"
   }
 ]
