@@ -1,8 +1,11 @@
 import bot from '../patsabot/bot.js'
+import baselogger from '../patsabot/logger.js'
 
-bot.edit('ผู้ใช้:PatsaBot/timestamp', () => {
-  return {
-    text: '{{subst:#timel:r}}',
-    summary: 'อัปเดต'
-  }
+const logger = baselogger.child({
+  script: 'updatestatus'
 })
+try {
+  await bot.save('User:PatsaBot/timestamp', "{{subst:#timel:r}}", "อัปเดตสถานะ")
+} catch (err) {
+  logger.log('error', err)
+}
