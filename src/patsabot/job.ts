@@ -1,18 +1,31 @@
-import { schedule } from './config.js'
+import { schedule, sentry_dsn } from './config.js'
 import baselogger from './logger.js'
 import { JobsManager } from './jobsmanager.js'
 import express from 'express'
 import ExpressStatusMonitor from 'express-status-monitor'
+import * as Sentry from "@sentry/node";
+import * as Tracing from "@sentry/tracing";
 
 const logger = baselogger.child({
   script: 'jobrunner'
 })
+
 if (!Array.isArray(schedule)) {
   logger.log('error', '\'tasks\' is not define in schedule.json or not an array')
 }
 
 try {
   const app = express()
+  Sentry.init({
+    dsn: sentry_dsn,
+    integrations: [
+      // enable HTTP calls tracing
+      new Sentry.Integrations.Http({ tracing: true }),
+      // enable Express.js middleware tracing
+      new Tracing.Integrations.Express({ app }),
+    ],
+    tracesSampleRate: 0.7,
+  });
   const jobs = new JobsManager({
     timezone: 'Asia/Bangkok',
     ignoreError: true,
@@ -21,6 +34,9 @@ try {
   jobs.addJobs(schedule)
 
   app.use(ExpressStatusMonitor())
+  app.use(Sentry.Handlers.requestHandler());
+  app.use(Sentry.Handlers.tracingHandler());
+
   app.get('/:jobname/:get', (req, res) => {
     const { jobname, get } = req.params
     const job = jobs.job(jobname)
@@ -55,6 +71,11 @@ try {
       "color": job.running ? 'green' : 'gray'
     })
   })
+  app.use(Sentry.Handlers.errorHandler());
+  app.use(function onError(err, req, res, next) {
+    res.statusCode = 500;
+    res.end(res.sentry + "\n");
+  });
 
   app.listen(process.env.PORT ?? 3000, () => {
     console.log(`app listening on port ${process.env.PORT ?? 3000}`)

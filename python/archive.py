@@ -23,7 +23,9 @@ from ceterach import exceptions as exc
 import json
 
 import mwparserfromhell as mwp
+import sentry_sdk
 
+sentry_sdk.init(dsn=json.load(open("./credentials.json", "rb"))["sentry_dsn"])
 API_URL = "https://th.wikipedia.org/w/api.php"
 LOGIN_INFO = "PatsaBot", json.load(open("./credentials.json", "rb"))["password"]
 SHUTOFF = u"ผู้ใช้:PatsaBot/shutoff/archive"
