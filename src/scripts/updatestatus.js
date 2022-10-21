@@ -3,4 +3,9 @@ import baselogger from '../patsabot/logger.js';
 const logger = baselogger.child({
     script: 'updatestatus'
 });
-await bot.save('User:PatsaBot/timestamp', "{{subst:#timel:r}}", "อัปเดตสถานะ");
+try {
+    await bot.save('User:PatsaBot/timestamp', "{{subst:#timel:r}}", "อัปเดตสถานะ");
+}
+catch (err) {
+    logger.log('error', err);
+}

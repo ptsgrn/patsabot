@@ -2,6 +2,7 @@ import { schedule } from './config.js'
 import baselogger from './logger.js'
 import { JobsManager } from './jobsmanager.js'
 import express from 'express'
+import ExpressStatusMonitor from 'express-status-monitor'
 
 const logger = baselogger.child({
   script: 'jobrunner'
@@ -19,6 +20,7 @@ try {
   })
   jobs.addJobs(schedule)
 
+  app.use(ExpressStatusMonitor())
   app.get('/:jobname/:get', (req, res) => {
     const { jobname, get } = req.params
     const job = jobs.job(jobname)
