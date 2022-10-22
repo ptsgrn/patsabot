@@ -1,14 +1,13 @@
-import 'winston-daily-rotate-file'
-import { loggerDir, sentry_dsn } from './config.js'
-import winston from 'winston'
-const { createLogger, format, transports, addColors } = winston
-import Sentry from 'winston-sentry-log'
-
+import 'winston-daily-rotate-file';
+import { loggerDir, sentry_dsn } from './config.js';
+import winston from 'winston';
+const { createLogger, format, transports, addColors } = winston;
+import Sentry from 'winston-transport-sentry-node';
 addColors({
   done: 'green',
   scriptrun: 'bold green',
   scriptdone: 'bold green'
-})
+});
 const logger = createLogger({
   levels: {
     emerg: 0,
@@ -25,41 +24,30 @@ const logger = createLogger({
     scriptdone: 5
   },
   level: process.env.NODE_ENV === 'production' ? 'info' : 'debug',
-  format: format.combine(
-    format.timestamp(),
-    format.errors({
-      stack: true
-    }),
-    format.splat(),
-    format.json(),
-    format.ms()
-  ),
+  format: format.combine(format.timestamp(), format.errors({
+    stack: true
+  }), format.splat(), format.json(), format.ms()),
   defaultMeta: { service: 'patsabot' },
   transports: [
     new transports.File({
       filename: `${loggerDir}/logs.log`,
     }),
     new transports.Console({
-      format: format.combine(
-        format.colorize(),
-        format.printf(info => `${info.timestamp} ${info.level}: ${info.message}`)
-      )
+      format: format.combine(format.colorize(), format.printf(info => `${info.timestamp} ${info.level}: ${info.message}`))
     }),
-    new Sentry({
-      dsn: sentry_dsn,
+    new Sentry.default({
+      sentry: {
+        dsn: sentry_dsn,
+        environment: process.env.NODE_ENV
+      },
       level: 'info',
-      environment: process.env.NODE_ENV,
-      tags: {
-        service: 'patsabot'
-      }
     }),
   ],
   exceptionHandlers: [
     new transports.File({
-      filename: `${loggerDir}/exceptions.log`,
-      maxsize: 1_000_000,
+      filename: `${loggerDir}/error.log`,
+      maxsize: 1000000,
     })
   ]
-})
-
-export default logger
+});
+export default logger;
