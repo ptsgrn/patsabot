@@ -43,8 +43,8 @@
     "patsabot": "./src/patsabot/run.js"
   },
   "dependencies": {
-    "@sentry/node": "^7.16.0",
-    "@sentry/tracing": "^7.16.0",
+    "@sentry/node": "6.13.2",
+    "@sentry/tracing": "6.13.2",
     "axios": "^0.27.2",
     "chalk": "^5.0.1",
     "cron": "^2.1.0",
