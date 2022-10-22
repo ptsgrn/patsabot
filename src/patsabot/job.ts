@@ -43,7 +43,7 @@ try {
   app.use(Sentry.Handlers.requestHandler());
   app.use(Sentry.Handlers.tracingHandler());
 
-  app.get('/:jobname/:get', (req, res) => {
+  app.get('/job/:jobname/:get', (req, res) => {
     const { jobname, get } = req.params
     const job = jobs.job(jobname)
     if (!job || !['next', 'last'].includes(get)) return res.status(200).send({
@@ -62,7 +62,7 @@ try {
     })
   })
 
-  app.get('/:jobname', (req, res) => {
+  app.get('/job/:jobname', (req, res) => {
     const { jobname } = req.params
     const job = jobs.job(jobname)
     if (!job) return res.status(200).send({
