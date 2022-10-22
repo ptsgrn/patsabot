@@ -12,8 +12,8 @@ import { credentials, loggerDir } from './config.js'
 
 const logger = baseLogger.child({ script: 'selfupdate' })
 
-export default async function selfUpdate(req: Request, res: Response, next: NextFunction) {
-  if (req.url !== '/hook') return next()
+export default async function selfUpdate(req: Request, res: Response) {
+  logger.log('debug', 'hook accessed')
   const sig = req.headers['x-hub-signature-256']
   const event = req.headers['x-github-event']
   const id = req.headers['x-github-delivery']

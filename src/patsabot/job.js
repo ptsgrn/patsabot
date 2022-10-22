@@ -34,10 +34,10 @@ try {
     jobs.addJobs(schedule);
     app.use(ExpressStatusMonitor());
     app.use(bodyParser.json());
-    app.use('/hook', selfUpdate);
     app.use('/logs', express.static(join(loggerDir)));
     app.use(Sentry.Handlers.requestHandler());
     app.use(Sentry.Handlers.tracingHandler());
+    app.post('/hook', selfUpdate);
     app.get('/job/:jobname/:get', (req, res) => {
         const { jobname, get } = req.params;
         const job = jobs.job(jobname);
