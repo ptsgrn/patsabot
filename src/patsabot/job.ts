@@ -1,10 +1,13 @@
-import { schedule, sentry_dsn } from './config.js'
+import { loggerDir, schedule, sentry_dsn } from './config.js'
 import baselogger from './logger.js'
 import { JobsManager } from './jobsmanager.js'
 import express from 'express'
 import ExpressStatusMonitor from 'express-status-monitor'
+import bodyParser from 'body-parser'
 import * as Sentry from "@sentry/node";
 import * as Tracing from "@sentry/tracing";
+import selfUpdate from './selfupdater.js'
+import { join } from 'path'
 
 const logger = baselogger.child({
   script: 'jobrunner'
@@ -34,6 +37,9 @@ try {
   jobs.addJobs(schedule)
 
   app.use(ExpressStatusMonitor())
+  app.use(bodyParser.json())
+  app.use('/hook', selfUpdate)
+  app.use('/logs', express.static(join(loggerDir)))
   app.use(Sentry.Handlers.requestHandler());
   app.use(Sentry.Handlers.tracingHandler());
 
@@ -55,6 +61,7 @@ try {
       "color": job.running ? 'green' : 'gray'
     })
   })
+
   app.get('/:jobname', (req, res) => {
     const { jobname } = req.params
     const job = jobs.job(jobname)
@@ -71,12 +78,8 @@ try {
       "color": job.running ? 'green' : 'gray'
     })
   })
-  app.use(Sentry.Handlers.errorHandler());
-  app.use(function onError(err, req, res, next) {
-    res.statusCode = 500;
-    res.end(res.sentry + "\n");
-  });
 
+  app.use(Sentry.Handlers.errorHandler());
   app.listen(process.env.PORT ?? 3000, () => {
     console.log(`app listening on port ${process.env.PORT ?? 3000}`)
   })

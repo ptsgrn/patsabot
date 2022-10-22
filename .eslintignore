@@ -1,2 +1,1 @@
-# temporary ignoring it (not done yet)
-src/scripts/adminstats.js
+src/**.js
