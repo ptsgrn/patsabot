@@ -33,9 +33,9 @@ export default async function selfUpdate(req: Request, res: Response) {
     return res.status(400).send('Event is not push')
   }
   const { ref, head_commit: { modified }, repository } = req.body
-  if (ref !== 'refs/heads/master') {
-    logger.log('error', 'Not master branch', { id })
-    return res.status(400).send('Not master branch')
+  if (ref !== 'refs/heads/main') {
+    logger.log('error', 'Not main branch', { id })
+    return res.status(400).send('Not main branch')
   }
   if (!modified) {
     logger.log('error', 'No modified', { id })
@@ -53,6 +53,10 @@ export default async function selfUpdate(req: Request, res: Response) {
   const logPath = join(loggerDir, 'update.log')
   try {
     let output = `>> Start Update ${new Date().toISOString()}\n`
+    output += `>>>> git version: ${execSync('git --version')}\n`
+    output += `>>>> npm version: ${execSync('npm --version')}\n`
+    output += `>>>> node version: ${execSync('node --version')}\n`
+    output += `>>>> commit id: ${execSync('git rev-parse HEAD')}\n`
     output += `>> Pulling from ${repo}\n`
     output += execSync('git pull').toString()
     if (modified.includes('package.json')) {
