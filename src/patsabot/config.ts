@@ -60,7 +60,6 @@ interface CreadentailFile {
       "key_salt": string;
     }
   }
-  "sentry_dsn": string;
 }
 
 // these are bad idea, but I will fix it as I now how ('=-=)
@@ -162,4 +161,3 @@ export const replicaConfig = {
 }
 
 export const schedule: JobOption[] = parseJsonFile(resolveRelativePath(import.meta.url, '../../schedule.json'))
-export const sentry_dsn = credentials.sentry_dsn

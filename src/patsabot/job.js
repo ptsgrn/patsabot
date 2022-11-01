@@ -1,11 +1,9 @@
-import { loggerDir, schedule, sentry_dsn } from './config.js';
+import { loggerDir, schedule } from './config.js';
 import baselogger from './logger.js';
 import { JobsManager } from './jobsmanager.js';
 import express from 'express';
 import ExpressStatusMonitor from 'express-status-monitor';
 import bodyParser from 'body-parser';
-import * as Sentry from "@sentry/node";
-import * as Tracing from "@sentry/tracing";
 import selfUpdate from './selfupdater.js';
 import { join } from 'path';
 const logger = baselogger.child({
@@ -16,16 +14,6 @@ if (!Array.isArray(schedule)) {
 }
 try {
     const app = express();
-    Sentry.init({
-        dsn: sentry_dsn,
-        integrations: [
-            // enable HTTP calls tracing
-            new Sentry.Integrations.Http({ tracing: true }),
-            // enable Express.js middleware tracing
-            new Tracing.Integrations.Express({ app }),
-        ],
-        tracesSampleRate: 0.7,
-    });
     const jobs = new JobsManager({
         timezone: 'Asia/Bangkok',
         ignoreError: true,
@@ -35,8 +23,6 @@ try {
     app.use(ExpressStatusMonitor());
     app.use(bodyParser.json());
     app.use('/logs', express.static(join(loggerDir)));
-    app.use(Sentry.Handlers.requestHandler());
-    app.use(Sentry.Handlers.tracingHandler());
     app.post('/hook', selfUpdate);
     app.get('/job/:jobname/:get', (req, res) => {
         const { jobname, get } = req.params;
@@ -74,7 +60,6 @@ try {
             "color": job.running ? 'green' : 'gray'
         });
     });
-    app.use(Sentry.Handlers.errorHandler());
     app.listen(process.env.PORT ?? 3000, () => {
         console.log(`app listening on port ${process.env.PORT ?? 3000}`);
     });

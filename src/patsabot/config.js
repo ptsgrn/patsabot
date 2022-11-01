@@ -93,4 +93,3 @@ export const replicaConfig = {
     dbURL: `${config?.replica?.provider ?? 'mysql'}://${replicaCredentials.username}:${replicaCredentials.password}@${config?.replica?.host ?? '127.0.0.1'}:${config?.replica?.port ?? 3306}/${config?.replica?.database ?? 'thwiki_p'}`,
 };
 export const schedule = parseJsonFile(resolveRelativePath(import.meta.url, '../../schedule.json'));
-export const sentry_dsn = credentials.sentry_dsn;

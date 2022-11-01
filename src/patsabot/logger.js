@@ -1,8 +1,7 @@
 import 'winston-daily-rotate-file';
-import { loggerDir, sentry_dsn } from './config.js';
+import { loggerDir } from './config.js';
 import winston from 'winston';
 const { createLogger, format, transports, addColors } = winston;
-import Sentry from 'winston-transport-sentry-node';
 addColors({
     done: 'green',
     scriptrun: 'bold green',
@@ -34,13 +33,6 @@ const logger = createLogger({
         }),
         new transports.Console({
             format: format.combine(format.colorize(), format.printf(info => `${info.timestamp} ${info.level}: ${info.message}`))
-        }),
-        new Sentry.default({
-            sentry: {
-                dsn: sentry_dsn,
-                environment: process.env.NODE_ENV
-            },
-            level: 'info',
         }),
     ],
     exceptionHandlers: [
