@@ -80,10 +80,15 @@ bot.batchOperation(categories, (page) => {
             'createonly': true
         })
             .then(resolve)
-            .catch(reject);
+            .catch((error) => {
+            logger.log('error', error, { article: page });
+            reject(error);
+        });
     });
-}, 1, 1).then(() => {
+}, 10, 1).then(() => {
     logger.log('debug', 'done');
+}).catch((err) => {
+    logger.log('error', err);
 });
 export default {
     desc: 'Create categories for AfC submissions.'

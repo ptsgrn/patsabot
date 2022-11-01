@@ -91,13 +91,18 @@ bot.batchOperation(
         }
       )
         .then(resolve)
-        .catch(reject)
+        .catch((error) => {
+          logger.log('error', error, { article: page })
+          reject(error)
+        })
     })
   },
-  1,
+  10,
   1
 ).then(() => {
   logger.log('debug', 'done')
+}).catch((err) => {
+  logger.log('error', err)
 })
 
 export default {

@@ -9,8 +9,12 @@ import chalk from 'chalk';
 import { version } from './version.js';
 import fs from 'fs';
 import { fileURLToPath } from 'url';
+import logger from './logger.js';
 const argv = process.argv.splice(2);
 const script_path = resolve(dirname(fileURLToPath(import.meta.url)), '../scripts/');
+process.on('uncaughtException', (err) => {
+    logger.log('error', err);
+});
 if (argv.length === 0) {
     fs.readdir(script_path, function (err, files) {
         if (err) {
