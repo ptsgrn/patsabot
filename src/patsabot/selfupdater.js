@@ -20,31 +20,11 @@ export default async function selfUpdate(req, res) {
         logger.log('error', 'Wrong signature', { id });
         return res.status(403).send('Wrong signature');
     }
-    if (!event) {
-        logger.log('error', 'No event', { id });
-        return res.status(400).send('No event');
-    }
-    if (event !== 'push') {
-        logger.log('error', 'Event is not push', { id });
-        return res.status(400).send('Event is not push');
-    }
-    const { ref, head_commit: { modified }, repository } = req.body;
-    if (ref !== 'refs/heads/main') {
-        logger.log('error', 'Not main branch', { id });
-        return res.status(400).send('Not main branch');
-    }
-    if (!modified) {
-        logger.log('error', 'No modified', { id });
-        return res.status(400).send('No modified');
-    }
-    if (!repository) {
-        logger.log('error', 'No repository', { id });
-        return res.status(400).send('No repository');
-    }
-    const { full_name: repo } = repository;
-    if (repo !== 'ptsgrn/patsabot') {
-        logger.log('error', 'Not ptsgrn/patsabot', { id });
-        return res.status(400).send('Not ptsgrn/patsabot');
+    logger.log('debug', 'signature verified', { id });
+    // check if it's ptsgrn/patsabot and main branch
+    if (req.body.repository.full_name !== 'ptsgrn/patsabot' || req.body.ref !== 'refs/heads/main') {
+        logger.log('debug', 'Not main branch or not ptsgrn/patsabot', { id });
+        return res.status(200).send('Not main branch or not ptsgrn/patsabot');
     }
     const logPath = join(loggerDir, 'update.log');
     try {
@@ -53,8 +33,9 @@ export default async function selfUpdate(req, res) {
         output += `>>>> npm version: ${execSync('npm --version')}\n`;
         output += `>>>> node version: ${execSync('node --version')}\n`;
         output += `>>>> commit id: ${execSync('git rev-parse HEAD')}\n`;
-        output += `>> Pulling from ${repo}\n`;
+        output += `>> Pulling from repo\n`;
         output += execSync('git pull').toString();
+        const modified = execSync('git diff --name-only HEAD HEAD~1').toString();
         if (modified.includes('package.json')) {
             output += '>> Installing dependencies\n';
             output += execSync('npm install --production').toString();

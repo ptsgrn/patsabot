@@ -60,6 +60,11 @@ interface CreadentailFile {
       "key_salt": string;
     }
   }
+  "discord": {
+    "webhook": {
+      "logger": string;
+    }
+  }
 }
 
 // these are bad idea, but I will fix it as I now how ('=-=)

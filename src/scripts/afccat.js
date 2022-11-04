@@ -65,30 +65,34 @@ if (isNaN(categories.length) || categories.length === 0) {
     logger.log('info', 'No categories to create.');
     process.exit(0);
 }
-logger.log('info', 'Categories to create: ' + categories.join(', '));
-logger.log('debug', 'categories', categories);
-bot.batchOperation(categories, (page) => {
+logger.log("debug", "categories", { categories });
+bot
+    .batchOperation(categories, (page) => {
     return new Promise((resolve, reject) => {
         if (cli.flags.dryRun) {
-            logger.log('info', '[W] Dry run, not creating category: ' + page);
-            resolve('dryrun');
+            logger.log("info", "[W] Dry run, not creating category: " + page);
+            resolve("dryrun");
         }
-        if (page.indexOf('หมวดหมู่:ฉบับร่างเรียงตามวันที่ส่ง/') === -1 || page === 'หมวดหมู่:ฉบับร่างเรียงตามวันที่ส่ง/Invalid date')
+        if (page.indexOf("หมวดหมู่:ฉบับร่างเรียงตามวันที่ส่ง/") === -1 ||
+            page === "หมวดหมู่:ฉบับร่างเรียงตามวันที่ส่ง/Invalid date")
             return reject();
-        bot.save(page, '{{AfC submission category header}}', 'สร้างหมวดหมู่ฉบับร่าง ([[user:PatsaBot/task/1|Task #1]])', {
+        bot
+            .save(page, "{{AfC submission category header}}", "สร้างหมวดหมู่ฉบับร่าง ([[user:PatsaBot/task/1|Task #1]])", {
             // do not edit the page if it already exists
-            'createonly': true
+            createonly: true,
         })
             .then(resolve)
             .catch((error) => {
-            logger.log('error', error, { article: page });
+            logger.log("error", error.message, { article: page });
             reject(error);
         });
     });
-}, 10, 1).then(() => {
-    logger.log('debug', 'done');
-}).catch((err) => {
-    logger.log('error', err);
+}, 10, 1)
+    .then(() => {
+    logger.log("debug", "done");
+})
+    .catch((err) => {
+    logger.log("error", err.message);
 });
 export default {
     desc: 'Create categories for AfC submissions.'
