@@ -17,6 +17,6 @@
   {
     "name": "timestamp",
     "command": "node $HOME/bot/src/patsabot/run.js updatestatus",
-    "crontab": "0,30 * * * *"
+    "crontab": "0 */8 * * * *"
   }
 ]
