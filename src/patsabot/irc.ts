@@ -1,7 +1,7 @@
 import { Client } from 'matrix-org-irc'
+import { cuid } from './utils.js'
 import { ircConfig } from './config.js'
 import { spawn } from 'child_process'
-import cuid from 'cuid'
 
 const client = new Client(ircConfig.server, 'patsabot[bot]', {
   userName: 'bot',

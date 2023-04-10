@@ -2,11 +2,11 @@
 // 
 // This software is released under the MIT License.
 // https://opensource.org/licenses/MIT
-import bot from '../patsabot/bot.js';
-import moment from 'moment';
-import meow from 'meow';
 import baseLogger from '../patsabot/logger.js';
-import cuid from 'cuid';
+import bot from '../patsabot/bot.js';
+import { cuid } from '../patsabot/utils.js';
+import meow from 'meow';
+import moment from 'moment';
 const logger = baseLogger.child({
     script: 'afccat',
     runId: `run-${cuid()}`

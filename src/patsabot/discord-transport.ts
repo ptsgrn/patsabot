@@ -1,4 +1,5 @@
 import Transport, { TransportStreamOptions } from "winston-transport";
+
 import axios from "axios";
 import os from "os";
 import rateLimit from "axios-rate-limit";
@@ -13,6 +14,7 @@ interface DiscordTransportOptions extends TransportStreamOptions {
   defaultMeta: any;
 }
 
+// @ts-ignore
 const http = rateLimit(axios.create(), {
   maxRequests: 1,
   perMilliseconds: 1000,
