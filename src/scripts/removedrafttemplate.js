@@ -47,10 +47,8 @@ async function main() {
         })).query.pages[0].redirects.map(({ title }) => title.replace("แม่แบบ:", "")),
         "บทความฉบับร่าง",
     ];
-    console.log(draftTemplates);
     log.info(`found ${draftTemplates.length} draft templates: ${draftTemplates.join(", ")}`);
     const replaceRegex = new RegExp(`\\{\\{\\s*?((แม่แบบ|[Tt]emplate)\\:)?(${draftTemplates.join("|")}).*?\\}\\}\n?`, "g");
-    console.log(replaceRegex);
     for await (const result of bot.continuedQueryGen({
         action: "query",
         format: "json",
@@ -60,6 +58,10 @@ async function main() {
         tinamespace: "0",
     })) {
         for (const list of result.query.pages) {
+            if (!list.transcludedin) {
+                log.info(`no transclusion found for ${list.title}`);
+                continue;
+            }
             for (const { title } of list.transcludedin) {
                 log.info(`dry run: ${title}`);
                 bot.edit(title, ({ content }) => {
