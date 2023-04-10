@@ -18,5 +18,10 @@
     "name": "timestamp",
     "command": "node $HOME/bot/src/patsabot/run.js updatestatus",
     "crontab": "0 */8 * * * *"
+  },
+  {
+    "name": "removedrafttemplate",
+    "command": "node $HOME/bot/src/patsabot/run.js removedrafttemplate",
+    "crontab": "15 2 * * *"
   }
 ]
