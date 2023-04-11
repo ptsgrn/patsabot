@@ -1,6 +1,0 @@
-{
-    "dataSource": "commits",
-    "includeMessages": "all",
-    "ignoreCommitsWith": ["refactor", "changelog", "style", "v"],
-    "changelogFilename": "CHANGELOG.md"
-}

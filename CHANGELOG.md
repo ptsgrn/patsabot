@@ -1,145 +1,528 @@
 # Changelog
 
+## v2.2.0 (10/04/2023)
+- [fix: remove console.log debug](https://github.com/ptsgrn/patsabot/commit/b7280701d79da6b3cb1c1f4eb145847559bb5402) - @ptsgrn
+- [feat: add removedrafttemplate.ts](https://github.com/ptsgrn/patsabot/commit/d803ddf8f04fe5f749074a036660c51c61693364) - @ptsgrn
+- [feat: use @paralleldrive/cuid2 instead of cuid](https://github.com/ptsgrn/patsabot/commit/74122544379f18f4a991a18609efa60db4946c4a) - @ptsgrn
+- [deps: update package](https://github.com/ptsgrn/patsabot/commit/3d2e03ca3f44ea5dc75e4a1124ff15274a13659c) - @ptsgrn
+- [feat(deps): update packages](https://github.com/ptsgrn/patsabot/commit/85a214c1374f79d5cb1abbaf23cc08a09c96de56) - @ptsgrn
+- [feat(schd): update schedule](https://github.com/ptsgrn/patsabot/commit/4568c4a2085f26289438bf0f0e95244fd5aba836) - @ptsgrn
+- [Update README.md](https://github.com/ptsgrn/patsabot/commit/7ed24cf0fd3c1cbc0c2f0ff666cf20bcc3362f99) - @ptsgrn
+- [feat: discord logging](https://github.com/ptsgrn/patsabot/commit/54812dba6405b742d66aca8ca3d29a2e403e2172) - @ptsgrn
+- [feat: auto update hook](https://github.com/ptsgrn/patsabot/commit/8250252fbe0855a8e1cbc19f9cb049f6e59f2987) - @ptsgrn
+- [refacto: remove sentry](https://github.com/ptsgrn/patsabot/commit/e81dc3508af18da047ed25c694777bebdce07174) - @ptsgrn
+- [fix: sentry not logging](https://github.com/ptsgrn/patsabot/commit/86e4b5a7ee16b02f04bfd6e5c8c13418a81f1507) - @ptsgrn
+- [fix: change branch to observing](https://github.com/ptsgrn/patsabot/commit/21201355696e3dfd18fb459efcaa94c460ce30d4) - @ptsgrn
+- [fix: use post hanlder function instead](https://github.com/ptsgrn/patsabot/commit/3042f8430c1fd8b9f36b17f81bd5b39c33b016af) - @ptsgrn
+- [fix: update readme per adf3b44](https://github.com/ptsgrn/patsabot/commit/3c332450b7d8e8d141a70a43595dacb5e2a3d5e6) - @ptsgrn
+- [Merge branch 'main' of github.com:ptsgrn/patsabot into main](https://github.com/ptsgrn/patsabot/commit/d51548295736efc581cc1989d1f5fd5c9fa3fd9f) - @ptsgrn
+- [fix: use /job/ instead of bare without prefix](https://github.com/ptsgrn/patsabot/commit/adf3b44d0cab6dcf88b4b3810addbbe8a16f3169) - @ptsgrn
+- [fix: use /job/ instead of bare without prefix](https://github.com/ptsgrn/patsabot/commit/7ca6a0caab32c84f07402c8bd19987a23174a66a) - @ptsgrn
+- [feat: add github webhook autoupdate](https://github.com/ptsgrn/patsabot/commit/f7f57fad169db3da4d59ddcdf388febbee83a6be) - @ptsgrn
+- [fix: fix sentry version incompatable](https://github.com/ptsgrn/patsabot/commit/cd5a92dda3cfeec825f692e63cca49b7fab2a949) - @ptsgrn
+- [feat: add sentry](https://github.com/ptsgrn/patsabot/commit/6defba6823d40c78940494bfab29d37e916ad846) - @ptsgrn
+- [update](https://github.com/ptsgrn/patsabot/commit/b181cc1b522a0d3c06b9c1b5e0a4d709b552a559) - @ptsgrn
+- [fix: script not run](https://github.com/ptsgrn/patsabot/commit/9bc0e786a627981aa84793d3f25f7eb0c0e4d08b) - @ptsgrn
+- [Merge branch 'main' of github.com:ptsgrn/patsabot into main](https://github.com/ptsgrn/patsabot/commit/565bcb0b1cc86ffcb24da64eb7fe424e9eea10d0) - @ptsgrn
+- [feat: add status timestamping](https://github.com/ptsgrn/patsabot/commit/b187c0e883e4f94052541306ed6262d4ce1e55d5) - @ptsgrn
+- [fix: use blue in next/last color](https://github.com/ptsgrn/patsabot/commit/3177e1ed568b7ccf0627da1c3be1053ff17621c2) - @ptsgrn
+- [fix: table overflow](https://github.com/ptsgrn/patsabot/commit/d34807d33e2b454f242d8d456028ba953783d312) - @ptsgrn
+- [Update README.md](https://github.com/ptsgrn/patsabot/commit/4c084e51748ba8f56f14a4e5d22c594f3fdd3d20) - @ptsgrn
+- [fix: update crontab of topsdits](https://github.com/ptsgrn/patsabot/commit/4e86c063f46aec91679bc7d93887e37cac5f26e6) - @ptsgrn
+- [fix: change timezone](https://github.com/ptsgrn/patsabot/commit/918e03756e208c614d16f770eb0cb6bba3bfdf33) - @ptsgrn
+- [fix: error in schedule file and remove content in jobs.yaml](https://github.com/ptsgrn/patsabot/commit/95a8ed37a27bcddd553875618d69f89dd471bb34) - @ptsgrn
+- [fix: cleanup schedule migration](https://github.com/ptsgrn/patsabot/commit/d29106538176f37ca958f1a59093e5652e8f9daf) - @ptsgrn
+- [ci: add ts-node to dev](https://github.com/ptsgrn/patsabot/commit/0c463768bc8aac6afa1a3ac54ec608a6e95d658d) - @ptsgrn
+- [feat: add example credentials file](https://github.com/ptsgrn/patsabot/commit/586fec8679acf1417e3eaa882166d720c989aa46) - @ptsgrn
+- [fix: add python logfile to .gitignore](https://github.com/ptsgrn/patsabot/commit/5857d7f9f58f82630217215db48487d0a1a9b486) - @ptsgrn
+- [fix: move to schedule.json](https://github.com/ptsgrn/patsabot/commit/b258de5d066b79ee1d517a8efbdf293d5938c9a5) - @ptsgrn
+- [feat: add job framework](https://github.com/ptsgrn/patsabot/commit/0373f1b0e48e37041aa270a81f440f45adb8537c) - @ptsgrn
+- [feat: update donetl to accept RegEx](https://github.com/ptsgrn/patsabot/commit/8acc3ab18741258b26a14415cdfaa28d117edf32) - @ptsgrn
+- [update config.json](https://github.com/ptsgrn/patsabot/commit/2ae6d59dcb9f0611bc6c239c735efeff962cd9c2) - @ptsgrn
+- [update](https://github.com/ptsgrn/patsabot/commit/555b236ceaa68a5474ba864c05f1dfb1c6672e76) - @ptsgrn
+- [migrate to typescript](https://github.com/ptsgrn/patsabot/commit/6b4e362bd5991890d6d924786270ecf1a45d3132) - @ptsgrn
+- [approved](https://github.com/ptsgrn/patsabot/commit/bc8c8dcad6c451e6d6b19ab0a2b101b28d35c8e2) - @ptsgrn
+- [add: topedit.js](https://github.com/ptsgrn/patsabot/commit/22da2f501f9859722f5651f81cb3cf50f7cc0823) - @ptsgrn
+- [fix: archivebot to 15 17 * * *](https://github.com/ptsgrn/patsabot/commit/3cbd91d36a340c4406fa9eb87c0070e30c228391) - @ptsgrn
+- [fix: update jobs.yaml](https://github.com/ptsgrn/patsabot/commit/8d780df0bd8fa64c525edf09ca73f6dc21a8d31c) - @ptsgrn
+- [fix: edit credntials path](https://github.com/ptsgrn/patsabot/commit/6c95d59e11354412145c45c03d2e46457e724f96) - @ptsgrn
+- [fix: edit credentials.json path](https://github.com/ptsgrn/patsabot/commit/eff7561c303af4a3c72799321a184cf323811d3c) - @ptsgrn
+- [fix: bootstrap_venv.sh](https://github.com/ptsgrn/patsabot/commit/84b141e068d8349453de668f7e56d210fb148607) - @ptsgrn
+- [package: update version](https://github.com/ptsgrn/patsabot/commit/69453b51bfe7830c077fe6e966d65c410f26d8c6) - @ptsgrn
+- [feat: create adminstats script](https://github.com/ptsgrn/patsabot/commit/9a80e8d9c68453c477127a70a68e8cad6dd294da) - @ptsgrn
+- [fix: remove cejs as currently unneeded](https://github.com/ptsgrn/patsabot/commit/8cff62d2f00969517ac3f2afe5d16bf9bd7eb0cc) - @ptsgrn
+- [pretty stable now](https://github.com/ptsgrn/patsabot/commit/65a628d2193e961450e8992940819b3e5c01f8cd) - @ptsgrn
+- [Merge branch 'main' of github.com:ptsgrn/patsabot into main](https://github.com/ptsgrn/patsabot/commit/cd7fe467800951dd1159d56f129ce2c214b8a500) - @ptsgrn
+- [add missing mwparserfromhell](https://github.com/ptsgrn/patsabot/commit/e78aa018c233e532958e5715b871b642ec000188) - @ptsgrn
+- [add mmissign mwparserfromhell](https://github.com/ptsgrn/patsabot/commit/e0328e9e54b79713550a450d4ecf25598b479297) - @ptsgrn
+- [Update jobs.yaml](https://github.com/ptsgrn/patsabot/commit/844a1b1402b3cfe46ff6256c1014943929b1b4a7) - @ptsgrn
+- [jobs: afccat:no-logfile:false](https://github.com/ptsgrn/patsabot/commit/9eda63fd618ca9a2f9daa0c101249d5e7e3e5bfe) - @ptsgrn
+- [jobs: use thailand 0000](https://github.com/ptsgrn/patsabot/commit/e5e552b692e9b64bee350fc0338f8c184bf8526c) - @ptsgrn
+- [add bootstrap_venv.sh](https://github.com/ptsgrn/patsabot/commit/26ab500158d353148e8a335de8ebdb818c5b7213) - @ptsgrn
+- [addquarter to archive.py](https://github.com/ptsgrn/patsabot/commit/baa31dce576b15a27f79047976ca317e3948b067) - @ptsgrn
+- [update jobs.yaml](https://github.com/ptsgrn/patsabot/commit/fb0192ab9830feab43ea202d4c2c02656ed3d536) - @ptsgrn
+- [fix: typo](https://github.com/ptsgrn/patsabot/commit/09a492e294db1d7427ee07698f4eef0a84e52234) - @ptsgrn
+- [remove deprecated use `collections`](https://github.com/ptsgrn/patsabot/commit/cdff0de1bf7ee11865834e9e5c562e68118f1888) - @ptsgrn
+- [change running switch text from true to on](https://github.com/ptsgrn/patsabot/commit/d70f517cb7186ba7560b6bc22c39e25422971c74) - @ptsgrn
+- [localized for thai wikipedia](https://github.com/ptsgrn/patsabot/commit/1e441dc8d962758b0c93142a749a8c18efadbf92) - @ptsgrn
+- [import archive.py from lowercase sigma bot III](https://github.com/ptsgrn/patsabot/commit/b512cedab8bdd97444ae9103d725987e22806b56) - @ptsgrn
+- [Revert "move to its own branch"](https://github.com/ptsgrn/patsabot/commit/e8e4146935b09c1787068c71055ef41fe6df1ef0) - @ptsgrn
+- [move to its own branch](https://github.com/ptsgrn/patsabot/commit/786bffc541a7f1ee64609d0b3043a6b9a2e4a0f3) - @ptsgrn
+- [update git-pull](https://github.com/ptsgrn/patsabot/commit/938d31765c967270f07d8293f6d7cbfa77bb96c6) - @ptsgrn
+- [update](https://github.com/ptsgrn/patsabot/commit/0255941699297d369dabaac903587959034cc2bf) - @ptsgrn
+- [update git-pull](https://github.com/ptsgrn/patsabot/commit/8a6351acfdbd681a762a3ffef2ea8516fd529911) - @ptsgrn
+- [update git-pull](https://github.com/ptsgrn/patsabot/commit/1094e762df606fb704a9a8dce17202c9649742e1) - @ptsgrn
+- [add gitpull and push observe](https://github.com/ptsgrn/patsabot/commit/a50abeb56eecf728425b780eef3a36e0e6d2fe95) - @ptsgrn
+- [migrate jobs file](https://github.com/ptsgrn/patsabot/commit/2b25a7b35feaaa33ea3d4d346c5588b23d1912d2) - @ptsgrn
+- [update timezone](https://github.com/ptsgrn/patsabot/commit/6870e791e9ad013d2e70fdcef77f4e67017b1834) - @ptsgrn
+- [add optional chain to irc config](https://github.com/ptsgrn/patsabot/commit/ca9dd17f14eddaec1332af6a53dcf69eafca6013) - @ptsgrn
+- [update cron](https://github.com/ptsgrn/patsabot/commit/7b5bebf24b50762ce1192ccf03fd0946e73039f2) - @ptsgrn
+- [update](https://github.com/ptsgrn/patsabot/commit/fd24b86ddcb117ba09c87ba3c48edbfd26ebef5f) - @ptsgrn
+- [update](https://github.com/ptsgrn/patsabot/commit/70a38a3611ae9c935c566e71d5f3a0d7097c4cbc) - @ptsgrn
+- [fix: add cors](https://github.com/ptsgrn/patsabot/commit/3d375847956ad053ec0415c75162b708c542c06b) - @ptsgrn
+- [feat: add username param](https://github.com/ptsgrn/patsabot/commit/ec10b5fbe692fbd8025342caafeb4d816eb2719e) - @ptsgrn
+- [fix: upgrade mwn from 0.9.1 to 0.11.2 (#11)](https://github.com/ptsgrn/patsabot/commit/76392148348251b5ee494636bcf30de76412d98c) - @snyk-bot
+- [feat(jobsrunner): add jobrunner script (#12)](https://github.com/ptsgrn/patsabot/commit/1d2c46e646d0df79146f6a6e414afab6617ad2c9) - @ptsgrn
+- [update](https://github.com/ptsgrn/patsabot/commit/34b4e1691df82b3511597fccc915815f64a1349a) - @ptsgrn
+- [updates](https://github.com/ptsgrn/patsabot/commit/a034a34152b6cb8c0a5c60a53d731d28d17b7ab7) - @ptsgrn
+- [feat(thwikisource_itm): update](https://github.com/ptsgrn/patsabot/commit/7ff64231411481ba6ff25ed0e7b500b660b8f6f6) - @ptsgrn
+- [feat(thwikisorce_itm): update progression](https://github.com/ptsgrn/patsabot/commit/0d93211441a38597479128922409879818e8036a) - @ptsgrn
+- [feat: add thwikisource indextemplatemigration task](https://github.com/ptsgrn/patsabot/commit/e0977b5cd591ec6a066ff46a946357b1c69d8f7b) - @ptsgrn
+- [feat(ircremote): add chuck split and message queue](https://github.com/ptsgrn/patsabot/commit/8e45d2953429fece58f4cff99b40ef41cca3c39d) - @ptsgrn
+- [fix: USE '-d today' for current date](https://github.com/ptsgrn/patsabot/commit/484db210246493024b9877bd678445db0c1db6a1) - @ptsgrn
+- [feat: add irc remote control](https://github.com/ptsgrn/patsabot/commit/3ca35341ba295d0897f2912d5ef05b9ef3d0b332) - @ptsgrn
+- [feat: add replica connection](https://github.com/ptsgrn/patsabot/commit/6c5ed03342e346ab9bed4e5783e2ec8549854766) - @ptsgrn
+- [update](https://github.com/ptsgrn/patsabot/commit/8bbebc3a409376a9ade9a03c136bc37c48999072) - @ptsgrn
+- [update](https://github.com/ptsgrn/patsabot/commit/d3ab3cf816b102ad6dd67e5ef89e3338ac7aa8af) - @ptsgrn
+- [build: remove unused packages](https://github.com/ptsgrn/patsabot/commit/e34343826d30165e843906c62edef632b1f1bb95) - @ptsgrn
+- [fix: use absolute path](https://github.com/ptsgrn/patsabot/commit/4a00de113e28bb537311ae0c4ae2878f72437613) - @ptsgrn
+- [fix: simple it](https://github.com/ptsgrn/patsabot/commit/9c3dfac465754a715526b3f8d38f0076d62a60a6) - @ptsgrn
+- [merge](https://github.com/ptsgrn/patsabot/commit/37e977528ff0e041a111da6ce6155f6b9acfd2e3) - @ptsgrn
+- [fix(afccat): disabled schedule](https://github.com/ptsgrn/patsabot/commit/4fa7f3482de92ed4a21e869cf20ed1b291b11600) - @ptsgrn
+- [feat: add job runner](https://github.com/ptsgrn/patsabot/commit/4bef4dd1a7f4b400c46782d60df6d53e8367590b) - @ptsgrn
+
+---
+
 ## v1.0.0 (04/01/2022)
-- [Merge branch 'main' of github.com:ptsgrn/patsabot into main](https://github.com/ptsgrn/patsabot/commit/c63e765ff9f142dbd4841b2bc123b80f69506c8e) - @ptsgrn
-- [feat: introduce new format date with moment.js](https://github.com/ptsgrn/patsabot/commit/a44c06f2474eb3f85e5416f5cb3c043586bf4b44) - @ptsgrn
-- [edit bot name](https://github.com/ptsgrn/patsabot/commit/e7b0730248b33e3817bda3f65fca5bbec785b124) - @ptsgrn
-- [Update README.md](https://github.com/ptsgrn/patsabot/commit/10e2800bdfa75b70b1e6c3b89219451c1c69b995) - @ptsgrn
-- [fix: edit exist status](https://github.com/ptsgrn/patsabot/commit/9355f2f04b1f7a622887daef565b4bb5a3e2b4f9) - @ptsgrn
-- [build: update gitlab url to github](https://github.com/ptsgrn/patsabot/commit/49894d786f7764d50334f1153fc73eb195544d75) - @ptsgrn
-- [feat: create afc category page creator](https://github.com/ptsgrn/patsabot/commit/bc8741ea33a5869b25946819b1d1fb89afd0d243) - @ptsgrn
-- [feat: add scheduler](https://github.com/ptsgrn/patsabot/commit/ef1fa3099c7551017562b72ddb87f09c5629d5e1) - @ptsgrn
-- [build: install node-cron](https://github.com/ptsgrn/patsabot/commit/1fb131b6754c83175bca82c564753da1c1befd36) - @ptsgrn
-- [fix: unexepted await](https://github.com/ptsgrn/patsabot/commit/436d07cdeb9d5d6892d3f24dbdabab249e50ac51) - @ptsgrn
-- [feat: add async query Api](https://github.com/ptsgrn/patsabot/commit/ba2b5fd9fc547d214e3e6a3b3b5c50ed48b217f1) - @ptsgrn
-- [feat: add parser](https://github.com/ptsgrn/patsabot/commit/e1a47b819c14218904515216b80fb4a70621407b) - @ptsgrn
-- [feat: add wikiapi and CeJS](https://github.com/ptsgrn/patsabot/commit/3326c42bebb209ebf689e014d485ad49aef0281a) - @ptsgrn
-- [feat: add parser function from CeJS](https://github.com/ptsgrn/patsabot/commit/5ef24a9e568018c1cfb2e647e15607dc4e2ada52) - @ptsgrn
-- [feat: add script name in json log](https://github.com/ptsgrn/patsabot/commit/dbbedab521411a685aced30a8b3323dbeb97e607) - @ptsgrn
-- [Merge branch 'main' of github.com:ptsgrn/ainalbot into main](https://github.com/ptsgrn/patsabot/commit/ac74a0b34fce3cf43bbb6aab6560337a1e4b9994) - @ptsgrn
-- [feat(logger): to many dirup](https://github.com/ptsgrn/patsabot/commit/4f0fed2f4bfef44594bb53016924ab8b71d812e2) - @ptsgrn
-- [ci: update pnpm-lock.yaml](https://github.com/ptsgrn/patsabot/commit/5962be24929880d230fbb0f1e8434d8d8f599e86) - @ptsgrn
-- [build: update eslint config for esm supporting](https://github.com/ptsgrn/patsabot/commit/7aa3d7db4eb777759133c47ca66fb8b82906bd04) - @ptsgrn
-- [feat: install lowdb](https://github.com/ptsgrn/patsabot/commit/cedc010fe2a7b4e1e0c728f8dbec830a49037d5e) - @ptsgrn
-- [build: dalete tsc options as unused](https://github.com/ptsgrn/patsabot/commit/9ffca68038f69f13f75b3f91b96383693764944b) - @ptsgrn
-- [add scriptrun logging](https://github.com/ptsgrn/patsabot/commit/747b7e8fde3658eb6f2135a44ab3a6abeac24b1e) - @ptsgrn
-- [feat(index.js): add workid using cuid()](https://github.com/ptsgrn/patsabot/commit/6553c5ed763124f416b25832caa4248b87552a75) - @ptsgrn
-- [feat(runner): make script usable with command line in arg 1 and create custom error and logging](https://github.com/ptsgrn/patsabot/commit/9894fb5b9d55804c0c56c1da99dc9bdc6515985f) - @ptsgrn
-- [Merge branch 'main' of https://github.com/ptsgrn/ainalbot into main](https://github.com/ptsgrn/patsabot/commit/c4a99841203a5b6d28ae3aa0ea56287ac894bcd2) - @ptsgrn
-- [update](https://github.com/ptsgrn/patsabot/commit/7729c1b24bfcac3c1b99019a38f58e8369e686e3) - @ptsgrn
-- [reset to use js instead](https://github.com/ptsgrn/patsabot/commit/148325585fe059573edc6ebe9536a4dc942b8f95) - @ptsgrn
-- [add cz config option](https://github.com/ptsgrn/patsabot/commit/86b64282529e864775f702cb9c92168e5e0cba13) - @ptsgrn
-- [update](https://github.com/ptsgrn/patsabot/commit/a043df182a55469f14a467da7dff071ace0fea15) - @ptsgrn
-- [Migrate to function base (#2)](https://github.com/ptsgrn/patsabot/commit/2561c06b1d2f7a48372e97e14acf586618d9ecfa) - @ptsgrn
-- [fixed markup in README](https://github.com/ptsgrn/patsabot/commit/2fa3cc6f4656b5fdf42451a15a9860b138ec5d33) - @ptsgrn
-- [update README](https://github.com/ptsgrn/patsabot/commit/b472385228def93ed05e6d93046632a3d96ee5b4) - @ptsgrn
-- [update](https://github.com/ptsgrn/patsabot/commit/c6f75f3b35800b280678725e77d695270b4639ee) - @ptsgrn
-- [update](https://github.com/ptsgrn/patsabot/commit/4714fe4e7513f2de21be69cd47ee740dab1d8404) - @ptsgrn
-- [update](https://github.com/ptsgrn/patsabot/commit/5197bbe316c4fb61dbcf99cc55d5a9b11536c119) - @ptsgrn
-- [create logger.ts work with Debug](https://github.com/ptsgrn/patsabot/commit/deb697e702d16e19e676b787c712c94eb7260254) - @ptsgrn
-- [update](https://github.com/ptsgrn/patsabot/commit/ab0490f30a2f4c8208f4bc2b78a846bf050eeb01) - @ptsgrn
-- [uninstall some unuesd packages](https://github.com/ptsgrn/patsabot/commit/330e404eaeef396c84e8c3379e89f381b3ba9f74) - @ptsgrn
-- [include `(including the next paragraph)` to show there is no warranty](https://github.com/ptsgrn/patsabot/commit/ac5b7aa95ab5c826b3cd0968601c0170cc1b0ead) - @ptsgrn
-- [Merge pull request #1 from ptsgrn/set-sast-config-1](https://github.com/ptsgrn/patsabot/commit/911d20c0ea5da0880365baff25dd742ec56f5525) - @ptsgrn
-- [Set .gitlab-ci.yml to enable or configure SAST](https://github.com/ptsgrn/patsabot/commit/d3b0fd34df52ea0930b2b9654bc099d7041ea787) - undefined
-- [update](https://github.com/ptsgrn/patsabot/commit/4a4ed72ec872153c77e92abe097a95bb9fa62be3) - @ptsgrn
-- [update](https://github.com/ptsgrn/patsabot/commit/2cd42e9dd3ba8f5a503a82995eb59b96cc244728) - @ptsgrn
-- [เพิ่มจัด task + อัปเดต config](https://github.com/ptsgrn/patsabot/commit/8e9e7156958a858757cccda0658741ff8472b733) - @ptsgrn
-- [add CONTRIBUTING.md](https://github.com/ptsgrn/patsabot/commit/e614c7bc8733aa0e2d17ab67c6314905ae3b2705) - @ptsgrn
-- [add new todo to README](https://github.com/ptsgrn/patsabot/commit/ba4f0ef99da24040d22f5b79756b20bd340e7405) - @ptsgrn
-- [fotgot to delete test](https://github.com/ptsgrn/patsabot/commit/bd25bb94c0baf48c669955db1327721ca6eba3b0) - @ptsgrn
-- [Merge branch 'master' of gitlab.com:ptsgrn/ainalbot](https://github.com/ptsgrn/patsabot/commit/8de012e556459b39a41b39c9312863c2fc29c448) - @ptsgrn
-- [updates](https://github.com/ptsgrn/patsabot/commit/03f6057e9978ce9b3deb80dc0a759ce011fd6d2f) - @ptsgrn
-- [Update README.md](https://github.com/ptsgrn/patsabot/commit/ba662db14275985cdcd664ab8e734020c111a638) - undefined
-- [update README with some botlink and TODOs](https://github.com/ptsgrn/patsabot/commit/f7f42ed992b71591966890cc981601d3fb2ebd02) - @ptsgrn
-- [Edit year in LICENSE](https://github.com/ptsgrn/patsabot/commit/c173b734cc248208e502e718e0fd3bc5d1e3988a) - @ptsgrn
-- [update](https://github.com/ptsgrn/patsabot/commit/9f5fd062bad434cd082c90b67d3626ebdad8d8e1) - @ptsgrn
-- [updated](https://github.com/ptsgrn/patsabot/commit/976921427808929d69e377092e9ce4fc4c0fbe52) - @ptsgrn
-- [Update package.json and package-lock.json](https://github.com/ptsgrn/patsabot/commit/602652299f7341325314d8851f1ef5e6d8475d29) - @ptsgrn
+
+
+---
+
+## v0.2.1 (11/11/2021)
+- [per https://npmjs.com/advisories/1594](https://github.com/ptsgrn/patsabot/commit/7ba1ae9f2eadd77ec09e8c636623560d00c31780) - @ptsgrn
 - [Add .gitlab-ci.yml](https://github.com/ptsgrn/patsabot/commit/298a61299cf0513c25190246a2130fdaf88e371d) - undefined
 - [Preparing](https://github.com/ptsgrn/patsabot/commit/e48fe23e365e39505301448d6a6644ac47dd9743) - undefined
 - [Add LICENSE](https://github.com/ptsgrn/patsabot/commit/7b129ed6215252cd545d1bd470273fe1940a0a42) - undefined
 
 ---
 
-## v0.2.1 (11/11/2021)
-Since the bot is still not reach v1.x yet, this is still unstable released version.
+## v1.0.1 (01/01/1970)
+- [docs: add removedrafttemplate](https://github.com/ptsgrn/patsabot/commit/e746f72262cd3fed27601ebf8b0cc6448b2e4201) - @ptsgrn
+- [fix: remove console.log debug](https://github.com/ptsgrn/patsabot/commit/b7280701d79da6b3cb1c1f4eb145847559bb5402) - @ptsgrn
+- [feat: add removedrafttemplate.ts](https://github.com/ptsgrn/patsabot/commit/d803ddf8f04fe5f749074a036660c51c61693364) - @ptsgrn
+- [feat: use @paralleldrive/cuid2 instead of cuid](https://github.com/ptsgrn/patsabot/commit/74122544379f18f4a991a18609efa60db4946c4a) - @ptsgrn
+- [deps: update package](https://github.com/ptsgrn/patsabot/commit/3d2e03ca3f44ea5dc75e4a1124ff15274a13659c) - @ptsgrn
+- [feat(deps): update packages](https://github.com/ptsgrn/patsabot/commit/85a214c1374f79d5cb1abbaf23cc08a09c96de56) - @ptsgrn
+- [feat(schd): update schedule](https://github.com/ptsgrn/patsabot/commit/4568c4a2085f26289438bf0f0e95244fd5aba836) - @ptsgrn
+- [Update README.md](https://github.com/ptsgrn/patsabot/commit/7ed24cf0fd3c1cbc0c2f0ff666cf20bcc3362f99) - @ptsgrn
+- [feat: discord logging](https://github.com/ptsgrn/patsabot/commit/54812dba6405b742d66aca8ca3d29a2e403e2172) - @ptsgrn
+- [feat: auto update hook](https://github.com/ptsgrn/patsabot/commit/8250252fbe0855a8e1cbc19f9cb049f6e59f2987) - @ptsgrn
+- [refacto: remove sentry](https://github.com/ptsgrn/patsabot/commit/e81dc3508af18da047ed25c694777bebdce07174) - @ptsgrn
+- [fix: sentry not logging](https://github.com/ptsgrn/patsabot/commit/86e4b5a7ee16b02f04bfd6e5c8c13418a81f1507) - @ptsgrn
+- [fix: change branch to observing](https://github.com/ptsgrn/patsabot/commit/21201355696e3dfd18fb459efcaa94c460ce30d4) - @ptsgrn
+- [fix: use post hanlder function instead](https://github.com/ptsgrn/patsabot/commit/3042f8430c1fd8b9f36b17f81bd5b39c33b016af) - @ptsgrn
+- [fix: update readme per adf3b44](https://github.com/ptsgrn/patsabot/commit/3c332450b7d8e8d141a70a43595dacb5e2a3d5e6) - @ptsgrn
+- [Merge branch 'main' of github.com:ptsgrn/patsabot into main](https://github.com/ptsgrn/patsabot/commit/d51548295736efc581cc1989d1f5fd5c9fa3fd9f) - @ptsgrn
+- [fix: use /job/ instead of bare without prefix](https://github.com/ptsgrn/patsabot/commit/adf3b44d0cab6dcf88b4b3810addbbe8a16f3169) - @ptsgrn
+- [fix: use /job/ instead of bare without prefix](https://github.com/ptsgrn/patsabot/commit/7ca6a0caab32c84f07402c8bd19987a23174a66a) - @ptsgrn
+- [feat: add github webhook autoupdate](https://github.com/ptsgrn/patsabot/commit/f7f57fad169db3da4d59ddcdf388febbee83a6be) - @ptsgrn
+- [fix: fix sentry version incompatable](https://github.com/ptsgrn/patsabot/commit/cd5a92dda3cfeec825f692e63cca49b7fab2a949) - @ptsgrn
+- [feat: add sentry](https://github.com/ptsgrn/patsabot/commit/6defba6823d40c78940494bfab29d37e916ad846) - @ptsgrn
+- [update](https://github.com/ptsgrn/patsabot/commit/b181cc1b522a0d3c06b9c1b5e0a4d709b552a559) - @ptsgrn
+- [fix: script not run](https://github.com/ptsgrn/patsabot/commit/9bc0e786a627981aa84793d3f25f7eb0c0e4d08b) - @ptsgrn
+- [Merge branch 'main' of github.com:ptsgrn/patsabot into main](https://github.com/ptsgrn/patsabot/commit/565bcb0b1cc86ffcb24da64eb7fe424e9eea10d0) - @ptsgrn
+- [feat: add status timestamping](https://github.com/ptsgrn/patsabot/commit/b187c0e883e4f94052541306ed6262d4ce1e55d5) - @ptsgrn
+- [fix: use blue in next/last color](https://github.com/ptsgrn/patsabot/commit/3177e1ed568b7ccf0627da1c3be1053ff17621c2) - @ptsgrn
+- [fix: table overflow](https://github.com/ptsgrn/patsabot/commit/d34807d33e2b454f242d8d456028ba953783d312) - @ptsgrn
+- [Update README.md](https://github.com/ptsgrn/patsabot/commit/4c084e51748ba8f56f14a4e5d22c594f3fdd3d20) - @ptsgrn
+- [fix: update crontab of topsdits](https://github.com/ptsgrn/patsabot/commit/4e86c063f46aec91679bc7d93887e37cac5f26e6) - @ptsgrn
+- [fix: change timezone](https://github.com/ptsgrn/patsabot/commit/918e03756e208c614d16f770eb0cb6bba3bfdf33) - @ptsgrn
+- [fix: error in schedule file and remove content in jobs.yaml](https://github.com/ptsgrn/patsabot/commit/95a8ed37a27bcddd553875618d69f89dd471bb34) - @ptsgrn
+- [fix: cleanup schedule migration](https://github.com/ptsgrn/patsabot/commit/d29106538176f37ca958f1a59093e5652e8f9daf) - @ptsgrn
+- [ci: add ts-node to dev](https://github.com/ptsgrn/patsabot/commit/0c463768bc8aac6afa1a3ac54ec608a6e95d658d) - @ptsgrn
+- [feat: add example credentials file](https://github.com/ptsgrn/patsabot/commit/586fec8679acf1417e3eaa882166d720c989aa46) - @ptsgrn
+- [fix: add python logfile to .gitignore](https://github.com/ptsgrn/patsabot/commit/5857d7f9f58f82630217215db48487d0a1a9b486) - @ptsgrn
+- [fix: move to schedule.json](https://github.com/ptsgrn/patsabot/commit/b258de5d066b79ee1d517a8efbdf293d5938c9a5) - @ptsgrn
+- [feat: add job framework](https://github.com/ptsgrn/patsabot/commit/0373f1b0e48e37041aa270a81f440f45adb8537c) - @ptsgrn
+- [feat: update donetl to accept RegEx](https://github.com/ptsgrn/patsabot/commit/8acc3ab18741258b26a14415cdfaa28d117edf32) - @ptsgrn
+- [update config.json](https://github.com/ptsgrn/patsabot/commit/2ae6d59dcb9f0611bc6c239c735efeff962cd9c2) - @ptsgrn
+- [update](https://github.com/ptsgrn/patsabot/commit/555b236ceaa68a5474ba864c05f1dfb1c6672e76) - @ptsgrn
+- [migrate to typescript](https://github.com/ptsgrn/patsabot/commit/6b4e362bd5991890d6d924786270ecf1a45d3132) - @ptsgrn
+- [approved](https://github.com/ptsgrn/patsabot/commit/bc8c8dcad6c451e6d6b19ab0a2b101b28d35c8e2) - @ptsgrn
+- [add: topedit.js](https://github.com/ptsgrn/patsabot/commit/22da2f501f9859722f5651f81cb3cf50f7cc0823) - @ptsgrn
+- [fix: archivebot to 15 17 * * *](https://github.com/ptsgrn/patsabot/commit/3cbd91d36a340c4406fa9eb87c0070e30c228391) - @ptsgrn
+- [fix: update jobs.yaml](https://github.com/ptsgrn/patsabot/commit/8d780df0bd8fa64c525edf09ca73f6dc21a8d31c) - @ptsgrn
+- [fix: edit credntials path](https://github.com/ptsgrn/patsabot/commit/6c95d59e11354412145c45c03d2e46457e724f96) - @ptsgrn
+- [fix: edit credentials.json path](https://github.com/ptsgrn/patsabot/commit/eff7561c303af4a3c72799321a184cf323811d3c) - @ptsgrn
+- [fix: bootstrap_venv.sh](https://github.com/ptsgrn/patsabot/commit/84b141e068d8349453de668f7e56d210fb148607) - @ptsgrn
+- [package: update version](https://github.com/ptsgrn/patsabot/commit/69453b51bfe7830c077fe6e966d65c410f26d8c6) - @ptsgrn
+- [feat: create adminstats script](https://github.com/ptsgrn/patsabot/commit/9a80e8d9c68453c477127a70a68e8cad6dd294da) - @ptsgrn
+- [fix: remove cejs as currently unneeded](https://github.com/ptsgrn/patsabot/commit/8cff62d2f00969517ac3f2afe5d16bf9bd7eb0cc) - @ptsgrn
+- [pretty stable now](https://github.com/ptsgrn/patsabot/commit/65a628d2193e961450e8992940819b3e5c01f8cd) - @ptsgrn
+- [Merge branch 'main' of github.com:ptsgrn/patsabot into main](https://github.com/ptsgrn/patsabot/commit/cd7fe467800951dd1159d56f129ce2c214b8a500) - @ptsgrn
+- [add missing mwparserfromhell](https://github.com/ptsgrn/patsabot/commit/e78aa018c233e532958e5715b871b642ec000188) - @ptsgrn
+- [add mmissign mwparserfromhell](https://github.com/ptsgrn/patsabot/commit/e0328e9e54b79713550a450d4ecf25598b479297) - @ptsgrn
+- [Update jobs.yaml](https://github.com/ptsgrn/patsabot/commit/844a1b1402b3cfe46ff6256c1014943929b1b4a7) - @ptsgrn
+- [jobs: afccat:no-logfile:false](https://github.com/ptsgrn/patsabot/commit/9eda63fd618ca9a2f9daa0c101249d5e7e3e5bfe) - @ptsgrn
+- [jobs: use thailand 0000](https://github.com/ptsgrn/patsabot/commit/e5e552b692e9b64bee350fc0338f8c184bf8526c) - @ptsgrn
+- [add bootstrap_venv.sh](https://github.com/ptsgrn/patsabot/commit/26ab500158d353148e8a335de8ebdb818c5b7213) - @ptsgrn
+- [addquarter to archive.py](https://github.com/ptsgrn/patsabot/commit/baa31dce576b15a27f79047976ca317e3948b067) - @ptsgrn
+- [update jobs.yaml](https://github.com/ptsgrn/patsabot/commit/fb0192ab9830feab43ea202d4c2c02656ed3d536) - @ptsgrn
+- [fix: typo](https://github.com/ptsgrn/patsabot/commit/09a492e294db1d7427ee07698f4eef0a84e52234) - @ptsgrn
+- [remove deprecated use `collections`](https://github.com/ptsgrn/patsabot/commit/cdff0de1bf7ee11865834e9e5c562e68118f1888) - @ptsgrn
+- [change running switch text from true to on](https://github.com/ptsgrn/patsabot/commit/d70f517cb7186ba7560b6bc22c39e25422971c74) - @ptsgrn
+- [localized for thai wikipedia](https://github.com/ptsgrn/patsabot/commit/1e441dc8d962758b0c93142a749a8c18efadbf92) - @ptsgrn
+- [import archive.py from lowercase sigma bot III](https://github.com/ptsgrn/patsabot/commit/b512cedab8bdd97444ae9103d725987e22806b56) - @ptsgrn
+- [Revert "move to its own branch"](https://github.com/ptsgrn/patsabot/commit/e8e4146935b09c1787068c71055ef41fe6df1ef0) - @ptsgrn
+- [move to its own branch](https://github.com/ptsgrn/patsabot/commit/786bffc541a7f1ee64609d0b3043a6b9a2e4a0f3) - @ptsgrn
+- [update git-pull](https://github.com/ptsgrn/patsabot/commit/938d31765c967270f07d8293f6d7cbfa77bb96c6) - @ptsgrn
+- [update](https://github.com/ptsgrn/patsabot/commit/0255941699297d369dabaac903587959034cc2bf) - @ptsgrn
+- [update git-pull](https://github.com/ptsgrn/patsabot/commit/8a6351acfdbd681a762a3ffef2ea8516fd529911) - @ptsgrn
+- [update git-pull](https://github.com/ptsgrn/patsabot/commit/1094e762df606fb704a9a8dce17202c9649742e1) - @ptsgrn
+- [add gitpull and push observe](https://github.com/ptsgrn/patsabot/commit/a50abeb56eecf728425b780eef3a36e0e6d2fe95) - @ptsgrn
+- [migrate jobs file](https://github.com/ptsgrn/patsabot/commit/2b25a7b35feaaa33ea3d4d346c5588b23d1912d2) - @ptsgrn
+- [update timezone](https://github.com/ptsgrn/patsabot/commit/6870e791e9ad013d2e70fdcef77f4e67017b1834) - @ptsgrn
+- [add optional chain to irc config](https://github.com/ptsgrn/patsabot/commit/ca9dd17f14eddaec1332af6a53dcf69eafca6013) - @ptsgrn
+- [update cron](https://github.com/ptsgrn/patsabot/commit/7b5bebf24b50762ce1192ccf03fd0946e73039f2) - @ptsgrn
+- [update](https://github.com/ptsgrn/patsabot/commit/fd24b86ddcb117ba09c87ba3c48edbfd26ebef5f) - @ptsgrn
+- [update](https://github.com/ptsgrn/patsabot/commit/70a38a3611ae9c935c566e71d5f3a0d7097c4cbc) - @ptsgrn
+- [fix: add cors](https://github.com/ptsgrn/patsabot/commit/3d375847956ad053ec0415c75162b708c542c06b) - @ptsgrn
+- [feat: add username param](https://github.com/ptsgrn/patsabot/commit/ec10b5fbe692fbd8025342caafeb4d816eb2719e) - @ptsgrn
+- [fix: upgrade mwn from 0.9.1 to 0.11.2 (#11)](https://github.com/ptsgrn/patsabot/commit/76392148348251b5ee494636bcf30de76412d98c) - @snyk-bot
+- [feat(jobsrunner): add jobrunner script (#12)](https://github.com/ptsgrn/patsabot/commit/1d2c46e646d0df79146f6a6e414afab6617ad2c9) - @ptsgrn
+- [update](https://github.com/ptsgrn/patsabot/commit/34b4e1691df82b3511597fccc915815f64a1349a) - @ptsgrn
+- [updates](https://github.com/ptsgrn/patsabot/commit/a034a34152b6cb8c0a5c60a53d731d28d17b7ab7) - @ptsgrn
+- [feat(thwikisource_itm): update](https://github.com/ptsgrn/patsabot/commit/7ff64231411481ba6ff25ed0e7b500b660b8f6f6) - @ptsgrn
+- [feat(thwikisorce_itm): update progression](https://github.com/ptsgrn/patsabot/commit/0d93211441a38597479128922409879818e8036a) - @ptsgrn
+- [feat: add thwikisource indextemplatemigration task](https://github.com/ptsgrn/patsabot/commit/e0977b5cd591ec6a066ff46a946357b1c69d8f7b) - @ptsgrn
+- [feat(ircremote): add chuck split and message queue](https://github.com/ptsgrn/patsabot/commit/8e45d2953429fece58f4cff99b40ef41cca3c39d) - @ptsgrn
+- [fix: USE '-d today' for current date](https://github.com/ptsgrn/patsabot/commit/484db210246493024b9877bd678445db0c1db6a1) - @ptsgrn
+- [feat: add irc remote control](https://github.com/ptsgrn/patsabot/commit/3ca35341ba295d0897f2912d5ef05b9ef3d0b332) - @ptsgrn
+- [feat: add replica connection](https://github.com/ptsgrn/patsabot/commit/6c5ed03342e346ab9bed4e5783e2ec8549854766) - @ptsgrn
+- [update](https://github.com/ptsgrn/patsabot/commit/8bbebc3a409376a9ade9a03c136bc37c48999072) - @ptsgrn
+- [update](https://github.com/ptsgrn/patsabot/commit/d3ab3cf816b102ad6dd67e5ef89e3338ac7aa8af) - @ptsgrn
+- [build: remove unused packages](https://github.com/ptsgrn/patsabot/commit/e34343826d30165e843906c62edef632b1f1bb95) - @ptsgrn
+- [fix: use absolute path](https://github.com/ptsgrn/patsabot/commit/4a00de113e28bb537311ae0c4ae2878f72437613) - @ptsgrn
+- [fix: simple it](https://github.com/ptsgrn/patsabot/commit/9c3dfac465754a715526b3f8d38f0076d62a60a6) - @ptsgrn
+- [merge](https://github.com/ptsgrn/patsabot/commit/37e977528ff0e041a111da6ce6155f6b9acfd2e3) - @ptsgrn
+- [fix(afccat): disabled schedule](https://github.com/ptsgrn/patsabot/commit/4fa7f3482de92ed4a21e869cf20ed1b291b11600) - @ptsgrn
 
-## Changlogs
-- [build: update gitlab url to github](https://github.com/ptsgrn/patsabot/commit/49894d786f7764d50334f1153fc73eb195544d75) - @ptsgrn
-- [v0.2.1](https://github.com/ptsgrn/patsabot/commit/59ed319f704b8389cb08e395ecffe7ad38bf3510) - @ptsgrn
-- [v0.2.0](https://github.com/ptsgrn/patsabot/commit/09b870ba6f7d13cc49aa981fc28cbdb7245f4421) - @ptsgrn
-- [feat: create afc category page creator](https://github.com/ptsgrn/patsabot/commit/bc8741ea33a5869b25946819b1d1fb89afd0d243) - @ptsgrn
-- [feat: add scheduler](https://github.com/ptsgrn/patsabot/commit/ef1fa3099c7551017562b72ddb87f09c5629d5e1) - @ptsgrn
-- [build: install node-cron](https://github.com/ptsgrn/patsabot/commit/1fb131b6754c83175bca82c564753da1c1befd36) - @ptsgrn
-- [feat: include version from package.json](https://github.com/ptsgrn/patsabot/commit/ae23a200751543ea155ae5cbbbff5c87edb8bec0) - @ptsgrn
-- [fix: unexepted await](https://github.com/ptsgrn/patsabot/commit/436d07cdeb9d5d6892d3f24dbdabab249e50ac51) - @ptsgrn
-- [feat: moved api to its file](https://github.com/ptsgrn/patsabot/commit/1dcb87775320c02d6239e77d3b93e3d8fd56e285) - @ptsgrn
-- [v0.1.7](https://github.com/ptsgrn/patsabot/commit/b3d9835a3ed9e23e91cf6801dcd7b7d2fd34ca6f) - @ptsgrn
-- [feat: add apierror level](https://github.com/ptsgrn/patsabot/commit/cb1aaec6da30e6a12038e1ff218325f0411811eb) - @ptsgrn
-- [feat: add async query Api](https://github.com/ptsgrn/patsabot/commit/ba2b5fd9fc547d214e3e6a3b3b5c50ed48b217f1) - @ptsgrn
-- [feat: add parser](https://github.com/ptsgrn/patsabot/commit/e1a47b819c14218904515216b80fb4a70621407b) - @ptsgrn
-- [docs: move todos](https://github.com/ptsgrn/patsabot/commit/c3d07e6e26017cdeba326375d77f3adad912d8d0) - @ptsgrn
-- [docs: move to /scripts](https://github.com/ptsgrn/patsabot/commit/775acc4613e562b855f3dd0f6efcc8eeccdc3d3c) - @ptsgrn
-- [feat: add wikiapi and CeJS](https://github.com/ptsgrn/patsabot/commit/3326c42bebb209ebf689e014d485ad49aef0281a) - @ptsgrn
-- [feat: add parser function from CeJS](https://github.com/ptsgrn/patsabot/commit/5ef24a9e568018c1cfb2e647e15607dc4e2ada52) - @ptsgrn
-- [feat: add script name in json log](https://github.com/ptsgrn/patsabot/commit/dbbedab521411a685aced30a8b3323dbeb97e607) - @ptsgrn
-- [fix: use value from config in loggerDir](https://github.com/ptsgrn/patsabot/commit/a9bc547684d1a10a667c8ef882532a127bd0ddee) - @ptsgrn
-- [Merge branch 'main' of github.com:ptsgrn/ainalbot into main](https://github.com/ptsgrn/patsabot/commit/ac74a0b34fce3cf43bbb6aab6560337a1e4b9994) - @ptsgrn
-- [feat(logger): to many dirup](https://github.com/ptsgrn/patsabot/commit/4f0fed2f4bfef44594bb53016924ab8b71d812e2) - @ptsgrn
-- [ci: update pnpm-lock.yaml](https://github.com/ptsgrn/patsabot/commit/5962be24929880d230fbb0f1e8434d8d8f599e86) - @ptsgrn
-- [feat: reslove error](https://github.com/ptsgrn/patsabot/commit/7c902a46fe7e6f28e284e816045f6e86fe86c257) - @ptsgrn
-- [build: update eslint config for esm supporting](https://github.com/ptsgrn/patsabot/commit/7aa3d7db4eb777759133c47ca66fb8b82906bd04) - @ptsgrn
-- [build: using es module and dump to v0.1.5](https://github.com/ptsgrn/patsabot/commit/423a9e441327e146c344f4e45cc6e8e0076b12c9) - @ptsgrn
-- [feat: install lowdb](https://github.com/ptsgrn/patsabot/commit/cedc010fe2a7b4e1e0c728f8dbec830a49037d5e) - @ptsgrn
-- [feat(subster):  using dictionary to store page that have to edit](https://github.com/ptsgrn/patsabot/commit/d9a6d002489a04d10e71e40aae1f159ae1aa28c9) - @ptsgrn
-- [build: dalete tsc options as unused](https://github.com/ptsgrn/patsabot/commit/9ffca68038f69f13f75b3f91b96383693764944b) - @ptsgrn
-- [add scriptrun logging](https://github.com/ptsgrn/patsabot/commit/747b7e8fde3658eb6f2135a44ab3a6abeac24b1e) - @ptsgrn
-- [feat(index.js): add workid using cuid()](https://github.com/ptsgrn/patsabot/commit/6553c5ed763124f416b25832caa4248b87552a75) - @ptsgrn
-- [feat(runner): make script usable with command line in arg 1 and create custom error and logging](https://github.com/ptsgrn/patsabot/commit/9894fb5b9d55804c0c56c1da99dc9bdc6515985f) - @ptsgrn
-- [Merge branch 'main' of https://github.com/ptsgrn/ainalbot into main](https://github.com/ptsgrn/patsabot/commit/c4a99841203a5b6d28ae3aa0ea56287ac894bcd2) - @ptsgrn
-- [build(packages): audit and move to using pnpm](https://github.com/ptsgrn/patsabot/commit/b9f14b5551f61f71f56ca84cae5c8fdb30a32cf4) - @ptsgrn
-- [Update README.md and remove yarn lo](https://github.com/ptsgrn/patsabot/commit/5b39b4b3a9a1f1edec8b1e82887994116268f305) - @ptsgrn
-- [update](https://github.com/ptsgrn/patsabot/commit/7729c1b24bfcac3c1b99019a38f58e8369e686e3) - @ptsgrn
-- [chore(dependencies): remove and audited unused packages](https://github.com/ptsgrn/patsabot/commit/7dfb6c5eca8e894ccc76d844f68e4bfa9fa734dc) - @ptsgrn
-- [reset to use js instead](https://github.com/ptsgrn/patsabot/commit/148325585fe059573edc6ebe9536a4dc942b8f95) - @ptsgrn
-- [add cz config option](https://github.com/ptsgrn/patsabot/commit/86b64282529e864775f702cb9c92168e5e0cba13) - @ptsgrn
-- [update](https://github.com/ptsgrn/patsabot/commit/a043df182a55469f14a467da7dff071ace0fea15) - @ptsgrn
-- [Migrate to function base (#2)](https://github.com/ptsgrn/patsabot/commit/2561c06b1d2f7a48372e97e14acf586618d9ecfa) - @ptsgrn
-- [fixed markup in README](https://github.com/ptsgrn/patsabot/commit/2fa3cc6f4656b5fdf42451a15a9860b138ec5d33) - @ptsgrn
-- [update README](https://github.com/ptsgrn/patsabot/commit/b472385228def93ed05e6d93046632a3d96ee5b4) - @ptsgrn
-- [update](https://github.com/ptsgrn/patsabot/commit/c6f75f3b35800b280678725e77d695270b4639ee) - @ptsgrn
-- [update](https://github.com/ptsgrn/patsabot/commit/4714fe4e7513f2de21be69cd47ee740dab1d8404) - @ptsgrn
-- [update](https://github.com/ptsgrn/patsabot/commit/5197bbe316c4fb61dbcf99cc55d5a9b11536c119) - @ptsgrn
-- [create logger.ts work with Debug](https://github.com/ptsgrn/patsabot/commit/deb697e702d16e19e676b787c712c94eb7260254) - @ptsgrn
-- [update](https://github.com/ptsgrn/patsabot/commit/ab0490f30a2f4c8208f4bc2b78a846bf050eeb01) - @ptsgrn
-- [uninstall some unuesd packages](https://github.com/ptsgrn/patsabot/commit/330e404eaeef396c84e8c3379e89f381b3ba9f74) - @ptsgrn
-- [include `(including the next paragraph)` to show there is no warranty](https://github.com/ptsgrn/patsabot/commit/ac5b7aa95ab5c826b3cd0968601c0170cc1b0ead) - @ptsgrn
-- [unused, from previous gitlab repo](https://github.com/ptsgrn/patsabot/commit/e632e35ac40beb5a18ae345a96bb29a21b753b3a) - @ptsgrn
-- [Merge pull request #1 from ptsgrn/set-sast-config-1](https://github.com/ptsgrn/patsabot/commit/911d20c0ea5da0880365baff25dd742ec56f5525) - @ptsgrn
-- [Set .gitlab-ci.yml to enable or configure SAST](https://github.com/ptsgrn/patsabot/commit/d3b0fd34df52ea0930b2b9654bc099d7041ea787) - undefined
-- [update](https://github.com/ptsgrn/patsabot/commit/4a4ed72ec872153c77e92abe097a95bb9fa62be3) - @ptsgrn
-- [update](https://github.com/ptsgrn/patsabot/commit/2cd42e9dd3ba8f5a503a82995eb59b96cc244728) - @ptsgrn
-- [imporve and migrate from JavaScript to TypeScript](https://github.com/ptsgrn/patsabot/commit/c7d640d23710dd3adf2285be665d683a526bd3e7) - @ptsgrn
-- [migrate from JavaScript to TypeScript](https://github.com/ptsgrn/patsabot/commit/273aeca8a2702862d972bcc036db845ce188999b) - @ptsgrn
-- [improve ainalbot/config.js and fix some bugs](https://github.com/ptsgrn/patsabot/commit/dd0274b6a7b6024a2c068f5fca3348e62ed6e2a7) - @ptsgrn
-- [เพิ่มจัด task + อัปเดต config](https://github.com/ptsgrn/patsabot/commit/8e9e7156958a858757cccda0658741ff8472b733) - @ptsgrn
-- [add CONTRIBUTING.md](https://github.com/ptsgrn/patsabot/commit/e614c7bc8733aa0e2d17ab67c6314905ae3b2705) - @ptsgrn
-- [add new todo to README](https://github.com/ptsgrn/patsabot/commit/ba4f0ef99da24040d22f5b79756b20bd340e7405) - @ptsgrn
-- [fotgot to delete test](https://github.com/ptsgrn/patsabot/commit/bd25bb94c0baf48c669955db1327721ca6eba3b0) - @ptsgrn
-- [Merge branch 'master' of gitlab.com:ptsgrn/ainalbot](https://github.com/ptsgrn/patsabot/commit/8de012e556459b39a41b39c9312863c2fc29c448) - @ptsgrn
-- [updates](https://github.com/ptsgrn/patsabot/commit/03f6057e9978ce9b3deb80dc0a759ce011fd6d2f) - @ptsgrn
-- [Update README.md](https://github.com/ptsgrn/patsabot/commit/ba662db14275985cdcd664ab8e734020c111a638) - undefined
-- [uninstall loglevel and use winston](https://github.com/ptsgrn/patsabot/commit/32717a7f4fd86b1361647f494e983f0e0dad2a97) - @ptsgrn
-- [update README with some botlink and TODOs](https://github.com/ptsgrn/patsabot/commit/f7f42ed992b71591966890cc981601d3fb2ebd02) - @ptsgrn
-- [Edit year in LICENSE](https://github.com/ptsgrn/patsabot/commit/c173b734cc248208e502e718e0fd3bc5d1e3988a) - @ptsgrn
-- [make logger to have own log on each module](https://github.com/ptsgrn/patsabot/commit/b21441d90f9b3e814243a1c97f523117e1af035e) - @ptsgrn
-- [update](https://github.com/ptsgrn/patsabot/commit/9f5fd062bad434cd082c90b67d3626ebdad8d8e1) - @ptsgrn
-- [updated](https://github.com/ptsgrn/patsabot/commit/976921427808929d69e377092e9ce4fc4c0fbe52) - @ptsgrn
-- [Update package.json and package-lock.json](https://github.com/ptsgrn/patsabot/commit/602652299f7341325314d8851f1ef5e6d8475d29) - @ptsgrn
-- [per https://npmjs.com/advisories/1594](https://github.com/ptsgrn/patsabot/commit/7ba1ae9f2eadd77ec09e8c636623560d00c31780) - @ptsgrn
-- [Add .gitlab-ci.yml](https://github.com/ptsgrn/patsabot/commit/298a61299cf0513c25190246a2130fdaf88e371d) - undefined
-- [Preparing](https://github.com/ptsgrn/patsabot/commit/e48fe23e365e39505301448d6a6644ac47dd9743) - undefined
-- [Add LICENSE](https://github.com/ptsgrn/patsabot/commit/7b129ed6215252cd545d1bd470273fe1940a0a42) - undefined
+---
 
-**Full Changelog**: https://github.com/ptsgrn/patsabot/compare/v0.2.0...v0.2.1
+## v0.2.0 (01/01/1970)
+- [docs: add removedrafttemplate](https://github.com/ptsgrn/patsabot/commit/e746f72262cd3fed27601ebf8b0cc6448b2e4201) - @ptsgrn
+- [fix: remove console.log debug](https://github.com/ptsgrn/patsabot/commit/b7280701d79da6b3cb1c1f4eb145847559bb5402) - @ptsgrn
+- [feat: add removedrafttemplate.ts](https://github.com/ptsgrn/patsabot/commit/d803ddf8f04fe5f749074a036660c51c61693364) - @ptsgrn
+- [feat: use @paralleldrive/cuid2 instead of cuid](https://github.com/ptsgrn/patsabot/commit/74122544379f18f4a991a18609efa60db4946c4a) - @ptsgrn
+- [deps: update package](https://github.com/ptsgrn/patsabot/commit/3d2e03ca3f44ea5dc75e4a1124ff15274a13659c) - @ptsgrn
+- [feat(deps): update packages](https://github.com/ptsgrn/patsabot/commit/85a214c1374f79d5cb1abbaf23cc08a09c96de56) - @ptsgrn
+- [feat(schd): update schedule](https://github.com/ptsgrn/patsabot/commit/4568c4a2085f26289438bf0f0e95244fd5aba836) - @ptsgrn
+- [Update README.md](https://github.com/ptsgrn/patsabot/commit/7ed24cf0fd3c1cbc0c2f0ff666cf20bcc3362f99) - @ptsgrn
+- [feat: discord logging](https://github.com/ptsgrn/patsabot/commit/54812dba6405b742d66aca8ca3d29a2e403e2172) - @ptsgrn
+- [feat: auto update hook](https://github.com/ptsgrn/patsabot/commit/8250252fbe0855a8e1cbc19f9cb049f6e59f2987) - @ptsgrn
+- [refacto: remove sentry](https://github.com/ptsgrn/patsabot/commit/e81dc3508af18da047ed25c694777bebdce07174) - @ptsgrn
+- [fix: sentry not logging](https://github.com/ptsgrn/patsabot/commit/86e4b5a7ee16b02f04bfd6e5c8c13418a81f1507) - @ptsgrn
+- [fix: change branch to observing](https://github.com/ptsgrn/patsabot/commit/21201355696e3dfd18fb459efcaa94c460ce30d4) - @ptsgrn
+- [fix: use post hanlder function instead](https://github.com/ptsgrn/patsabot/commit/3042f8430c1fd8b9f36b17f81bd5b39c33b016af) - @ptsgrn
+- [fix: update readme per adf3b44](https://github.com/ptsgrn/patsabot/commit/3c332450b7d8e8d141a70a43595dacb5e2a3d5e6) - @ptsgrn
+- [Merge branch 'main' of github.com:ptsgrn/patsabot into main](https://github.com/ptsgrn/patsabot/commit/d51548295736efc581cc1989d1f5fd5c9fa3fd9f) - @ptsgrn
+- [fix: use /job/ instead of bare without prefix](https://github.com/ptsgrn/patsabot/commit/adf3b44d0cab6dcf88b4b3810addbbe8a16f3169) - @ptsgrn
+- [fix: use /job/ instead of bare without prefix](https://github.com/ptsgrn/patsabot/commit/7ca6a0caab32c84f07402c8bd19987a23174a66a) - @ptsgrn
+- [feat: add github webhook autoupdate](https://github.com/ptsgrn/patsabot/commit/f7f57fad169db3da4d59ddcdf388febbee83a6be) - @ptsgrn
+- [fix: fix sentry version incompatable](https://github.com/ptsgrn/patsabot/commit/cd5a92dda3cfeec825f692e63cca49b7fab2a949) - @ptsgrn
+- [feat: add sentry](https://github.com/ptsgrn/patsabot/commit/6defba6823d40c78940494bfab29d37e916ad846) - @ptsgrn
+- [update](https://github.com/ptsgrn/patsabot/commit/b181cc1b522a0d3c06b9c1b5e0a4d709b552a559) - @ptsgrn
+- [fix: script not run](https://github.com/ptsgrn/patsabot/commit/9bc0e786a627981aa84793d3f25f7eb0c0e4d08b) - @ptsgrn
+- [Merge branch 'main' of github.com:ptsgrn/patsabot into main](https://github.com/ptsgrn/patsabot/commit/565bcb0b1cc86ffcb24da64eb7fe424e9eea10d0) - @ptsgrn
+- [feat: add status timestamping](https://github.com/ptsgrn/patsabot/commit/b187c0e883e4f94052541306ed6262d4ce1e55d5) - @ptsgrn
+- [fix: use blue in next/last color](https://github.com/ptsgrn/patsabot/commit/3177e1ed568b7ccf0627da1c3be1053ff17621c2) - @ptsgrn
+- [fix: table overflow](https://github.com/ptsgrn/patsabot/commit/d34807d33e2b454f242d8d456028ba953783d312) - @ptsgrn
+- [Update README.md](https://github.com/ptsgrn/patsabot/commit/4c084e51748ba8f56f14a4e5d22c594f3fdd3d20) - @ptsgrn
+- [fix: update crontab of topsdits](https://github.com/ptsgrn/patsabot/commit/4e86c063f46aec91679bc7d93887e37cac5f26e6) - @ptsgrn
+- [fix: change timezone](https://github.com/ptsgrn/patsabot/commit/918e03756e208c614d16f770eb0cb6bba3bfdf33) - @ptsgrn
+- [fix: error in schedule file and remove content in jobs.yaml](https://github.com/ptsgrn/patsabot/commit/95a8ed37a27bcddd553875618d69f89dd471bb34) - @ptsgrn
+- [fix: cleanup schedule migration](https://github.com/ptsgrn/patsabot/commit/d29106538176f37ca958f1a59093e5652e8f9daf) - @ptsgrn
+- [ci: add ts-node to dev](https://github.com/ptsgrn/patsabot/commit/0c463768bc8aac6afa1a3ac54ec608a6e95d658d) - @ptsgrn
+- [feat: add example credentials file](https://github.com/ptsgrn/patsabot/commit/586fec8679acf1417e3eaa882166d720c989aa46) - @ptsgrn
+- [fix: add python logfile to .gitignore](https://github.com/ptsgrn/patsabot/commit/5857d7f9f58f82630217215db48487d0a1a9b486) - @ptsgrn
+- [fix: move to schedule.json](https://github.com/ptsgrn/patsabot/commit/b258de5d066b79ee1d517a8efbdf293d5938c9a5) - @ptsgrn
+- [feat: add job framework](https://github.com/ptsgrn/patsabot/commit/0373f1b0e48e37041aa270a81f440f45adb8537c) - @ptsgrn
+- [feat: update donetl to accept RegEx](https://github.com/ptsgrn/patsabot/commit/8acc3ab18741258b26a14415cdfaa28d117edf32) - @ptsgrn
+- [update config.json](https://github.com/ptsgrn/patsabot/commit/2ae6d59dcb9f0611bc6c239c735efeff962cd9c2) - @ptsgrn
+- [update](https://github.com/ptsgrn/patsabot/commit/555b236ceaa68a5474ba864c05f1dfb1c6672e76) - @ptsgrn
+- [migrate to typescript](https://github.com/ptsgrn/patsabot/commit/6b4e362bd5991890d6d924786270ecf1a45d3132) - @ptsgrn
+- [approved](https://github.com/ptsgrn/patsabot/commit/bc8c8dcad6c451e6d6b19ab0a2b101b28d35c8e2) - @ptsgrn
+- [add: topedit.js](https://github.com/ptsgrn/patsabot/commit/22da2f501f9859722f5651f81cb3cf50f7cc0823) - @ptsgrn
+- [fix: archivebot to 15 17 * * *](https://github.com/ptsgrn/patsabot/commit/3cbd91d36a340c4406fa9eb87c0070e30c228391) - @ptsgrn
+- [fix: update jobs.yaml](https://github.com/ptsgrn/patsabot/commit/8d780df0bd8fa64c525edf09ca73f6dc21a8d31c) - @ptsgrn
+- [fix: edit credntials path](https://github.com/ptsgrn/patsabot/commit/6c95d59e11354412145c45c03d2e46457e724f96) - @ptsgrn
+- [fix: edit credentials.json path](https://github.com/ptsgrn/patsabot/commit/eff7561c303af4a3c72799321a184cf323811d3c) - @ptsgrn
+- [fix: bootstrap_venv.sh](https://github.com/ptsgrn/patsabot/commit/84b141e068d8349453de668f7e56d210fb148607) - @ptsgrn
+- [package: update version](https://github.com/ptsgrn/patsabot/commit/69453b51bfe7830c077fe6e966d65c410f26d8c6) - @ptsgrn
+- [feat: create adminstats script](https://github.com/ptsgrn/patsabot/commit/9a80e8d9c68453c477127a70a68e8cad6dd294da) - @ptsgrn
+- [fix: remove cejs as currently unneeded](https://github.com/ptsgrn/patsabot/commit/8cff62d2f00969517ac3f2afe5d16bf9bd7eb0cc) - @ptsgrn
+- [pretty stable now](https://github.com/ptsgrn/patsabot/commit/65a628d2193e961450e8992940819b3e5c01f8cd) - @ptsgrn
+- [Merge branch 'main' of github.com:ptsgrn/patsabot into main](https://github.com/ptsgrn/patsabot/commit/cd7fe467800951dd1159d56f129ce2c214b8a500) - @ptsgrn
+- [add missing mwparserfromhell](https://github.com/ptsgrn/patsabot/commit/e78aa018c233e532958e5715b871b642ec000188) - @ptsgrn
+- [add mmissign mwparserfromhell](https://github.com/ptsgrn/patsabot/commit/e0328e9e54b79713550a450d4ecf25598b479297) - @ptsgrn
+- [Update jobs.yaml](https://github.com/ptsgrn/patsabot/commit/844a1b1402b3cfe46ff6256c1014943929b1b4a7) - @ptsgrn
+- [jobs: afccat:no-logfile:false](https://github.com/ptsgrn/patsabot/commit/9eda63fd618ca9a2f9daa0c101249d5e7e3e5bfe) - @ptsgrn
+- [jobs: use thailand 0000](https://github.com/ptsgrn/patsabot/commit/e5e552b692e9b64bee350fc0338f8c184bf8526c) - @ptsgrn
+- [add bootstrap_venv.sh](https://github.com/ptsgrn/patsabot/commit/26ab500158d353148e8a335de8ebdb818c5b7213) - @ptsgrn
+- [addquarter to archive.py](https://github.com/ptsgrn/patsabot/commit/baa31dce576b15a27f79047976ca317e3948b067) - @ptsgrn
+- [update jobs.yaml](https://github.com/ptsgrn/patsabot/commit/fb0192ab9830feab43ea202d4c2c02656ed3d536) - @ptsgrn
+- [fix: typo](https://github.com/ptsgrn/patsabot/commit/09a492e294db1d7427ee07698f4eef0a84e52234) - @ptsgrn
+- [remove deprecated use `collections`](https://github.com/ptsgrn/patsabot/commit/cdff0de1bf7ee11865834e9e5c562e68118f1888) - @ptsgrn
+- [change running switch text from true to on](https://github.com/ptsgrn/patsabot/commit/d70f517cb7186ba7560b6bc22c39e25422971c74) - @ptsgrn
+- [localized for thai wikipedia](https://github.com/ptsgrn/patsabot/commit/1e441dc8d962758b0c93142a749a8c18efadbf92) - @ptsgrn
+- [import archive.py from lowercase sigma bot III](https://github.com/ptsgrn/patsabot/commit/b512cedab8bdd97444ae9103d725987e22806b56) - @ptsgrn
+- [Revert "move to its own branch"](https://github.com/ptsgrn/patsabot/commit/e8e4146935b09c1787068c71055ef41fe6df1ef0) - @ptsgrn
+- [move to its own branch](https://github.com/ptsgrn/patsabot/commit/786bffc541a7f1ee64609d0b3043a6b9a2e4a0f3) - @ptsgrn
+- [update git-pull](https://github.com/ptsgrn/patsabot/commit/938d31765c967270f07d8293f6d7cbfa77bb96c6) - @ptsgrn
+- [update](https://github.com/ptsgrn/patsabot/commit/0255941699297d369dabaac903587959034cc2bf) - @ptsgrn
+- [update git-pull](https://github.com/ptsgrn/patsabot/commit/8a6351acfdbd681a762a3ffef2ea8516fd529911) - @ptsgrn
+- [update git-pull](https://github.com/ptsgrn/patsabot/commit/1094e762df606fb704a9a8dce17202c9649742e1) - @ptsgrn
+- [add gitpull and push observe](https://github.com/ptsgrn/patsabot/commit/a50abeb56eecf728425b780eef3a36e0e6d2fe95) - @ptsgrn
+- [migrate jobs file](https://github.com/ptsgrn/patsabot/commit/2b25a7b35feaaa33ea3d4d346c5588b23d1912d2) - @ptsgrn
+- [update timezone](https://github.com/ptsgrn/patsabot/commit/6870e791e9ad013d2e70fdcef77f4e67017b1834) - @ptsgrn
+- [add optional chain to irc config](https://github.com/ptsgrn/patsabot/commit/ca9dd17f14eddaec1332af6a53dcf69eafca6013) - @ptsgrn
+- [update cron](https://github.com/ptsgrn/patsabot/commit/7b5bebf24b50762ce1192ccf03fd0946e73039f2) - @ptsgrn
+- [update](https://github.com/ptsgrn/patsabot/commit/fd24b86ddcb117ba09c87ba3c48edbfd26ebef5f) - @ptsgrn
+- [update](https://github.com/ptsgrn/patsabot/commit/70a38a3611ae9c935c566e71d5f3a0d7097c4cbc) - @ptsgrn
+- [fix: add cors](https://github.com/ptsgrn/patsabot/commit/3d375847956ad053ec0415c75162b708c542c06b) - @ptsgrn
+- [feat: add username param](https://github.com/ptsgrn/patsabot/commit/ec10b5fbe692fbd8025342caafeb4d816eb2719e) - @ptsgrn
+- [fix: upgrade mwn from 0.9.1 to 0.11.2 (#11)](https://github.com/ptsgrn/patsabot/commit/76392148348251b5ee494636bcf30de76412d98c) - @snyk-bot
+- [feat(jobsrunner): add jobrunner script (#12)](https://github.com/ptsgrn/patsabot/commit/1d2c46e646d0df79146f6a6e414afab6617ad2c9) - @ptsgrn
+- [update](https://github.com/ptsgrn/patsabot/commit/34b4e1691df82b3511597fccc915815f64a1349a) - @ptsgrn
+- [updates](https://github.com/ptsgrn/patsabot/commit/a034a34152b6cb8c0a5c60a53d731d28d17b7ab7) - @ptsgrn
+- [feat(thwikisource_itm): update](https://github.com/ptsgrn/patsabot/commit/7ff64231411481ba6ff25ed0e7b500b660b8f6f6) - @ptsgrn
+- [feat(thwikisorce_itm): update progression](https://github.com/ptsgrn/patsabot/commit/0d93211441a38597479128922409879818e8036a) - @ptsgrn
+- [feat: add thwikisource indextemplatemigration task](https://github.com/ptsgrn/patsabot/commit/e0977b5cd591ec6a066ff46a946357b1c69d8f7b) - @ptsgrn
+- [feat(ircremote): add chuck split and message queue](https://github.com/ptsgrn/patsabot/commit/8e45d2953429fece58f4cff99b40ef41cca3c39d) - @ptsgrn
+- [fix: USE '-d today' for current date](https://github.com/ptsgrn/patsabot/commit/484db210246493024b9877bd678445db0c1db6a1) - @ptsgrn
+- [feat: add irc remote control](https://github.com/ptsgrn/patsabot/commit/3ca35341ba295d0897f2912d5ef05b9ef3d0b332) - @ptsgrn
+- [feat: add replica connection](https://github.com/ptsgrn/patsabot/commit/6c5ed03342e346ab9bed4e5783e2ec8549854766) - @ptsgrn
+- [update](https://github.com/ptsgrn/patsabot/commit/8bbebc3a409376a9ade9a03c136bc37c48999072) - @ptsgrn
+- [update](https://github.com/ptsgrn/patsabot/commit/d3ab3cf816b102ad6dd67e5ef89e3338ac7aa8af) - @ptsgrn
+- [build: remove unused packages](https://github.com/ptsgrn/patsabot/commit/e34343826d30165e843906c62edef632b1f1bb95) - @ptsgrn
+- [fix: use absolute path](https://github.com/ptsgrn/patsabot/commit/4a00de113e28bb537311ae0c4ae2878f72437613) - @ptsgrn
+- [fix: simple it](https://github.com/ptsgrn/patsabot/commit/9c3dfac465754a715526b3f8d38f0076d62a60a6) - @ptsgrn
+- [merge](https://github.com/ptsgrn/patsabot/commit/37e977528ff0e041a111da6ce6155f6b9acfd2e3) - @ptsgrn
+- [fix(afccat): disabled schedule](https://github.com/ptsgrn/patsabot/commit/4fa7f3482de92ed4a21e869cf20ed1b291b11600) - @ptsgrn
+
+---
+
+## v0.1.7 (01/01/1970)
+- [docs: add removedrafttemplate](https://github.com/ptsgrn/patsabot/commit/e746f72262cd3fed27601ebf8b0cc6448b2e4201) - @ptsgrn
+- [fix: remove console.log debug](https://github.com/ptsgrn/patsabot/commit/b7280701d79da6b3cb1c1f4eb145847559bb5402) - @ptsgrn
+- [feat: add removedrafttemplate.ts](https://github.com/ptsgrn/patsabot/commit/d803ddf8f04fe5f749074a036660c51c61693364) - @ptsgrn
+- [feat: use @paralleldrive/cuid2 instead of cuid](https://github.com/ptsgrn/patsabot/commit/74122544379f18f4a991a18609efa60db4946c4a) - @ptsgrn
+- [deps: update package](https://github.com/ptsgrn/patsabot/commit/3d2e03ca3f44ea5dc75e4a1124ff15274a13659c) - @ptsgrn
+- [feat(deps): update packages](https://github.com/ptsgrn/patsabot/commit/85a214c1374f79d5cb1abbaf23cc08a09c96de56) - @ptsgrn
+- [feat(schd): update schedule](https://github.com/ptsgrn/patsabot/commit/4568c4a2085f26289438bf0f0e95244fd5aba836) - @ptsgrn
+- [Update README.md](https://github.com/ptsgrn/patsabot/commit/7ed24cf0fd3c1cbc0c2f0ff666cf20bcc3362f99) - @ptsgrn
+- [feat: discord logging](https://github.com/ptsgrn/patsabot/commit/54812dba6405b742d66aca8ca3d29a2e403e2172) - @ptsgrn
+- [feat: auto update hook](https://github.com/ptsgrn/patsabot/commit/8250252fbe0855a8e1cbc19f9cb049f6e59f2987) - @ptsgrn
+- [refacto: remove sentry](https://github.com/ptsgrn/patsabot/commit/e81dc3508af18da047ed25c694777bebdce07174) - @ptsgrn
+- [fix: sentry not logging](https://github.com/ptsgrn/patsabot/commit/86e4b5a7ee16b02f04bfd6e5c8c13418a81f1507) - @ptsgrn
+- [fix: change branch to observing](https://github.com/ptsgrn/patsabot/commit/21201355696e3dfd18fb459efcaa94c460ce30d4) - @ptsgrn
+- [fix: use post hanlder function instead](https://github.com/ptsgrn/patsabot/commit/3042f8430c1fd8b9f36b17f81bd5b39c33b016af) - @ptsgrn
+- [fix: update readme per adf3b44](https://github.com/ptsgrn/patsabot/commit/3c332450b7d8e8d141a70a43595dacb5e2a3d5e6) - @ptsgrn
+- [Merge branch 'main' of github.com:ptsgrn/patsabot into main](https://github.com/ptsgrn/patsabot/commit/d51548295736efc581cc1989d1f5fd5c9fa3fd9f) - @ptsgrn
+- [fix: use /job/ instead of bare without prefix](https://github.com/ptsgrn/patsabot/commit/adf3b44d0cab6dcf88b4b3810addbbe8a16f3169) - @ptsgrn
+- [fix: use /job/ instead of bare without prefix](https://github.com/ptsgrn/patsabot/commit/7ca6a0caab32c84f07402c8bd19987a23174a66a) - @ptsgrn
+- [feat: add github webhook autoupdate](https://github.com/ptsgrn/patsabot/commit/f7f57fad169db3da4d59ddcdf388febbee83a6be) - @ptsgrn
+- [fix: fix sentry version incompatable](https://github.com/ptsgrn/patsabot/commit/cd5a92dda3cfeec825f692e63cca49b7fab2a949) - @ptsgrn
+- [feat: add sentry](https://github.com/ptsgrn/patsabot/commit/6defba6823d40c78940494bfab29d37e916ad846) - @ptsgrn
+- [update](https://github.com/ptsgrn/patsabot/commit/b181cc1b522a0d3c06b9c1b5e0a4d709b552a559) - @ptsgrn
+- [fix: script not run](https://github.com/ptsgrn/patsabot/commit/9bc0e786a627981aa84793d3f25f7eb0c0e4d08b) - @ptsgrn
+- [Merge branch 'main' of github.com:ptsgrn/patsabot into main](https://github.com/ptsgrn/patsabot/commit/565bcb0b1cc86ffcb24da64eb7fe424e9eea10d0) - @ptsgrn
+- [feat: add status timestamping](https://github.com/ptsgrn/patsabot/commit/b187c0e883e4f94052541306ed6262d4ce1e55d5) - @ptsgrn
+- [fix: use blue in next/last color](https://github.com/ptsgrn/patsabot/commit/3177e1ed568b7ccf0627da1c3be1053ff17621c2) - @ptsgrn
+- [fix: table overflow](https://github.com/ptsgrn/patsabot/commit/d34807d33e2b454f242d8d456028ba953783d312) - @ptsgrn
+- [Update README.md](https://github.com/ptsgrn/patsabot/commit/4c084e51748ba8f56f14a4e5d22c594f3fdd3d20) - @ptsgrn
+- [fix: update crontab of topsdits](https://github.com/ptsgrn/patsabot/commit/4e86c063f46aec91679bc7d93887e37cac5f26e6) - @ptsgrn
+- [fix: change timezone](https://github.com/ptsgrn/patsabot/commit/918e03756e208c614d16f770eb0cb6bba3bfdf33) - @ptsgrn
+- [fix: error in schedule file and remove content in jobs.yaml](https://github.com/ptsgrn/patsabot/commit/95a8ed37a27bcddd553875618d69f89dd471bb34) - @ptsgrn
+- [fix: cleanup schedule migration](https://github.com/ptsgrn/patsabot/commit/d29106538176f37ca958f1a59093e5652e8f9daf) - @ptsgrn
+- [ci: add ts-node to dev](https://github.com/ptsgrn/patsabot/commit/0c463768bc8aac6afa1a3ac54ec608a6e95d658d) - @ptsgrn
+- [feat: add example credentials file](https://github.com/ptsgrn/patsabot/commit/586fec8679acf1417e3eaa882166d720c989aa46) - @ptsgrn
+- [fix: add python logfile to .gitignore](https://github.com/ptsgrn/patsabot/commit/5857d7f9f58f82630217215db48487d0a1a9b486) - @ptsgrn
+- [fix: move to schedule.json](https://github.com/ptsgrn/patsabot/commit/b258de5d066b79ee1d517a8efbdf293d5938c9a5) - @ptsgrn
+- [feat: add job framework](https://github.com/ptsgrn/patsabot/commit/0373f1b0e48e37041aa270a81f440f45adb8537c) - @ptsgrn
+- [feat: update donetl to accept RegEx](https://github.com/ptsgrn/patsabot/commit/8acc3ab18741258b26a14415cdfaa28d117edf32) - @ptsgrn
+- [update config.json](https://github.com/ptsgrn/patsabot/commit/2ae6d59dcb9f0611bc6c239c735efeff962cd9c2) - @ptsgrn
+- [update](https://github.com/ptsgrn/patsabot/commit/555b236ceaa68a5474ba864c05f1dfb1c6672e76) - @ptsgrn
+- [migrate to typescript](https://github.com/ptsgrn/patsabot/commit/6b4e362bd5991890d6d924786270ecf1a45d3132) - @ptsgrn
+- [approved](https://github.com/ptsgrn/patsabot/commit/bc8c8dcad6c451e6d6b19ab0a2b101b28d35c8e2) - @ptsgrn
+- [add: topedit.js](https://github.com/ptsgrn/patsabot/commit/22da2f501f9859722f5651f81cb3cf50f7cc0823) - @ptsgrn
+- [fix: archivebot to 15 17 * * *](https://github.com/ptsgrn/patsabot/commit/3cbd91d36a340c4406fa9eb87c0070e30c228391) - @ptsgrn
+- [fix: update jobs.yaml](https://github.com/ptsgrn/patsabot/commit/8d780df0bd8fa64c525edf09ca73f6dc21a8d31c) - @ptsgrn
+- [fix: edit credntials path](https://github.com/ptsgrn/patsabot/commit/6c95d59e11354412145c45c03d2e46457e724f96) - @ptsgrn
+- [fix: edit credentials.json path](https://github.com/ptsgrn/patsabot/commit/eff7561c303af4a3c72799321a184cf323811d3c) - @ptsgrn
+- [fix: bootstrap_venv.sh](https://github.com/ptsgrn/patsabot/commit/84b141e068d8349453de668f7e56d210fb148607) - @ptsgrn
+- [package: update version](https://github.com/ptsgrn/patsabot/commit/69453b51bfe7830c077fe6e966d65c410f26d8c6) - @ptsgrn
+- [feat: create adminstats script](https://github.com/ptsgrn/patsabot/commit/9a80e8d9c68453c477127a70a68e8cad6dd294da) - @ptsgrn
+- [fix: remove cejs as currently unneeded](https://github.com/ptsgrn/patsabot/commit/8cff62d2f00969517ac3f2afe5d16bf9bd7eb0cc) - @ptsgrn
+- [pretty stable now](https://github.com/ptsgrn/patsabot/commit/65a628d2193e961450e8992940819b3e5c01f8cd) - @ptsgrn
+- [Merge branch 'main' of github.com:ptsgrn/patsabot into main](https://github.com/ptsgrn/patsabot/commit/cd7fe467800951dd1159d56f129ce2c214b8a500) - @ptsgrn
+- [add missing mwparserfromhell](https://github.com/ptsgrn/patsabot/commit/e78aa018c233e532958e5715b871b642ec000188) - @ptsgrn
+- [add mmissign mwparserfromhell](https://github.com/ptsgrn/patsabot/commit/e0328e9e54b79713550a450d4ecf25598b479297) - @ptsgrn
+- [Update jobs.yaml](https://github.com/ptsgrn/patsabot/commit/844a1b1402b3cfe46ff6256c1014943929b1b4a7) - @ptsgrn
+- [jobs: afccat:no-logfile:false](https://github.com/ptsgrn/patsabot/commit/9eda63fd618ca9a2f9daa0c101249d5e7e3e5bfe) - @ptsgrn
+- [jobs: use thailand 0000](https://github.com/ptsgrn/patsabot/commit/e5e552b692e9b64bee350fc0338f8c184bf8526c) - @ptsgrn
+- [add bootstrap_venv.sh](https://github.com/ptsgrn/patsabot/commit/26ab500158d353148e8a335de8ebdb818c5b7213) - @ptsgrn
+- [addquarter to archive.py](https://github.com/ptsgrn/patsabot/commit/baa31dce576b15a27f79047976ca317e3948b067) - @ptsgrn
+- [update jobs.yaml](https://github.com/ptsgrn/patsabot/commit/fb0192ab9830feab43ea202d4c2c02656ed3d536) - @ptsgrn
+- [fix: typo](https://github.com/ptsgrn/patsabot/commit/09a492e294db1d7427ee07698f4eef0a84e52234) - @ptsgrn
+- [remove deprecated use `collections`](https://github.com/ptsgrn/patsabot/commit/cdff0de1bf7ee11865834e9e5c562e68118f1888) - @ptsgrn
+- [change running switch text from true to on](https://github.com/ptsgrn/patsabot/commit/d70f517cb7186ba7560b6bc22c39e25422971c74) - @ptsgrn
+- [localized for thai wikipedia](https://github.com/ptsgrn/patsabot/commit/1e441dc8d962758b0c93142a749a8c18efadbf92) - @ptsgrn
+- [import archive.py from lowercase sigma bot III](https://github.com/ptsgrn/patsabot/commit/b512cedab8bdd97444ae9103d725987e22806b56) - @ptsgrn
+- [Revert "move to its own branch"](https://github.com/ptsgrn/patsabot/commit/e8e4146935b09c1787068c71055ef41fe6df1ef0) - @ptsgrn
+- [move to its own branch](https://github.com/ptsgrn/patsabot/commit/786bffc541a7f1ee64609d0b3043a6b9a2e4a0f3) - @ptsgrn
+- [update git-pull](https://github.com/ptsgrn/patsabot/commit/938d31765c967270f07d8293f6d7cbfa77bb96c6) - @ptsgrn
+- [update](https://github.com/ptsgrn/patsabot/commit/0255941699297d369dabaac903587959034cc2bf) - @ptsgrn
+- [update git-pull](https://github.com/ptsgrn/patsabot/commit/8a6351acfdbd681a762a3ffef2ea8516fd529911) - @ptsgrn
+- [update git-pull](https://github.com/ptsgrn/patsabot/commit/1094e762df606fb704a9a8dce17202c9649742e1) - @ptsgrn
+- [add gitpull and push observe](https://github.com/ptsgrn/patsabot/commit/a50abeb56eecf728425b780eef3a36e0e6d2fe95) - @ptsgrn
+- [migrate jobs file](https://github.com/ptsgrn/patsabot/commit/2b25a7b35feaaa33ea3d4d346c5588b23d1912d2) - @ptsgrn
+- [update timezone](https://github.com/ptsgrn/patsabot/commit/6870e791e9ad013d2e70fdcef77f4e67017b1834) - @ptsgrn
+- [add optional chain to irc config](https://github.com/ptsgrn/patsabot/commit/ca9dd17f14eddaec1332af6a53dcf69eafca6013) - @ptsgrn
+- [update cron](https://github.com/ptsgrn/patsabot/commit/7b5bebf24b50762ce1192ccf03fd0946e73039f2) - @ptsgrn
+- [update](https://github.com/ptsgrn/patsabot/commit/fd24b86ddcb117ba09c87ba3c48edbfd26ebef5f) - @ptsgrn
+- [update](https://github.com/ptsgrn/patsabot/commit/70a38a3611ae9c935c566e71d5f3a0d7097c4cbc) - @ptsgrn
+- [fix: add cors](https://github.com/ptsgrn/patsabot/commit/3d375847956ad053ec0415c75162b708c542c06b) - @ptsgrn
+- [feat: add username param](https://github.com/ptsgrn/patsabot/commit/ec10b5fbe692fbd8025342caafeb4d816eb2719e) - @ptsgrn
+- [fix: upgrade mwn from 0.9.1 to 0.11.2 (#11)](https://github.com/ptsgrn/patsabot/commit/76392148348251b5ee494636bcf30de76412d98c) - @snyk-bot
+- [feat(jobsrunner): add jobrunner script (#12)](https://github.com/ptsgrn/patsabot/commit/1d2c46e646d0df79146f6a6e414afab6617ad2c9) - @ptsgrn
+- [update](https://github.com/ptsgrn/patsabot/commit/34b4e1691df82b3511597fccc915815f64a1349a) - @ptsgrn
+- [updates](https://github.com/ptsgrn/patsabot/commit/a034a34152b6cb8c0a5c60a53d731d28d17b7ab7) - @ptsgrn
+- [feat(thwikisource_itm): update](https://github.com/ptsgrn/patsabot/commit/7ff64231411481ba6ff25ed0e7b500b660b8f6f6) - @ptsgrn
+- [feat(thwikisorce_itm): update progression](https://github.com/ptsgrn/patsabot/commit/0d93211441a38597479128922409879818e8036a) - @ptsgrn
+- [feat: add thwikisource indextemplatemigration task](https://github.com/ptsgrn/patsabot/commit/e0977b5cd591ec6a066ff46a946357b1c69d8f7b) - @ptsgrn
+- [feat(ircremote): add chuck split and message queue](https://github.com/ptsgrn/patsabot/commit/8e45d2953429fece58f4cff99b40ef41cca3c39d) - @ptsgrn
+- [fix: USE '-d today' for current date](https://github.com/ptsgrn/patsabot/commit/484db210246493024b9877bd678445db0c1db6a1) - @ptsgrn
+- [feat: add irc remote control](https://github.com/ptsgrn/patsabot/commit/3ca35341ba295d0897f2912d5ef05b9ef3d0b332) - @ptsgrn
+- [feat: add replica connection](https://github.com/ptsgrn/patsabot/commit/6c5ed03342e346ab9bed4e5783e2ec8549854766) - @ptsgrn
+- [update](https://github.com/ptsgrn/patsabot/commit/8bbebc3a409376a9ade9a03c136bc37c48999072) - @ptsgrn
+- [update](https://github.com/ptsgrn/patsabot/commit/d3ab3cf816b102ad6dd67e5ef89e3338ac7aa8af) - @ptsgrn
+- [build: remove unused packages](https://github.com/ptsgrn/patsabot/commit/e34343826d30165e843906c62edef632b1f1bb95) - @ptsgrn
+- [fix: use absolute path](https://github.com/ptsgrn/patsabot/commit/4a00de113e28bb537311ae0c4ae2878f72437613) - @ptsgrn
+- [fix: simple it](https://github.com/ptsgrn/patsabot/commit/9c3dfac465754a715526b3f8d38f0076d62a60a6) - @ptsgrn
+- [merge](https://github.com/ptsgrn/patsabot/commit/37e977528ff0e041a111da6ce6155f6b9acfd2e3) - @ptsgrn
+- [fix(afccat): disabled schedule](https://github.com/ptsgrn/patsabot/commit/4fa7f3482de92ed4a21e869cf20ed1b291b11600) - @ptsgrn
+
+---
+
+## v0.1.5 (01/01/1970)
+- [docs: add removedrafttemplate](https://github.com/ptsgrn/patsabot/commit/e746f72262cd3fed27601ebf8b0cc6448b2e4201) - @ptsgrn
+- [fix: remove console.log debug](https://github.com/ptsgrn/patsabot/commit/b7280701d79da6b3cb1c1f4eb145847559bb5402) - @ptsgrn
+- [feat: add removedrafttemplate.ts](https://github.com/ptsgrn/patsabot/commit/d803ddf8f04fe5f749074a036660c51c61693364) - @ptsgrn
+- [feat: use @paralleldrive/cuid2 instead of cuid](https://github.com/ptsgrn/patsabot/commit/74122544379f18f4a991a18609efa60db4946c4a) - @ptsgrn
+- [deps: update package](https://github.com/ptsgrn/patsabot/commit/3d2e03ca3f44ea5dc75e4a1124ff15274a13659c) - @ptsgrn
+- [feat(deps): update packages](https://github.com/ptsgrn/patsabot/commit/85a214c1374f79d5cb1abbaf23cc08a09c96de56) - @ptsgrn
+- [feat(schd): update schedule](https://github.com/ptsgrn/patsabot/commit/4568c4a2085f26289438bf0f0e95244fd5aba836) - @ptsgrn
+- [Update README.md](https://github.com/ptsgrn/patsabot/commit/7ed24cf0fd3c1cbc0c2f0ff666cf20bcc3362f99) - @ptsgrn
+- [feat: discord logging](https://github.com/ptsgrn/patsabot/commit/54812dba6405b742d66aca8ca3d29a2e403e2172) - @ptsgrn
+- [feat: auto update hook](https://github.com/ptsgrn/patsabot/commit/8250252fbe0855a8e1cbc19f9cb049f6e59f2987) - @ptsgrn
+- [refacto: remove sentry](https://github.com/ptsgrn/patsabot/commit/e81dc3508af18da047ed25c694777bebdce07174) - @ptsgrn
+- [fix: sentry not logging](https://github.com/ptsgrn/patsabot/commit/86e4b5a7ee16b02f04bfd6e5c8c13418a81f1507) - @ptsgrn
+- [fix: change branch to observing](https://github.com/ptsgrn/patsabot/commit/21201355696e3dfd18fb459efcaa94c460ce30d4) - @ptsgrn
+- [fix: use post hanlder function instead](https://github.com/ptsgrn/patsabot/commit/3042f8430c1fd8b9f36b17f81bd5b39c33b016af) - @ptsgrn
+- [fix: update readme per adf3b44](https://github.com/ptsgrn/patsabot/commit/3c332450b7d8e8d141a70a43595dacb5e2a3d5e6) - @ptsgrn
+- [Merge branch 'main' of github.com:ptsgrn/patsabot into main](https://github.com/ptsgrn/patsabot/commit/d51548295736efc581cc1989d1f5fd5c9fa3fd9f) - @ptsgrn
+- [fix: use /job/ instead of bare without prefix](https://github.com/ptsgrn/patsabot/commit/adf3b44d0cab6dcf88b4b3810addbbe8a16f3169) - @ptsgrn
+- [fix: use /job/ instead of bare without prefix](https://github.com/ptsgrn/patsabot/commit/7ca6a0caab32c84f07402c8bd19987a23174a66a) - @ptsgrn
+- [feat: add github webhook autoupdate](https://github.com/ptsgrn/patsabot/commit/f7f57fad169db3da4d59ddcdf388febbee83a6be) - @ptsgrn
+- [fix: fix sentry version incompatable](https://github.com/ptsgrn/patsabot/commit/cd5a92dda3cfeec825f692e63cca49b7fab2a949) - @ptsgrn
+- [feat: add sentry](https://github.com/ptsgrn/patsabot/commit/6defba6823d40c78940494bfab29d37e916ad846) - @ptsgrn
+- [update](https://github.com/ptsgrn/patsabot/commit/b181cc1b522a0d3c06b9c1b5e0a4d709b552a559) - @ptsgrn
+- [fix: script not run](https://github.com/ptsgrn/patsabot/commit/9bc0e786a627981aa84793d3f25f7eb0c0e4d08b) - @ptsgrn
+- [Merge branch 'main' of github.com:ptsgrn/patsabot into main](https://github.com/ptsgrn/patsabot/commit/565bcb0b1cc86ffcb24da64eb7fe424e9eea10d0) - @ptsgrn
+- [feat: add status timestamping](https://github.com/ptsgrn/patsabot/commit/b187c0e883e4f94052541306ed6262d4ce1e55d5) - @ptsgrn
+- [fix: use blue in next/last color](https://github.com/ptsgrn/patsabot/commit/3177e1ed568b7ccf0627da1c3be1053ff17621c2) - @ptsgrn
+- [fix: table overflow](https://github.com/ptsgrn/patsabot/commit/d34807d33e2b454f242d8d456028ba953783d312) - @ptsgrn
+- [Update README.md](https://github.com/ptsgrn/patsabot/commit/4c084e51748ba8f56f14a4e5d22c594f3fdd3d20) - @ptsgrn
+- [fix: update crontab of topsdits](https://github.com/ptsgrn/patsabot/commit/4e86c063f46aec91679bc7d93887e37cac5f26e6) - @ptsgrn
+- [fix: change timezone](https://github.com/ptsgrn/patsabot/commit/918e03756e208c614d16f770eb0cb6bba3bfdf33) - @ptsgrn
+- [fix: error in schedule file and remove content in jobs.yaml](https://github.com/ptsgrn/patsabot/commit/95a8ed37a27bcddd553875618d69f89dd471bb34) - @ptsgrn
+- [fix: cleanup schedule migration](https://github.com/ptsgrn/patsabot/commit/d29106538176f37ca958f1a59093e5652e8f9daf) - @ptsgrn
+- [ci: add ts-node to dev](https://github.com/ptsgrn/patsabot/commit/0c463768bc8aac6afa1a3ac54ec608a6e95d658d) - @ptsgrn
+- [feat: add example credentials file](https://github.com/ptsgrn/patsabot/commit/586fec8679acf1417e3eaa882166d720c989aa46) - @ptsgrn
+- [fix: add python logfile to .gitignore](https://github.com/ptsgrn/patsabot/commit/5857d7f9f58f82630217215db48487d0a1a9b486) - @ptsgrn
+- [fix: move to schedule.json](https://github.com/ptsgrn/patsabot/commit/b258de5d066b79ee1d517a8efbdf293d5938c9a5) - @ptsgrn
+- [feat: add job framework](https://github.com/ptsgrn/patsabot/commit/0373f1b0e48e37041aa270a81f440f45adb8537c) - @ptsgrn
+- [feat: update donetl to accept RegEx](https://github.com/ptsgrn/patsabot/commit/8acc3ab18741258b26a14415cdfaa28d117edf32) - @ptsgrn
+- [update config.json](https://github.com/ptsgrn/patsabot/commit/2ae6d59dcb9f0611bc6c239c735efeff962cd9c2) - @ptsgrn
+- [update](https://github.com/ptsgrn/patsabot/commit/555b236ceaa68a5474ba864c05f1dfb1c6672e76) - @ptsgrn
+- [migrate to typescript](https://github.com/ptsgrn/patsabot/commit/6b4e362bd5991890d6d924786270ecf1a45d3132) - @ptsgrn
+- [approved](https://github.com/ptsgrn/patsabot/commit/bc8c8dcad6c451e6d6b19ab0a2b101b28d35c8e2) - @ptsgrn
+- [add: topedit.js](https://github.com/ptsgrn/patsabot/commit/22da2f501f9859722f5651f81cb3cf50f7cc0823) - @ptsgrn
+- [fix: archivebot to 15 17 * * *](https://github.com/ptsgrn/patsabot/commit/3cbd91d36a340c4406fa9eb87c0070e30c228391) - @ptsgrn
+- [fix: update jobs.yaml](https://github.com/ptsgrn/patsabot/commit/8d780df0bd8fa64c525edf09ca73f6dc21a8d31c) - @ptsgrn
+- [fix: edit credntials path](https://github.com/ptsgrn/patsabot/commit/6c95d59e11354412145c45c03d2e46457e724f96) - @ptsgrn
+- [fix: edit credentials.json path](https://github.com/ptsgrn/patsabot/commit/eff7561c303af4a3c72799321a184cf323811d3c) - @ptsgrn
+- [fix: bootstrap_venv.sh](https://github.com/ptsgrn/patsabot/commit/84b141e068d8349453de668f7e56d210fb148607) - @ptsgrn
+- [package: update version](https://github.com/ptsgrn/patsabot/commit/69453b51bfe7830c077fe6e966d65c410f26d8c6) - @ptsgrn
+- [feat: create adminstats script](https://github.com/ptsgrn/patsabot/commit/9a80e8d9c68453c477127a70a68e8cad6dd294da) - @ptsgrn
+- [fix: remove cejs as currently unneeded](https://github.com/ptsgrn/patsabot/commit/8cff62d2f00969517ac3f2afe5d16bf9bd7eb0cc) - @ptsgrn
+- [pretty stable now](https://github.com/ptsgrn/patsabot/commit/65a628d2193e961450e8992940819b3e5c01f8cd) - @ptsgrn
+- [Merge branch 'main' of github.com:ptsgrn/patsabot into main](https://github.com/ptsgrn/patsabot/commit/cd7fe467800951dd1159d56f129ce2c214b8a500) - @ptsgrn
+- [add missing mwparserfromhell](https://github.com/ptsgrn/patsabot/commit/e78aa018c233e532958e5715b871b642ec000188) - @ptsgrn
+- [add mmissign mwparserfromhell](https://github.com/ptsgrn/patsabot/commit/e0328e9e54b79713550a450d4ecf25598b479297) - @ptsgrn
+- [Update jobs.yaml](https://github.com/ptsgrn/patsabot/commit/844a1b1402b3cfe46ff6256c1014943929b1b4a7) - @ptsgrn
+- [jobs: afccat:no-logfile:false](https://github.com/ptsgrn/patsabot/commit/9eda63fd618ca9a2f9daa0c101249d5e7e3e5bfe) - @ptsgrn
+- [jobs: use thailand 0000](https://github.com/ptsgrn/patsabot/commit/e5e552b692e9b64bee350fc0338f8c184bf8526c) - @ptsgrn
+- [add bootstrap_venv.sh](https://github.com/ptsgrn/patsabot/commit/26ab500158d353148e8a335de8ebdb818c5b7213) - @ptsgrn
+- [addquarter to archive.py](https://github.com/ptsgrn/patsabot/commit/baa31dce576b15a27f79047976ca317e3948b067) - @ptsgrn
+- [update jobs.yaml](https://github.com/ptsgrn/patsabot/commit/fb0192ab9830feab43ea202d4c2c02656ed3d536) - @ptsgrn
+- [fix: typo](https://github.com/ptsgrn/patsabot/commit/09a492e294db1d7427ee07698f4eef0a84e52234) - @ptsgrn
+- [remove deprecated use `collections`](https://github.com/ptsgrn/patsabot/commit/cdff0de1bf7ee11865834e9e5c562e68118f1888) - @ptsgrn
+- [change running switch text from true to on](https://github.com/ptsgrn/patsabot/commit/d70f517cb7186ba7560b6bc22c39e25422971c74) - @ptsgrn
+- [localized for thai wikipedia](https://github.com/ptsgrn/patsabot/commit/1e441dc8d962758b0c93142a749a8c18efadbf92) - @ptsgrn
+- [import archive.py from lowercase sigma bot III](https://github.com/ptsgrn/patsabot/commit/b512cedab8bdd97444ae9103d725987e22806b56) - @ptsgrn
+- [Revert "move to its own branch"](https://github.com/ptsgrn/patsabot/commit/e8e4146935b09c1787068c71055ef41fe6df1ef0) - @ptsgrn
+- [move to its own branch](https://github.com/ptsgrn/patsabot/commit/786bffc541a7f1ee64609d0b3043a6b9a2e4a0f3) - @ptsgrn
+- [update git-pull](https://github.com/ptsgrn/patsabot/commit/938d31765c967270f07d8293f6d7cbfa77bb96c6) - @ptsgrn
+- [update](https://github.com/ptsgrn/patsabot/commit/0255941699297d369dabaac903587959034cc2bf) - @ptsgrn
+- [update git-pull](https://github.com/ptsgrn/patsabot/commit/8a6351acfdbd681a762a3ffef2ea8516fd529911) - @ptsgrn
+- [update git-pull](https://github.com/ptsgrn/patsabot/commit/1094e762df606fb704a9a8dce17202c9649742e1) - @ptsgrn
+- [add gitpull and push observe](https://github.com/ptsgrn/patsabot/commit/a50abeb56eecf728425b780eef3a36e0e6d2fe95) - @ptsgrn
+- [migrate jobs file](https://github.com/ptsgrn/patsabot/commit/2b25a7b35feaaa33ea3d4d346c5588b23d1912d2) - @ptsgrn
+- [update timezone](https://github.com/ptsgrn/patsabot/commit/6870e791e9ad013d2e70fdcef77f4e67017b1834) - @ptsgrn
+- [add optional chain to irc config](https://github.com/ptsgrn/patsabot/commit/ca9dd17f14eddaec1332af6a53dcf69eafca6013) - @ptsgrn
+- [update cron](https://github.com/ptsgrn/patsabot/commit/7b5bebf24b50762ce1192ccf03fd0946e73039f2) - @ptsgrn
+- [update](https://github.com/ptsgrn/patsabot/commit/fd24b86ddcb117ba09c87ba3c48edbfd26ebef5f) - @ptsgrn
+- [update](https://github.com/ptsgrn/patsabot/commit/70a38a3611ae9c935c566e71d5f3a0d7097c4cbc) - @ptsgrn
+- [fix: add cors](https://github.com/ptsgrn/patsabot/commit/3d375847956ad053ec0415c75162b708c542c06b) - @ptsgrn
+- [feat: add username param](https://github.com/ptsgrn/patsabot/commit/ec10b5fbe692fbd8025342caafeb4d816eb2719e) - @ptsgrn
+- [fix: upgrade mwn from 0.9.1 to 0.11.2 (#11)](https://github.com/ptsgrn/patsabot/commit/76392148348251b5ee494636bcf30de76412d98c) - @snyk-bot
+- [feat(jobsrunner): add jobrunner script (#12)](https://github.com/ptsgrn/patsabot/commit/1d2c46e646d0df79146f6a6e414afab6617ad2c9) - @ptsgrn
+- [update](https://github.com/ptsgrn/patsabot/commit/34b4e1691df82b3511597fccc915815f64a1349a) - @ptsgrn
+- [updates](https://github.com/ptsgrn/patsabot/commit/a034a34152b6cb8c0a5c60a53d731d28d17b7ab7) - @ptsgrn
+- [feat(thwikisource_itm): update](https://github.com/ptsgrn/patsabot/commit/7ff64231411481ba6ff25ed0e7b500b660b8f6f6) - @ptsgrn
+- [feat(thwikisorce_itm): update progression](https://github.com/ptsgrn/patsabot/commit/0d93211441a38597479128922409879818e8036a) - @ptsgrn
+- [feat: add thwikisource indextemplatemigration task](https://github.com/ptsgrn/patsabot/commit/e0977b5cd591ec6a066ff46a946357b1c69d8f7b) - @ptsgrn
+- [feat(ircremote): add chuck split and message queue](https://github.com/ptsgrn/patsabot/commit/8e45d2953429fece58f4cff99b40ef41cca3c39d) - @ptsgrn
+- [fix: USE '-d today' for current date](https://github.com/ptsgrn/patsabot/commit/484db210246493024b9877bd678445db0c1db6a1) - @ptsgrn
+- [feat: add irc remote control](https://github.com/ptsgrn/patsabot/commit/3ca35341ba295d0897f2912d5ef05b9ef3d0b332) - @ptsgrn
+- [feat: add replica connection](https://github.com/ptsgrn/patsabot/commit/6c5ed03342e346ab9bed4e5783e2ec8549854766) - @ptsgrn
+- [update](https://github.com/ptsgrn/patsabot/commit/8bbebc3a409376a9ade9a03c136bc37c48999072) - @ptsgrn
+- [update](https://github.com/ptsgrn/patsabot/commit/d3ab3cf816b102ad6dd67e5ef89e3338ac7aa8af) - @ptsgrn
+- [build: remove unused packages](https://github.com/ptsgrn/patsabot/commit/e34343826d30165e843906c62edef632b1f1bb95) - @ptsgrn
+- [fix: use absolute path](https://github.com/ptsgrn/patsabot/commit/4a00de113e28bb537311ae0c4ae2878f72437613) - @ptsgrn
+- [fix: simple it](https://github.com/ptsgrn/patsabot/commit/9c3dfac465754a715526b3f8d38f0076d62a60a6) - @ptsgrn
+- [merge](https://github.com/ptsgrn/patsabot/commit/37e977528ff0e041a111da6ce6155f6b9acfd2e3) - @ptsgrn
+- [fix(afccat): disabled schedule](https://github.com/ptsgrn/patsabot/commit/4fa7f3482de92ed4a21e869cf20ed1b291b11600) - @ptsgrn
+- [feat: add job runner](https://github.com/ptsgrn/patsabot/commit/4bef4dd1a7f4b400c46782d60df6d53e8367590b) - @ptsgrn
