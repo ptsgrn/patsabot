@@ -140,7 +140,11 @@ async function main() {
         return {
             ...rest,
             cron,
-            cronText: cronstrue.toString(cron, { locale: 'th' }),
+            cronText: cronstrue.toString(cron, {
+                verbose: true,
+                locale: 'th',
+                use24HourTimeFormat: true,
+            }),
         };
     });
     const schedules = taskDataList.map((taskData) => {
@@ -181,7 +185,7 @@ async function main() {
             console.error('cannot save shutoff page', { stack: err.stack });
             process.exit(1);
         });
-        await writeFile(resolveRelativePath(import.meta.url, '../../schedules.json'), JSON.stringify(schedules, null, 2)).catch((err) => {
+        await writeFile(resolveRelativePath(import.meta.url, '../../schedule.json'), JSON.stringify(schedules, null, 2)).catch((err) => {
             console.error('cannot write schedules.json', { stack: err.stack });
             process.exit(1);
         });

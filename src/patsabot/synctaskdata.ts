@@ -225,7 +225,7 @@ async function main() {
       });
 
     await writeFile(
-      resolveRelativePath(import.meta.url, '../../schedules.json'),
+      resolveRelativePath(import.meta.url, '../../schedule.json'),
       JSON.stringify(schedules, null, 2)
     ).catch((err) => {
       console.error('cannot write schedules.json', { stack: err.stack });
