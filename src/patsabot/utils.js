@@ -4,17 +4,17 @@
 //
 // This software is released under the MIT License.
 // https://opensource.org/licenses/MIT
-import "moment/locale/th.js";
-import { dirname, resolve } from "path";
-import { fileURLToPath } from "url";
-import { init } from "@paralleldrive/cuid2";
-import moment from "moment";
-import { readFileSync } from "node:fs";
+import 'moment/locale/th.js';
+import { dirname, resolve } from 'path';
+import { fileURLToPath } from 'url';
+import { init } from '@paralleldrive/cuid2';
+import moment from 'moment';
+import { readFileSync } from 'node:fs';
 // // Only god know why this is necessary.
 // /** @type {Promise<?>} */
 // export const parse = CeL.wiki.parser
 // export const parser = CeL.wiki.parse
-moment.locale("th");
+moment.locale('th');
 export const DateTime = moment();
 export const mm = moment;
 /**

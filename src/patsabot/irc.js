@@ -12,10 +12,7 @@ const client = new Client(ircConfig.server, 'patsabot[bot]', {
     showErrors: true,
     autoRejoin: true,
     autoConnect: true,
-    channels: [
-        '#patsabot-console',
-        '#patsabot-log'
-    ],
+    channels: ['#patsabot-console', '#patsabot-log'],
     secure: false,
     selfSigned: false,
     certExpired: false,
@@ -27,7 +24,7 @@ const client = new Client(ircConfig.server, 'patsabot[bot]', {
     stripColors: false,
     channelPrefixes: '&#',
     messageSplit: 512,
-    encoding: ''
+    encoding: '',
 });
 let queue = [];
 client.on('message#patsabot-console', (nick, text, meta) => {
@@ -51,20 +48,23 @@ client.on('message#patsabot-console', (nick, text, meta) => {
         const child = spawn('patsabot', cmd);
         child.stdout.setEncoding('utf8');
         child.stdout.on('data', (data) => {
-            data.split('\n').forEach(line => {
+            data.split('\n').forEach((line) => {
                 queue.push({ channel: '#patsabot-log', text: `[${runid}] ${line}` });
             });
         });
         child.stderr.setEncoding('utf8');
         child.stderr.on('data', (data) => {
-            data.split('\n').forEach(line => {
-                queue.push({ channel: '#patsabot-console', text: `[${runid}] ${line}` });
+            data.split('\n').forEach((line) => {
+                queue.push({
+                    channel: '#patsabot-console',
+                    text: `[${runid}] ${line}`,
+                });
             });
         });
         child.on('close', (code) => {
             queue.forEach(async ({ channel, text }) => {
                 console.log(`${channel}: ${text}`);
-                await new Promise(resolve => setTimeout(resolve, 500)); // dont so hurry
+                await new Promise((resolve) => setTimeout(resolve, 500)); // dont so hurry
             });
         });
     }

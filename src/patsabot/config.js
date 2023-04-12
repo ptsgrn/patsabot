@@ -10,14 +10,14 @@ export const user = {
     username: credentials.username,
     password: credentials.password,
     OAuthCredentials: {
-        'consumerToken': credentials.consumerToken,
-        'consumerSecret': credentials.consumerSecret,
-        'accessToken': credentials.accessToken,
-        'accessSecret': credentials.accessSecret
-    }
+        consumerToken: credentials.consumerToken,
+        consumerSecret: credentials.consumerSecret,
+        accessToken: credentials.accessToken,
+        accessSecret: credentials.accessSecret,
+    },
 };
 export const site = {
-    siteUrl: config.config.siteUrl ?? 'https://th.wikipedia.org/w/api.php'
+    siteUrl: config.config.siteUrl ?? 'https://th.wikipedia.org/w/api.php',
 };
 export const ircConfig = {
     /**

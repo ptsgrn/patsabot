@@ -1,7 +1,7 @@
 ---
-  dataSource: "commits"
-  prefix: ""
-  includeMessages: "all"
-  changelogFilename: "CHANGELOG.md"
-  username: "ptsgrn"
-  repo: "patsabot"
+dataSource: 'commits'
+prefix: ''
+includeMessages: 'all'
+changelogFilename: 'CHANGELOG.md'
+username: 'ptsgrn'
+repo: 'patsabot'

@@ -16,7 +16,7 @@ import baselogger from './logger.js';
 import { promisify } from 'node:util';
 const promiseExec = promisify(exec);
 const logger = baselogger.child({
-    module: 'jobmanagers'
+    module: 'jobmanagers',
 }); // thank to winstonjs/winston/issues/1577#issuecomment-458117399
 export class JobsManager {
     /**
@@ -56,7 +56,7 @@ export class JobsManager {
         this.jobs[job.name] = {
             name: job.name,
             cron: new CronJob(job.crontab, this.run(job.command, job), this.onComplete(job.name), job.autostart ?? __classPrivateFieldGet(this, _JobsManager_options, "f").autostart, job.timezone ?? __classPrivateFieldGet(this, _JobsManager_options, "f").timezone),
-            data: job
+            data: job,
         };
         __classPrivateFieldGet(this, _JobsManager_jobsName, "f").push(job.name);
         logger.log('info', `${job.name} added`);
@@ -95,7 +95,7 @@ export class JobsManager {
                 .catch((err) => {
                 logger.log('error', `${job.name} error`, {
                     name: job.name,
-                    error: err
+                    error: err,
                 });
             });
         };
@@ -130,7 +130,7 @@ export class JobsManager {
             running: job.cron.running,
             last: job.cron.lastDate(),
             next: job.cron.nextDate(),
-            data: job.data
+            data: job.data,
         };
     }
 }

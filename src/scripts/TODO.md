@@ -1,4 +1,5 @@
 # TODO
+
 - [ ] เก็บกวาด Lang-xx ในการใช้ตัวเอียง
 - [ ] บอตส่งออก Short Description ไปวิกิสนเทศ
 - [x] บอตที่คอยบันทึกการอัปโหลดข้ามวิกิจาก th.wikipedia.org ไปคอมมอนส์ แล้วบันทึกไว้ให้ผู้ใช้อื่นตรวจสอบง่าย ๆ (มี [abusefilter](https://commons.wikimedia.org/wiki/Special:AbuseFilter/153))

@@ -3,6 +3,7 @@
 # LGPLv2+ license, look it up
 # specifically for Thai Wiki(s)
 
+import unittest
 import builtins
 import collections
 import sys
@@ -15,35 +16,37 @@ import hashlib
 # from typing import OrderedDict
 
 import twiggy
+import json
+import os
 from arrow import Arrow
 from datetime import timedelta
 from ceterach.api import MediaWiki
 from ceterach.page import Page
 from ceterach import exceptions as exc
-import json
 
 import mwparserfromhell as mwp
 
 API_URL = "https://th.wikipedia.org/w/api.php"
-LOGIN_INFO = "PatsaBot", json.load(open("./credentials.json", "rb"))["password"]
+LOGIN_INFO = "PatsaBot", os.environ["PATSABOT_PASSWORD"]
 SHUTOFF = u"ผู้ใช้:PatsaBot/shutoff/archive"
 ARCHIVE_TPL = u"แม่แบบ:เก็บอภิปรายอัตโนมัติ"
 FREQ = 30
 
 logger = twiggy.log.name("archivebot")
 locale.setlocale(locale.LC_ALL, "en_US.utf8")
-                     #   23:42, 14 พฤศจิกายน 2563 (+07)
-                     #   2 3: 4 2, 14      พฤศจิกายน 2563      (+07 )
-STAMP_RE = re.compile(r"\d\d:\d\d, \d{1,2} (มกราคม|กุมภาพันธ์|มีนาคม|เมษายน|พฤษภาคม|มิถุนายน|กรกฎาคม|สิงหาคม|กันยายน|ตุลาคม|พฤศจิกายน|ธันวาคม) (\d\d\d\d) \(\+07\)") # for thai-wiki
+#   23:42, 14 พฤศจิกายน 2563 (+07)
+#   2 3: 4 2, 14      พฤศจิกายน 2563      (+07 )
+STAMP_RE = re.compile(
+    r"\d\d:\d\d, \d{1,2} (มกราคม|กุมภาพันธ์|มีนาคม|เมษายน|พฤษภาคม|มิถุนายน|กรกฎาคม|สิงหาคม|กันยายน|ตุลาคม|พฤศจิกายน|ธันวาคม) (\d\d\d\d) \(\+07\)")  # for thai-wiki
 THE_FUTURE = Arrow.utcnow() + timedelta(365)
 MONTHS_ENGLISH = (None, "January", "February", "March", "April", "May", "June",
-          "July", "August", "September", "October", "November", "December"
-)
+                  "July", "August", "September", "October", "November", "December"
+                  )
 MONTHS = (None, "มกราคม", "กุมภาพันธ์", "มีนาคม", "เมษายน", "พฤษภาคม", "มิถุนายน",
           "กรกฎาคม", "สิงหาคม", "กันยายน", "ตุลาคม", "พฤศจิกายน", "ธันวาคม"
-)
+          )
 MONTHS_SHORT = (None, "ม.ค.", "ก.พ.", "มี.ค.", "เม.ย.", "พ.ค.", "มิ.ย.",
-          "ก.ค.", "ส.ค.", "ก.ย.", "ต.ค.", "พ.ย.", "ธ.ค.")
+                "ก.ค.", "ส.ค.", "ก.ย.", "ต.ค.", "พ.ย.", "ธ.ค.")
 
 
 class ArchiveError(exc.CeterachError):
@@ -93,7 +96,7 @@ def ucfirst(s: str):
 
 def make_key(title, target):
     """echo -en "${salt}\n${title}\n${target}" | sha256sum"""
-    sha256sum = hashlib.new("sha256", json.load(open("./credentials.json", "rb"))["scripts"]["archive"]["key_salt"])
+    sha256sum = hashlib.new("sha256", os.environ["PATSABOT_SALT"].encode("utf8"))
     sha256sum.update(b'\n')
     sha256sum.update(title.encode("utf8"))
     sha256sum.update(b'\n')
@@ -112,6 +115,7 @@ class RedoableIterator(abc.Iterator):
         iterable_obj.redo()
         continue
     """
+
     def __init__(self, iterable_obj):
         self.data = iter(iterable_obj)
         self._redo = False
@@ -135,12 +139,14 @@ class OrderedDefaultdict(abc.defaultdict, abc.OrderedDict):
 '''  # Both implemented in Python so you get a TypeError
 
 # https://stackoverflow.com/a/6190500
+
+
 class OrderedDefaultdict(OrderedDict):
     # Source: http://stackoverflow.com/a/6190500/562769
     def __init__(self, default_factory=None, *a, **kw):
         if (default_factory is not None and
-            not callable(default_factory)):
-            #not isinstance(default_factory, abc.Callable)):
+                not callable(default_factory)):
+            # not isinstance(default_factory, abc.Callable)):
             raise TypeError('first argument must be callable')
         super().__init__(*a, **kw)
         self.default_factory = default_factory
@@ -179,6 +185,7 @@ class OrderedDefaultdict(OrderedDict):
         return 'OrderedDefaultdict(%s, %s)' % (self.default_factory,
                                                OrderedDict.__repr__(self))
 
+
 def str2time(s: str):
     """Accepts a string defining a time period:
     7d - 7 days
@@ -211,7 +218,8 @@ def str2size(s: str):
     # int() handles other strange unicode characters too, so yay
     # http://www.fileformat.info/info/unicode/category/Nd/list.htm
     allowed_units = {'b': 1, 'k': 1024, 'm': 1024 * 1024, 't': 1, '': 1}
-    allowed_units = collections.defaultdict(lambda: 1024 * 1024, **allowed_units)
+    allowed_units = collections.defaultdict(
+        lambda: 1024 * 1024, **allowed_units)
     if not unit in allowed_units and not unit.isdecimal():
         raise TypeError("Bad input")
     if unit in allowed_units:
@@ -255,12 +263,13 @@ class DiscussionPage(Page):
                 # If there is a level 1 header, it probably has level 2 children.
                 # Because get_sections(levels=[1, 2]) will yield the level 2 sections
                 # later, we can just take the level 1 header and ignore its children.
-                section = section.get_sections(include_lead=False, flat=True)[0]
+                section = section.get_sections(
+                    include_lead=False, flat=True)[0]
             d = {"header": "", "content": "",
                  ("header", "content"): "",
                  "stamp": THE_FUTURE,
                  "oldenough": False
-            }
+                 }
             d['header'] = str(head)
             d['content'] = str(section[len(head):])
             d['header', 'content'] = str(section)
@@ -292,8 +301,9 @@ class DiscussionPage(Page):
                         continue
                     _stamp = _stamp.replace(MONTHS[index], month_en)
                 # replace Thai BE year
-                _stamp = _stamp.replace(stamp.group(2), str(int(stamp.group(2))-543))
-                _stamp = _stamp.replace("(+07)","(+0700)")
+                _stamp = _stamp.replace(stamp.group(
+                    2), str(int(stamp.group(2))-543))
+                _stamp = _stamp.replace("(+07)", "(+0700)")
                 try:
                     stamps.append(Arrow.strptime(_stamp, fmt))
                 except ValueError:  # Invalid stamps should not be parsed, ever
@@ -314,12 +324,12 @@ class DiscussionPage(Page):
         new_tpl = self.archiver.generate_template()
         talkhead = mwp_parse(self.talkhead)
         for talkhead_tpl_ref in talkhead.filter_templates():
-            tpl_name = talkhead_tpl_ref.name.strip_code().strip() 
+            tpl_name = talkhead_tpl_ref.name.strip_code().strip()
             if ucfirst(tpl_name) == ucfirst(self.archiver.tl):
                 break
         else:
             raise ArchiveError("No talk head")
-            #return 0x1337  # Our duty is done, and this function broke
+            # return 0x1337  # Our duty is done, and this function broke
         if dry:
             return  # Our duty is done, and this function worked
         for p in new_tpl.params:
@@ -357,7 +367,8 @@ class DiscussionPage(Page):
                 if self.simulate:
                     logger.info("SIMULATE: {} {}", summ, text)
                 else:
-                    logger.info("{}", self.edit(text, summ, minor=True, bot=True))
+                    logger.info("{}", self.edit(
+                        text, summ, minor=True, bot=True))
             except exc.SpamFilterError as e:
                 if e.code == 'spamblacklist':
                     # The only way to override the spam blacklist is to nowiki it
@@ -372,7 +383,8 @@ class DiscussionPage(Page):
                     if self.simulate:
                         logger.info("SIMULATE: {} {}", summ, text)
                     else:
-                        logger.info("{}", self.edit(text, summ, minor=True, bot=True))
+                        logger.info("{}", self.edit(
+                            text, summ, minor=True, bot=True))
             return
         if not archives_touched:
             return  # The talk page was not changed, and nothing was archived
@@ -392,7 +404,7 @@ class Archiver:
                        'oldcounter': 1,  # For internal use by the bot
                        'key': '',
                        'donetl': ''
-        }
+                       }
         self.api = api
         self.tl = tl
         self.archives_touched = frozenset()
@@ -406,10 +418,12 @@ class Archiver:
         sects = iter(code.get_sections())
         self.page.talkhead = str(next(sects))
         for section in sects:
-            if section.get(0).level < 3: break
+            if section.get(0).level < 3:
+                break
             self.page.talkhead += str(section)
         del sects
-        code = mwp_parse(self.page.talkhead)  # The template MUST be in the talkhead
+        # The template MUST be in the talkhead
+        code = mwp_parse(self.page.talkhead)
         try:
             template = next(code.ifilter_templates(matches=self.tl))
         except StopIteration:
@@ -425,10 +439,13 @@ class Archiver:
         try:
             # All these config options must be integers
             counter_ = str(self.config['counter'])
-            self.config['counter'] = abs(int(counter_ if counter_.isdecimal() else 1)) or 1
+            self.config['counter'] = abs(
+                int(counter_ if counter_.isdecimal() else 1)) or 1
             self.config['oldcounter'] = self.config['counter']
-            self.config['minthreadstoarchive'] = int(self.config['minthreadstoarchive'] or 1)
-            self.config['minthreadsleft'] = int(self.config['minthreadsleft'] or 1)
+            self.config['minthreadstoarchive'] = int(
+                self.config['minthreadstoarchive'] or 1)
+            self.config['minthreadsleft'] = int(
+                self.config['minthreadsleft'] or 1)
         except ValueError as e:
             print("Could not intify:", self.page.title)
             raise ArchiveError(e)
@@ -453,7 +470,7 @@ class Archiver:
                     'monthname': MONTHS[stamp.month],
                     'monthnameshort': MONTHS_SHORT[stamp.month],
                     'week': stamp.week,
-            }
+                    }
         keep_threads = self.config['minthreadsleft']
         fmt_str = self.config['archive']
         max_arch_size = str2size(self.config['maxarchivesize'])
@@ -470,12 +487,14 @@ class Archiver:
         # Archive the oldest threads first, not the highest threads
         # that happen to be old
         threads_with_indices = enumerate(self.page.threads)
-        threads_with_indices = sorted(threads_with_indices, key=lambda t: t[1]['stamp'])
+        threads_with_indices = sorted(
+            threads_with_indices, key=lambda t: t[1]['stamp'])
         threads_with_indices = RedoableIterator(threads_with_indices)
         for index, thread in threads_with_indices:
-        #for index, thread in enumerate(self.page.threads):
+            # for index, thread in enumerate(self.page.threads):
             if len(self.page.threads) - arched_so_far <= keep_threads:
-                logger.info("Keep at least {} threads on {}", keep_threads, self.page.title)
+                logger.info("Keep at least {} threads on {}",
+                            keep_threads, self.page.title)
                 break
             if not thread["oldenough"]:
                 continue  # Thread is too young to archive
@@ -557,15 +576,18 @@ class Archiver:
         yield None  # I am such an evil Pythoneer
         for title, content in archives_to_touch.items():
             page = arch_pages[title]  # Actually implement the caching
-            arch_thread_count = len(mwp_parse(content).get_sections(levels=[2]))
+            arch_thread_count = len(
+                mwp_parse(content).get_sections(levels=[2]))
             summ = "เก็บ {0} การอภิปรายลงกรุจาก [[{1}]]) (บอต"
             summ = summ.format(arch_thread_count, self.page.title)
             try:
                 if page.exists:
-                    logger.info("{}", page.append("\n\n" + content, summ, minor=True, bot=True))
+                    logger.info("{}", page.append(
+                        "\n\n" + content, summ, minor=True, bot=True))
                 else:
                     content = self.config['archiveheader'] + "\n\n" + content
-                    logger.info("{}", page.create(content, summ, minor=True, bot=True))
+                    logger.info("{}", page.create(
+                        content, summ, minor=True, bot=True))
             except exc.SpamFilterError as e:
                 if e.code == 'spamblacklist':
                     # The only way to override the spam blacklist is to nowiki it
@@ -578,9 +600,11 @@ class Archiver:
                     content = str(code)
                     del code
                     if page.exists:
-                        logger.info("{}", page.append("\n\n" + content, summ, minor=True, bot=True))
+                        logger.info("{}", page.append(
+                            "\n\n" + content, summ, minor=True, bot=True))
                     else:
-                        logger.info("{}", page.create(content, summ, minor=True, bot=True))
+                        logger.info("{}", page.create(
+                            content, summ, minor=True, bot=True))
             logger.fields(p=page.title).info("Actually archived")
             archives_actually_touched.append(title)
             # If the bot explodes mid-loop, we know which archive pages
@@ -595,7 +619,8 @@ class Archiver:
         if not untouched_archives:
             # If we couldn't edit a single archive, restore the whole TP
             untouched_archives = self.archives_touched
-        total_counter_increments = self.config['counter'] - self.config['oldcounter']
+        total_counter_increments = self.config['counter'] - \
+            self.config['oldcounter']
         for untouched in untouched_archives:
             total_counter_increments -= 1
             for index in self.indexes_in_archives[untouched]:
@@ -624,23 +649,21 @@ class Archiver:
         self.page.rebuild_talkhead(dry=True)  # Raises an exception if it fails
         if not self.config['archive'].startswith(self.page.title + "/"):
             if not self.key_ok():
-                raise ArchiveSecurityError("Bad key: " + repr(self.config['key']))
+                raise ArchiveSecurityError(
+                    "Bad key: " + repr(self.config['key']))
         time_machine = self.archive_threads()
         try:
             next(time_machine)  # Prepare the archive pages
         except StopIteration:  # Don't archive a measly few threads
             return
         # Now let's pause execution for a bit
-        #self.page.update(self.archives_touched)  # Assume that we won't fail
+        # self.page.update(self.archives_touched)  # Assume that we won't fail
         # Save the archives last (so that we don't fuck up if we can't edit the TP)
         # Bugs won't cause a loss of data thanks to unarchive_threads()
-        #next(time_machine)  # Continue archiving
+        # next(time_machine)  # Continue archiving
         # try to deal with blacklists this way?
         next(time_machine)
         self.page.update(self.archives_touched)
-
-
-import unittest
 
 
 class TestShit(unittest.TestCase):
@@ -654,7 +677,7 @@ class TestShit(unittest.TestCase):
                        'counter': 1,
                        'oldcounter': 1,
                        'key': '',
-        }
+                       }
 
     def modified_generate_config(self, k):
         import urllib.parse
@@ -664,9 +687,12 @@ class TestShit(unittest.TestCase):
         try:
             # All these config options must be integers
             counter_ = str(self.config['counter'])
-            self.config['counter'] = int(counter_ if counter_.isdecimal() else 1) or 1
-            self.config['minthreadstoarchive'] = int(self.config['minthreadstoarchive'] or 1)
-            self.config['minthreadsleft'] = int(self.config['minthreadsleft'] or 1)
+            self.config['counter'] = int(
+                counter_ if counter_.isdecimal() else 1) or 1
+            self.config['minthreadstoarchive'] = int(
+                self.config['minthreadstoarchive'] or 1)
+            self.config['minthreadsleft'] = int(
+                self.config['minthreadsleft'] or 1)
         except ValueError:
             print("Could not intify:", "<unittest>", self.config)
             raise
@@ -739,6 +765,7 @@ class TestShit(unittest.TestCase):
         s = "34j"
         self.assertRaises(ValueError, lambda: str2time(s).total_seconds())
 
+
 if __name__ == "__main__":
     # unittest.main(verbosity=2)
     # exit(0)
@@ -754,7 +781,8 @@ if __name__ == "__main__":
     def page_gen_dec(ns):
         def decorator(func):
             # You're lucky I didn't nest this a second time
-            real_dec = lambda *pages: (":".join([ns, shit]) for shit in func(*pages))
+            real_dec = lambda *pages: (":".join([ns, shit])
+                                       for shit in func(*pages))
             return real_dec
         return decorator
 
@@ -767,7 +795,8 @@ if __name__ == "__main__":
 
     twiggy_setup()
 
-    api = MediaWiki(API_URL, config={"retries": 9, "sleep": 9, "maxlag": 9, "throttle": 0.5})
+    api = MediaWiki(API_URL, config={
+                    "retries": 9, "sleep": 9, "maxlag": 9, "throttle": 0.5})
     api.login(*LOGIN_INFO)
     logger.info('Logged in.')
     #api.login("throwaway", "aoeui")
@@ -776,7 +805,8 @@ if __name__ == "__main__":
     shutoff_page = api.page(SHUTOFF)
     victims = itertools.chain((x['title'] for x in api.iterator(list='embeddedin',
                                                                 eititle=ARCHIVE_TPL,
-                                                                einamespace=[3,4],
+                                                                einamespace=[
+                                                                    3, 4],
                                                                 #eititle="Template:Experimental archiving",
                                                                 eilimit=500)),
                               # wp("Administrators' noticeboard/Edit warring",
@@ -788,7 +818,7 @@ if __name__ == "__main__":
                               # wt("Did you know",
                               #    "Twinkle",
                               # ),
-    )
+                              )
     issimmulate = False
     if len(sys.argv) > 1:
         victims = sys.argv[1:]
@@ -825,7 +855,8 @@ if __name__ == "__main__":
                 try:
                     bot.unarchive_threads()
                 except:
-                    logger.fields(p=victim).trace().critical("Failed to unarchive")
+                    logger.fields(p=victim).trace().critical(
+                        "Failed to unarchive")
                     continue
             else:
                 logger.fields(p=victim).info("Done")

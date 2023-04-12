@@ -1,6 +1,6 @@
 # https://wikitech.wikimedia.org/wiki/Help:Toolforge/Jobs_framework
 - name: archivebot
   command: $HOME/pyvenv/bin/python3 $HOME/bot/python/archive.py
-  schedule: "15 17 * * *"
+  schedule: '15 17 * * *'
   emails: onfailure
   image: tf-python37-DEPRECATED

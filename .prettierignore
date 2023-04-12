@@ -1,6 +1,6 @@
-# All files in the src directory
-**/**
-
 # Exepct typescript files
-!src/**/*.ts
+
+src/**/*.js
+
+!*.ts
 !*.json

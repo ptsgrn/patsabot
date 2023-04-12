@@ -1,8 +1,8 @@
-import Transport, { TransportStreamOptions } from "winston-transport";
+import Transport, { TransportStreamOptions } from 'winston-transport';
 
-import axios from "axios";
-import os from "os";
-import rateLimit from "axios-rate-limit";
+import axios from 'axios';
+import os from 'os';
+import rateLimit from 'axios-rate-limit';
 
 /**
  * Options for Discord transport for winston
@@ -71,7 +71,7 @@ export default class DiscordTransport extends Transport {
     this.initialized = new Promise((resolve, reject) => {
       const opts = {
         url: this.webhook,
-        method: "GET",
+        method: 'GET',
         json: true,
       };
       http
@@ -103,7 +103,7 @@ export default class DiscordTransport extends Transport {
             this.sendToDiscord(info);
           })
           .catch((err) => {
-            console.log("Error sending message to discord", err);
+            console.log('Error sending message to discord', err);
           });
       });
     }
@@ -127,7 +127,7 @@ export default class DiscordTransport extends Transport {
       ],
     };
 
-    if (info.level === "error" && info.error && info.error.stack) {
+    if (info.level === 'error' && info.error && info.error.stack) {
       postBody.content = `\`\`\`${info.error.stack}\`\`\``;
     }
 
@@ -140,37 +140,37 @@ export default class DiscordTransport extends Transport {
       });
     }
 
-    if (info[Symbol.for("splat")]) {
-      Object.keys(info[Symbol.for("splat")][0]).forEach((key) => {
+    if (info[Symbol.for('splat')]) {
+      Object.keys(info[Symbol.for('splat')][0]).forEach((key) => {
         postBody.embeds[0].fields.push({
           name: key,
-          value: serailizeToList(info[Symbol.for("splat")][0][key]),
+          value: serailizeToList(info[Symbol.for('splat')][0][key]),
         });
       });
     }
 
     function serailizeToList(obj: string | string[] | object) {
-      if (typeof obj === "string") {
+      if (typeof obj === 'string') {
         return obj;
       }
       if (Array.isArray(obj)) {
-        return "- " + obj.join("\n- ");
+        return '- ' + obj.join('\n- ');
       }
       return Object.keys(obj)
         .map((key) => {
           return `${key}: ${obj[key]}`;
         })
-        .join("\n");
+        .join('\n');
     }
 
     postBody.embeds[0].fields.push({
-      name: "Host",
+      name: 'Host',
       value: os.hostname(),
     });
 
     const options = {
       url: this.getUrl(),
-      method: "POST",
+      method: 'POST',
       json: true,
       body: postBody,
     };
@@ -181,11 +181,11 @@ export default class DiscordTransport extends Transport {
       // await request(options);
       await http.post(options.url, options.body, {
         headers: {
-          "Content-Type": "application/json",
+          'Content-Type': 'application/json',
         },
       });
     } catch (err) {
-      console.error("Error sending to discord", err);
+      console.error('Error sending to discord', err);
     }
   };
 }
