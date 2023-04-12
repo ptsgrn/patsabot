@@ -26,6 +26,9 @@ dependencies:
   cron-job-manager:
     specifier: ^2.3.1
     version: 2.3.1
+  cronstrue:
+    specifier: ^2.26.0
+    version: 2.26.0
   diff:
     specifier: ^5.1.0
     version: 5.1.0
@@ -1442,6 +1445,14 @@ packages:
       }
     dependencies:
       luxon: 3.3.0
+    dev: false
+
+  /cronstrue@2.26.0:
+    resolution:
+      {
+        integrity: sha512-M1VdV3hpBAsd1Zzvqcvf63wgDpcwCuS4WiNEVFpJ0s33MGO2sVDTfswYq0EPypCmESrCzmgL8h68DTzJuSDbVA==,
+      }
+    hasBin: true
     dev: false
 
   /cross-spawn@7.0.3:

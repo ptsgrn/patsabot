@@ -1,9 +1,9 @@
 /**
  * @inuse no-include-table
- * @id 3
+ * @id 0
  * @name updatestatus
  * @desc อัปเดตสถานะบอต
- * @cron 0 1 * * 0
+ * @cron 0 0,8,16 * * *
  * @author Patsagorn Y. (mpy@toolforge.org)
  * @license MIT
  */

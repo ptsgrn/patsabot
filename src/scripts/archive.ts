@@ -5,7 +5,7 @@
  * @desc ดูการใช้งาน {{tl|เก็บอภิปรายอัตโนมัติ}} แล้วเก็บลงกรุ
  * @script https://github.com/ptsgrn/patsabot/blob/main/src/scripts/archive.ts
  * @cron 0 15 * * *
- * @author
+ * @author Σ ([[:w:en:User:Σ]]) for archive script
  * @license LGPLv2+
  */
 
@@ -16,6 +16,12 @@ import { spawn } from 'child_process';
 
 const logger = baselogger.child({ script: 'archive' });
 
+/**
+ * @function archive
+ * @desc ดูการใช้งาน {{tl|เก็บอภิปรายอัตโนมัติ}} แล้วเก็บลงกรุ
+ * @cron 0 15 * * *
+ * @author Σ ([[:w:en:User:Σ]]) for archive script
+ */
 async function archive() {
   const archiveScriptPath = resolveRelativePath(
     import.meta.url,

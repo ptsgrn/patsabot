@@ -1,0 +1,27 @@
+[
+  {
+    "name": "afccat",
+    "crontab": "0 0 * * *",
+    "command": "node $HOME/bot/src/patsabot/run.js afccat"
+  },
+  {
+    "name": "archive",
+    "crontab": "0 15 * * *",
+    "command": "node $HOME/bot/src/patsabot/run.js archive"
+  },
+  {
+    "name": "updatestatus",
+    "crontab": "0 0,8,16 * * *",
+    "command": "node $HOME/bot/src/patsabot/run.js updatestatus"
+  },
+  {
+    "name": "topedits",
+    "crontab": "0 1 * * 0",
+    "command": "node $HOME/bot/src/patsabot/run.js topedits"
+  },
+  {
+    "name": "removedrafttemplate",
+    "crontab": "15 2 * * *",
+    "command": "node $HOME/bot/src/patsabot/run.js removedrafttemplate"
+  }
+]
