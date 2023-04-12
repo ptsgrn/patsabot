@@ -170,7 +170,11 @@ async function main() {
       return {
         ...rest,
         cron,
-        cronText: cronstrue.toString(cron, { locale: 'th' }),
+        cronText: cronstrue.toString(cron, {
+          verbose: true,
+          locale: 'th',
+          use24HourTimeFormat: true,
+        }),
       };
     });
   const schedules = taskDataList.map((taskData) => {
@@ -184,6 +188,11 @@ async function main() {
     };
   });
   let rowTaskTable = taskDataList
+    .filter(
+      (taskData) =>
+        taskData.inuse !== 'no-include-table' &&
+        (taskData.inuse || taskData.inuse === '')
+    )
     .map((taskDataFields) => {
       return `{{/row|${Object.entries(taskDataFields)
         .map(([key, value]) => {

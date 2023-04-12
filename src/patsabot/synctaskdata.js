@@ -151,6 +151,8 @@ async function main() {
         };
     });
     let rowTaskTable = taskDataList
+        .filter((taskData) => taskData.inuse !== 'no-include-table' &&
+        (taskData.inuse || taskData.inuse === ''))
         .map((taskDataFields) => {
         return `{{/row|${Object.entries(taskDataFields)
             .map(([key, value]) => {
