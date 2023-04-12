@@ -1,65 +1,15 @@
 {
   "_site": {
-    "_default": [
-      "http:",
-      "localhost:8004",
-      "/",
-      "/index.php?title="
-    ],
-    "thwiki": [
-      "https:",
-      "th.wikipedia.org",
-      "/w",
-      "/wiki"
-    ],
-    "thwikisource": [
-      "https:",
-      "th.wikisource.org",
-      "/w",
-      "/wiki"
-    ],
-    "thwiktionary": [
-      "https:",
-      "th.wiktionary.org",
-      "/w",
-      "/wiki"
-    ],
-    "enwiki": [
-      "https:",
-      "en.wikipedia.org",
-      "/w",
-      "/wiki"
-    ],
-    "wikidatawiki": [
-      "https:",
-      "wikidata.org",
-      "/w",
-      "/wiki"
-    ],
-    "testwikidatawiki": [
-      "https:",
-      "test.wikidata.org",
-      "/w",
-      "/wiki"
-    ],
-    "wikicommons": [
-      "https:",
-      "commons.wikimedia.org",
-      "/w",
-      "/wiki"
-    ],
-    "testwiki": [
-      "https:",
-      "test.wikipedia.org",
-      "/w",
-      "/wiki"
-    ],
-    "test2wiki": [
-      "https:",
-      "test.wikipedia.org",
-      "/w",
-      "/wiki"
-    ]
+    "_default": ["http:", "localhost:8004", "/", "/index.php?title="],
+    "thwiki": ["https:", "th.wikipedia.org", "/w", "/wiki"],
+    "thwikisource": ["https:", "th.wikisource.org", "/w", "/wiki"],
+    "thwiktionary": ["https:", "th.wiktionary.org", "/w", "/wiki"],
+    "enwiki": ["https:", "en.wikipedia.org", "/w", "/wiki"],
+    "wikidatawiki": ["https:", "wikidata.org", "/w", "/wiki"],
+    "testwikidatawiki": ["https:", "test.wikidata.org", "/w", "/wiki"],
+    "wikicommons": ["https:", "commons.wikimedia.org", "/w", "/wiki"],
+    "testwiki": ["https:", "test.wikipedia.org", "/w", "/wiki"],
+    "test2wiki": ["https:", "test.wikipedia.org", "/w", "/wiki"]
   },
   "config": {
     "user": "PatsaBot",
