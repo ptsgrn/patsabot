@@ -1,93 +1,96 @@
 // Copyright (c) 2021 Patsagorn Y.
-// 
+//
 // This software is released under the MIT License.
 // https://opensource.org/licenses/MIT
 import { JobOption } from './jobsmanager.js';
-import { resolveRelativePath, parseJsonFile} from './utils.js'
-
+import { resolveRelativePath, parseJsonFile } from './utils.js';
 
 interface ConfigTasksData {
-  "name": string;
-  "script": string;
-  "cron": string
+  name: string;
+  script: string;
+  cron: string;
 }
 interface ConfigFile {
-  "config": {
-    "user": string;
-    "credentials": string;
-    "simulate": boolean;
-    "siteUrl": string;
-  },
-  "log": {
-    "logdir": string;
-    "debug": boolean;
-    "debugprefix": string;
-    "log": boolean;
-    "autolog": string[];
-    "excludes": string[];
-  },
-  "replica": {
-    "provider": string[]
-    "host": string;
-    "port": number;
-    "database": string;
-  },
-  "tasks": ConfigTasksData[]
+  config: {
+    user: string;
+    credentials: string;
+    simulate: boolean;
+    siteUrl: string;
+  };
+  log: {
+    logdir: string;
+    debug: boolean;
+    debugprefix: string;
+    log: boolean;
+    autolog: string[];
+    excludes: string[];
+  };
+  replica: {
+    provider: string[];
+    host: string;
+    port: number;
+    database: string;
+  };
+  tasks: ConfigTasksData[];
 }
 
 interface CreadentailFile {
-  "username": string;
-  "password": string
-  "consumerToken": string;
-  "consumerSecret": string;
-  "accessToken": string;
-  "accessSecret": string;
-  "replica": {
-    "username": string;
-    "password": string;
-  },
-  "irc": {
-    "nickName": string;
-    "username": string;
-    "password": string;
-    "realName": string;
-    "server": string;
-    "port": number;
-  },
-  "githooksecret": string;
-  "scripts": {
-    "archive": {
-      "key_salt": string;
-    }
-  }
-  "discord": {
-    "webhook": {
-      "logger": string;
-    }
-  }
+  username: string;
+  password: string;
+  consumerToken: string;
+  consumerSecret: string;
+  accessToken: string;
+  accessSecret: string;
+  replica: {
+    username: string;
+    password: string;
+  };
+  irc: {
+    nickName: string;
+    username: string;
+    password: string;
+    realName: string;
+    server: string;
+    port: number;
+  };
+  githooksecret: string;
+  scripts: {
+    archive: {
+      key_salt: string;
+    };
+  };
+  discord: {
+    webhook: {
+      logger: string;
+    };
+  };
 }
 
 // these are bad idea, but I will fix it as I now how ('=-=)
-export let credentials: CreadentailFile = parseJsonFile(resolveRelativePath(import.meta.url, '../../credentials.json'))
-export let config: ConfigFile = parseJsonFile(resolveRelativePath(import.meta.url, '../../config.json'))
+export let credentials: CreadentailFile = parseJsonFile(
+  resolveRelativePath(import.meta.url, '../../credentials.json')
+);
+export let config: ConfigFile = parseJsonFile(
+  resolveRelativePath(import.meta.url, '../../config.json')
+);
 
 /**
  * processing current user informations
  */
-export const loggerDir = resolveRelativePath(import.meta.url, '../../logs/')
+export const loggerDir = resolveRelativePath(import.meta.url, '../../logs/');
 export const user = {
   username: credentials.username,
   password: credentials.password,
   OAuthCredentials: {
-    'consumerToken': credentials.consumerToken,
-    'consumerSecret': credentials.consumerSecret,
-    'accessToken': credentials.accessToken,
-    'accessSecret':  credentials.accessSecret
-  }
-}
+    consumerToken: credentials.consumerToken,
+    consumerSecret: credentials.consumerSecret,
+    accessToken: credentials.accessToken,
+    accessSecret: credentials.accessSecret,
+  },
+};
 export const site = {
-  siteUrl: config.config.siteUrl ?? 'https://th.wikipedia.org/w/api.php'
-}
+  siteUrl: config.config.siteUrl ?? 'https://th.wikipedia.org/w/api.php',
+};
 
 export const ircConfig = {
   /**
@@ -124,14 +127,14 @@ export const ircConfig = {
    * @type {String}
    */
   nickName: credentials?.irc?.nickName,
-}
+};
 
 export const replicaCredentials = {
   /** database table username for autherization */
   username: credentials?.replica?.username,
   /** database table password for autherization */
   password: credentials?.replica?.password,
-}
+};
 
 export const replicaConfig = {
   /**
@@ -162,7 +165,13 @@ export const replicaConfig = {
    * database url for connection
    * @type {String}
    */
-  dbURL: `${config?.replica?.provider ?? 'mysql'}://${replicaCredentials.username}:${replicaCredentials.password}@${config?.replica?.host ?? '127.0.0.1'}:${config?.replica?.port ?? 3306}/${config?.replica?.database ?? 'thwiki_p'}`,
-}
+  dbURL: `${config?.replica?.provider ?? 'mysql'}://${
+    replicaCredentials.username
+  }:${replicaCredentials.password}@${config?.replica?.host ?? '127.0.0.1'}:${
+    config?.replica?.port ?? 3306
+  }/${config?.replica?.database ?? 'thwiki_p'}`,
+};
 
-export const schedule: JobOption[] = parseJsonFile(resolveRelativePath(import.meta.url, '../../schedule.json'))
+export const schedule: JobOption[] = parseJsonFile(
+  resolveRelativePath(import.meta.url, '../../schedule.json')
+);

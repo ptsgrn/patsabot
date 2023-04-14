@@ -1,0 +1,7 @@
+---
+dataSource: 'commits'
+prefix: ''
+includeMessages: 'all'
+changelogFilename: 'CHANGELOG.md'
+username: 'ptsgrn'
+repo: 'patsabot'

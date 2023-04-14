@@ -7,10 +7,10 @@ import bodyParser from 'body-parser';
 import selfUpdate from './selfupdater.js';
 import { join } from 'path';
 const logger = baselogger.child({
-    script: 'jobrunner'
+    script: 'jobrunner',
 });
 if (!Array.isArray(schedule)) {
-    logger.log('error', '\'tasks\' is not define in schedule.json or not an array');
+    logger.log('error', "'tasks' is not define in schedule.json or not an array");
 }
 try {
     const app = express();
@@ -29,18 +29,18 @@ try {
         const job = jobs.job(jobname);
         if (!job || !['next', 'last'].includes(get))
             return res.status(200).send({
-                "schemaVersion": 1,
-                "label": jobname,
-                "message": "not found",
-                "color": 'gray'
+                schemaVersion: 1,
+                label: jobname,
+                message: 'not found',
+                color: 'gray',
             });
         res.status(200).send({
-            "schemaVersion": 1,
-            "label": `${get} run`,
-            "message": get === 'next'
+            schemaVersion: 1,
+            label: `${get} run`,
+            message: get === 'next'
                 ? `${job.next.toRelative()} at ${job.next.toISO()}`
                 : `${job.last?.toISOString() ?? '<no data>'}`,
-            "color": job.running ? 'green' : 'gray'
+            color: job.running ? 'green' : 'gray',
         });
     });
     app.get('/job/:jobname', (req, res) => {
@@ -48,16 +48,16 @@ try {
         const job = jobs.job(jobname);
         if (!job)
             return res.status(200).send({
-                "schemaVersion": 1,
-                "label": jobname,
-                "message": "not found",
-                "color": 'gray'
+                schemaVersion: 1,
+                label: jobname,
+                message: 'not found',
+                color: 'gray',
             });
         res.status(200).send({
-            "schemaVersion": 1,
-            "label": jobname,
-            "message": job.running ? 'active' : 'inactive',
-            "color": job.running ? 'green' : 'gray'
+            schemaVersion: 1,
+            label: jobname,
+            message: job.running ? 'active' : 'inactive',
+            color: job.running ? 'green' : 'gray',
         });
     });
     app.listen(process.env.PORT ?? 3000, () => {

@@ -1,13 +1,14 @@
 /* eslint-disable no-undef */
 /* @ts-ignore */
 // Copyright (c) 2021 Patsagorn Y.
-// 
+//
 // This software is released under the MIT License.
 // https://opensource.org/licenses/MIT
-import moment from 'moment';
 import 'moment/locale/th.js';
-import { resolve, dirname } from 'path';
+import { dirname, resolve } from 'path';
 import { fileURLToPath } from 'url';
+import { init } from '@paralleldrive/cuid2';
+import moment from 'moment';
 import { readFileSync } from 'node:fs';
 // // Only god know why this is necessary.
 // /** @type {Promise<?>} */
@@ -23,8 +24,7 @@ export const mm = moment;
  * @returns {string} absolute path to destination
  */
 export function resolveRelativePath(importMeta, path) {
-    return resolve(dirname(fileURLToPath(importMeta ??
-        import.meta.url)), path);
+    return resolve(dirname(fileURLToPath(importMeta ?? import.meta.url)), path);
 }
 /**
  * Parse json content in file.
@@ -55,3 +55,7 @@ export function flatten(array) {
 export function clone(obj) {
     return JSON.parse(JSON.stringify(obj));
 }
+/**
+ * CUID generator
+ */
+export const cuid = init({ length: 10 });

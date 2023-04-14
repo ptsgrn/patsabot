@@ -1,5 +1,5 @@
 // Copyright (c) 2021 Patsagorn Y.
-// 
+//
 // This software is released under the MIT License.
 // https://opensource.org/licenses/MIT
 import { readFileSync } from 'fs';

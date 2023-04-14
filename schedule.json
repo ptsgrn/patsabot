@@ -6,17 +6,22 @@
   },
   {
     "name": "archive",
-    "crontab": "15 0 * * *",
-    "command": "~/pyvenv/bin/python ~/bot/python/archive.py"
+    "crontab": "0 15 * * *",
+    "command": "node $HOME/bot/src/patsabot/run.js archive"
+  },
+  {
+    "name": "updatestatus",
+    "crontab": "0 0,8,16 * * *",
+    "command": "node $HOME/bot/src/patsabot/run.js updatestatus"
   },
   {
     "name": "topedits",
-    "command": "node $HOME/bot/src/patsabot/run.js topedits",
-    "crontab": "0 1 * * 0"
+    "crontab": "0 1 * * 0",
+    "command": "node $HOME/bot/src/patsabot/run.js topedits"
   },
   {
-    "name": "timestamp",
-    "command": "node $HOME/bot/src/patsabot/run.js updatestatus",
-    "crontab": "0,30 * * * *"
+    "name": "removedrafttemplate",
+    "crontab": "15 2 * * *",
+    "command": "node $HOME/bot/src/patsabot/run.js removedrafttemplate"
   }
 ]

@@ -1,11 +1,11 @@
-import { loggerDir, credentials } from "./config.js";
-import winston from "winston";
+import { loggerDir, credentials } from './config.js';
+import winston from 'winston';
 const { createLogger, format, transports, addColors } = winston;
-import DiscordTransport from "./discord-transport.js";
+import DiscordTransport from './discord-transport.js';
 addColors({
-    done: "green",
-    scriptrun: "bold green",
-    scriptdone: "bold green",
+    done: 'green',
+    scriptrun: 'bold green',
+    scriptdone: 'bold green',
 });
 const logger = createLogger({
     levels: {
@@ -22,11 +22,11 @@ const logger = createLogger({
         scriptrun: 5,
         scriptdone: 5,
     },
-    level: process.env.NODE_ENV === "production" ? "info" : "debug",
+    level: process.env.NODE_ENV === 'production' ? 'info' : 'debug',
     format: format.combine(format.timestamp(), format.errors({
         stack: true,
     }), format.splat(), format.json(), format.ms()),
-    defaultMeta: { service: "patsabot" },
+    defaultMeta: { service: 'patsabot' },
     transports: [
         new transports.File({
             filename: `${loggerDir}/logs.log`,
@@ -37,7 +37,7 @@ const logger = createLogger({
         }),
         new DiscordTransport({
             webhook: credentials.discord.webhook.logger,
-            defaultMeta: { service: "patsabot" },
+            defaultMeta: { service: 'patsabot' },
         }),
     ],
     exceptionHandlers: [

@@ -1,11 +1,11 @@
-// Copyright (c) 2022 Patsagorn Y.
-// 
-// This software is released under the MIT License.
-// https://opensource.org/licenses/MIT
-const sandboxlist = [
-    'วิกิพีเดีย:ทดลองเขียน',
-    'ฉบับร่าง:ทดลองเขียน'
-];
+/**
+ * @name sandboxclean
+ * @desc รีเซ็ตหน้ากระบะทราย
+ * @script https://github.com/ptsgrn/patsabot/blob/main/src/scripts/sandboxclean.ts
+ * @author Patsagorn Y. (mpy@toolforge.org)
+ * @license MIT
+ */
+const sandboxlist = ['วิกิพีเดีย:ทดลองเขียน', 'ฉบับร่าง:ทดลองเขียน'];
 // function isHaveToclean(page) {
 //   console.log(page.history)
 //   return false
@@ -16,10 +16,12 @@ export async function run({ bot, log }) {
     await bot.getSiteInfo();
     let pagename = 'วิกิพีเดีย:ทดลองเขียน';
     let page = new bot.page(pagename);
-    console.log(await page.history({
+    console.log(await page
+        .history({
         props: ['sha1', 'timestamp', 'user', 'comment'],
-        limit: 1
-    }).catch(err => log.error('%o', err)));
+        limit: 1,
+    })
+        .catch((err) => log.error('%o', err)));
     // bot.batchOperation(
     //   sandboxlist,
     //   async (pagename, idx) => {
@@ -28,7 +30,7 @@ export async function run({ bot, log }) {
     //       props: ['sha1', 'timestamp', 'user', 'comment'],
     //       limit: 1
     //     }))
-    //     // if (isHaveToclean(page)) 
+    //     // if (isHaveToclean(page))
     //   },
     //   /* concurrency */ 5,
     //   /* retries */ 2

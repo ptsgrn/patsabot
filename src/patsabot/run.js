@@ -1,15 +1,15 @@
 #!/usr/bin/env node
 // Copyright (c) 2021 Patsagorn Y.
-// 
+//
 // This software is released under the MIT License.
 // https://opensource.org/licenses/MIT
-import { spawn } from 'child_process';
-import { resolve, dirname } from 'path';
+import { dirname, resolve } from 'path';
 import chalk from 'chalk';
-import { version } from './version.js';
-import fs from 'fs';
 import { fileURLToPath } from 'url';
+import fs from 'fs';
 import logger from './logger.js';
+import { spawn } from 'child_process';
+import { version } from './version.js';
 const argv = process.argv.splice(2);
 const script_path = resolve(dirname(fileURLToPath(import.meta.url)), '../scripts/');
 process.on('uncaughtException', (err) => {
@@ -21,14 +21,14 @@ if (argv.length === 0) {
             return console.log(chalk.red.bold('Unable to scan directory: ' + err));
         }
         let scripts = files
-            .filter(f => f.endsWith('.js'))
-            .map(f => f.replace('.js', ''));
+            .filter((f) => f.endsWith('.js'))
+            .map((f) => f.replace('.js', ''));
         console.log(`
   For show help, use:
     $ ${chalk.green('patsabot')} --help
 
   ${chalk.green.bold('Available scripts:')}
-${scripts.map(s => `    ${chalk.green(s)}`).join('\n')}
+${scripts.map((s) => `    ${chalk.green(s)}`).join('\n')}
 
   For more usage and information about each script, see:
     $ ${chalk.green('patsabot')} <script> --help`);
@@ -56,8 +56,15 @@ if (argv[0] === '--help' || argv[0] === '-h') {
     process.exit(0);
 }
 if (argv[0] !== undefined && argv[0] != '--help' && argv[0] != '-h') {
-    const ls = spawn('node', [resolve(dirname(fileURLToPath(import.meta.url)), `../scripts/${argv[0]}.js`), ...argv.splice(1)], {
-        stdio: 'inherit'
+    const ls = spawn('node', [
+        resolve(dirname(fileURLToPath(import.meta.url)), `../scripts/${argv[0]}.js`),
+        ...argv.splice(1),
+    ], {
+        env: {
+            ...process.env,
+            NODE_ENV: 'development',
+        },
+        stdio: 'inherit',
     });
     ls.on('close', (code) => {
         console.log(chalk.black[code === 0 ? 'bgGreenBright' : 'bgRed'](`  script process exited with code ${chalk.bold(code)}  `));

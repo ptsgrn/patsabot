@@ -22,7 +22,8 @@ export default async function selfUpdate(req, res) {
     }
     logger.log('debug', 'signature verified', { id });
     // check if it's ptsgrn/patsabot and main branch
-    if (req.body.repository.full_name !== 'ptsgrn/patsabot' || req.body.ref !== 'refs/heads/main') {
+    if (req.body.repository.full_name !== 'ptsgrn/patsabot' ||
+        req.body.ref !== 'refs/heads/main') {
         logger.log('debug', 'Not main branch or not ptsgrn/patsabot', { id });
         return res.status(200).send('Not main branch or not ptsgrn/patsabot');
     }
