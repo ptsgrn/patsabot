@@ -10,7 +10,7 @@ const http = rateLimit(axios.create(), {
 /**
  * Nextabit's Discord Transport for winston
  */
-export default class DiscordTransport extends Transport {
+class DiscordTransport extends Transport {
     constructor(opts) {
         super(opts);
         /** Log queue */
@@ -145,3 +145,4 @@ DiscordTransport.COLORS = {
     debug: 2196944,
     silly: 2210373, // #21ba45
 };
+export default DiscordTransport;
