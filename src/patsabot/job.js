@@ -1,11 +1,11 @@
 import { loggerDir, schedule } from './config.js';
-import baselogger from './logger.js';
-import { JobsManager } from './jobsmanager.js';
-import express from 'express';
 import ExpressStatusMonitor from 'express-status-monitor';
+import { JobsManager } from './jobsmanager.js';
+import baselogger from './logger.js';
 import bodyParser from 'body-parser';
-import selfUpdate from './selfupdater.js';
+import express from 'express';
 import { join } from 'path';
+import selfUpdate from './selfupdater.js';
 const logger = baselogger.child({
     script: 'jobrunner',
 });
@@ -59,6 +59,9 @@ try {
             message: job.running ? 'active' : 'inactive',
             color: job.running ? 'green' : 'gray',
         });
+    });
+    app.all('/ping', (req, res) => {
+        res.status(200).send('OK');
     });
     app.listen(process.env.PORT ?? 3000, () => {
         console.log(`app listening on port ${process.env.PORT ?? 3000}`);

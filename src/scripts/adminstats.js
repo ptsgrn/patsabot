@@ -400,7 +400,7 @@ class AdminStats {
         this.bot = bot;
     }
     async run() {
-        const contentResponse = await axios.default.get(`https://xtools.wmflabs.org/adminstats/th.wikipedia.org/${__classPrivateFieldGet(this, _AdminStats_instances, "a", _AdminStats_start_get)}/${__classPrivateFieldGet(this, _AdminStats_instances, "a", _AdminStats_end_get)}?format=wikitext&actions=delete|revision-delete|log-delete|restore|re-block|unblock|re-protect|unprotect|rights|merge|import|abusefilter|contentmodel`);
+        const contentResponse = await axios.get(`https://xtools.wmflabs.org/adminstats/th.wikipedia.org/${__classPrivateFieldGet(this, _AdminStats_instances, "a", _AdminStats_start_get)}/${__classPrivateFieldGet(this, _AdminStats_instances, "a", _AdminStats_end_get)}?format=wikitext&actions=delete|revision-delete|log-delete|restore|re-block|unblock|re-protect|unprotect|rights|merge|import|abusefilter|contentmodel`);
         let content = new TextContent(contentResponse.data).content;
         content =
             `${this.config.header}\n: ข้อมูลระหว่างวันที่ ${__classPrivateFieldGet(this, _AdminStats_instances, "a", _AdminStats_start_get)} ถึง ${__classPrivateFieldGet(this, _AdminStats_instances, "a", _AdminStats_end_get)}` + content;

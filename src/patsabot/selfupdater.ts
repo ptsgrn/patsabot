@@ -13,7 +13,7 @@ import { join } from 'path';
 import { spawn } from 'child_process';
 
 const logger = baseLogger.child({ script: 'selfupdate' });
-const axios = Axios.default.create({
+const axios = Axios.create({
   baseURL: 'https://patsabot.toolforge.org',
   timeout: 10000,
 });

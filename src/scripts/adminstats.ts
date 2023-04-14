@@ -10,6 +10,7 @@
 
 import meow from 'meow';
 import axios from 'axios';
+import type { AxiosResponse } from 'axios';
 import bot from '../patsabot/bot.js';
 import Logger from '../patsabot/logger.js';
 import { mwn } from 'mwn';
@@ -446,14 +447,11 @@ class AdminStats implements AdminStats {
     }).format(new Date());
   }
   async run() {
-    const contentResponse: axios.AxiosResponse<string, string> =
-      await axios.default.get(
-        `https://xtools.wmflabs.org/adminstats/th.wikipedia.org/${
-          this.#start
-        }/${
-          this.#end
-        }?format=wikitext&actions=delete|revision-delete|log-delete|restore|re-block|unblock|re-protect|unprotect|rights|merge|import|abusefilter|contentmodel`
-      );
+    const contentResponse: AxiosResponse<string, string> = await axios.get(
+      `https://xtools.wmflabs.org/adminstats/th.wikipedia.org/${this.#start}/${
+        this.#end
+      }?format=wikitext&actions=delete|revision-delete|log-delete|restore|re-block|unblock|re-protect|unprotect|rights|merge|import|abusefilter|contentmodel`
+    );
     let content = new TextContent(contentResponse.data).content;
     content =
       `${this.config.header}\n: ข้อมูลระหว่างวันที่ ${this.#start} ถึง ${
