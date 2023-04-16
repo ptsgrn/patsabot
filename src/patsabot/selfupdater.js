@@ -122,4 +122,5 @@ export default async function selfUpdate(req, res) {
         process.exit(1);
         return;
     }
+    logger.info('🚀 Pinged! and status is OK', { id });
 }

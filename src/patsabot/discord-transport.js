@@ -1,7 +1,11 @@
 import Transport from 'winston-transport';
 import axios from 'axios';
+import baseLogger from './logger.js';
 import os from 'os';
 import rateLimit from 'axios-rate-limit';
+const logger = baseLogger.child({
+    script: 'internal:discord-transport',
+});
 // @ts-ignore
 const http = rateLimit(axios.create(), {
     maxRequests: 1,
@@ -37,7 +41,7 @@ class DiscordTransport extends Transport {
                     resolve();
                 })
                     .catch((err) => {
-                    console.error(`Could not connect to Discord Webhook at ${this.webhook}`);
+                    logger.error(`Could not connect to Discord Webhook at ${this.webhook}`);
                     reject(err);
                 });
             });
@@ -109,7 +113,7 @@ class DiscordTransport extends Transport {
                 });
             }
             catch (err) {
-                console.error('Error sending to discord', err);
+                logger.error('Error sending to discord', err);
             }
         };
         this.webhook = opts.webhook;
@@ -129,7 +133,7 @@ class DiscordTransport extends Transport {
                     this.sendToDiscord(info);
                 })
                     .catch((err) => {
-                    console.log('Error sending message to discord', err);
+                    logger.log('Error sending message to discord', err);
                 });
             });
         }
