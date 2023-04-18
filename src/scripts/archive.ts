@@ -4,7 +4,7 @@
  * @name archive
  * @desc ดูการใช้งาน {{tl|เก็บอภิปรายอัตโนมัติ}} แล้วเก็บลงกรุ
  * @script https://github.com/ptsgrn/patsabot/blob/main/src/scripts/archive.ts
- * @cron 0 15 * * *
+ * @cron 15 0 * * *
  * @author Σ ([[:w:en:User:Σ]]) for archive script
  * @license LGPLv2+
  */

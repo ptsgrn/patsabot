@@ -2,7 +2,6 @@ import Transport from 'winston-transport';
 import axios from 'axios';
 import os from 'os';
 import rateLimit from 'axios-rate-limit';
-// @ts-ignore
 const http = rateLimit(axios.create(), {
     maxRequests: 1,
     perMilliseconds: 1000,
