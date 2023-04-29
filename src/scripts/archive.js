@@ -40,4 +40,4 @@ async function archive() {
         logger.error(e.message, { stack: e.stack });
     }
 }
-archive();
+await archive();
