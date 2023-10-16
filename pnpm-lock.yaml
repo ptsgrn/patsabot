@@ -51,12 +51,12 @@ dependencies:
   mysql2:
     specifier: ^2.3.3
     version: 2.3.3
+  node-ts:
+    specifier: ^6.0.1
+    version: 6.0.1
   winston:
     specifier: ^3.11.0
     version: 3.11.0
-  winston-discord-transport:
-    specifier: ^1.3.0
-    version: 1.3.0
   winston-transport:
     specifier: ^4.6.0
     version: 4.6.0
@@ -216,6 +216,15 @@ packages:
       '@noble/hashes': 1.3.0
     dev: false
 
+  /@rauschma/stringio@1.4.0:
+    resolution:
+      {
+        integrity: sha512-3uor2f/MXZkmX5RJf8r+OC3WvZVzpSme0yyL0rQDPEnatE02qRcqwEwnsgpgriEck0S/n4vWtUd6tTtrJwk45Q==,
+      }
+    dependencies:
+      '@types/node': 10.17.60
+    dev: false
+
   /@tsconfig/node10@1.0.9:
     resolution:
       {
@@ -362,6 +371,13 @@ packages:
       }
     dev: false
 
+  /@types/node@10.17.60:
+    resolution:
+      {
+        integrity: sha512-F0KIgDJfy2nA3zMLmWGKxcH2ZVEtCZXHHdOQs2gSaQ27+lNeEfGxzkIw90aXswATX7AZ33tahPbzy6KAfUreVw==,
+      }
+    dev: false
+
   /@types/node@14.18.63:
     resolution:
       {
@@ -375,6 +391,15 @@ packages:
         integrity: sha512-4slmbtwV59ZxitY4ixUZdy1uRLf9eSIvBWPQxNjhHYWEtn0FryfKpyS2cvADYXTayWdKEIsJengncrVvkI4I6A==,
       }
     dev: true
+
+  /@types/node@20.8.6:
+    resolution:
+      {
+        integrity: sha512-eWO4K2Ji70QzKUqRy6oyJWUeB7+g2cRagT3T/nxYibYcT4y2BDL8lqolRXjTHmkZCdJfIPaY73KbJAZmcryxTQ==,
+      }
+    dependencies:
+      undici-types: 5.25.3
+    dev: false
 
   /@types/normalize-package-data@2.4.1:
     resolution:
@@ -749,6 +774,7 @@ packages:
       function-bind: 1.1.1
       get-intrinsic: 1.1.3
     dev: false
+    optional: true
 
   /camelcase-keys@8.0.2:
     resolution:
@@ -998,20 +1024,6 @@ packages:
     engines: { node: '>= 0.6' }
     dev: false
     optional: true
-
-  /cookiejar@2.1.4:
-    resolution:
-      {
-        integrity: sha512-LDx6oHrK+PhzLKJU9j5S7/Y3jM/mUHvD/DeI1WQmJn652iPC5Y4TBzC9l+5OMOXlyTTA+SmVUPm0HQUwpD5Jqw==,
-      }
-    dev: false
-
-  /core-util-is@1.0.3:
-    resolution:
-      {
-        integrity: sha512-ZQBvi1DcpJ4GDqanjucZ2Hj3wEO5pZDS89BWbkcrvdxksJorwUDDZamX9ldFkp9aw2lmBDLgkObEA4DWNJ9FYQ==,
-      }
-    dev: false
 
   /create-require@1.1.1:
     resolution:
@@ -1403,20 +1415,6 @@ packages:
     dev: false
     optional: true
 
-  /fast-safe-stringify@2.1.1:
-    resolution:
-      {
-        integrity: sha512-W+KJc2dmILlPplD/H4K9l9LcAHAfPtP6BY84uVLXQ6Evcz9Lcg33Y2z1IVblT6xdY54PXYVHEv+0Wpq8Io6zkA==,
-      }
-    dev: false
-
-  /fecha@2.3.3:
-    resolution:
-      {
-        integrity: sha512-lUGBnIamTAwk4znq5BcqsDaxSmZ9nDVJaij6NvRt/Tg4R69gERA+otPKbS86ROw9nxVMw2/mp1fnaiWqbs6Sdg==,
-      }
-    dev: false
-
   /fecha@4.2.3:
     resolution:
       {
@@ -1510,14 +1508,6 @@ packages:
       mime-types: 2.1.35
     dev: false
 
-  /formidable@1.2.6:
-    resolution:
-      {
-        integrity: sha512-KcpbcpuLNOwrEjnbpMC0gS+X8ciDoZE1kkqzat4a8vrprf+s9pKNQ/QIwWfbfs4ltgmFl3MD177SNTkve3BwGQ==,
-      }
-    deprecated: 'Please upgrade to latest, formidable@v2 or formidable@v3! Check these notes: https://bit.ly/2ZEqIau'
-    dev: false
-
   /forwarded@0.2.0:
     resolution:
       {
@@ -1562,6 +1552,7 @@ packages:
       has: 1.0.3
       has-symbols: 1.0.3
     dev: false
+    optional: true
 
   /get-stream@6.0.1:
     resolution:
@@ -1636,6 +1627,7 @@ packages:
       }
     engines: { node: '>= 0.4' }
     dev: false
+    optional: true
 
   /has@1.0.3:
     resolution:
@@ -1837,13 +1829,6 @@ packages:
     engines: { node: ^12.20.0 || ^14.13.1 || >=16.0.0 }
     dev: true
 
-  /isarray@1.0.0:
-    resolution:
-      {
-        integrity: sha512-VLghIWNM6ELQzo7zwmcg0NmTVyWKYjvIeM83yjp0wRDTmUnrM678fQbcKBo6n2CJEF0szoG//ytg+TKla89ALQ==,
-      }
-    dev: false
-
   /isarray@2.0.1:
     resolution:
       {
@@ -1967,19 +1952,6 @@ packages:
       strip-ansi: 7.1.0
       wrap-ansi: 8.1.0
     dev: true
-
-  /logform@2.1.2:
-    resolution:
-      {
-        integrity: sha512-+lZh4OpERDBLqjiwDLpAWNQu6KMjnlXH2ByZwCuSqVPJletw0kTWJf5CgSNAUKn1KUkv3m2cUz/LK8zyEy7wzQ==,
-      }
-    dependencies:
-      colors: 1.4.0
-      fast-safe-stringify: 2.1.1
-      fecha: 2.3.3
-      ms: 2.1.3
-      triple-beam: 1.3.0
-    dev: false
 
   /logform@2.4.2:
     resolution:
@@ -2119,6 +2091,7 @@ packages:
       }
     engines: { node: '>= 0.6' }
     dev: false
+    optional: true
 
   /micromatch@4.0.5:
     resolution:
@@ -2158,15 +2131,6 @@ packages:
     hasBin: true
     dev: false
     optional: true
-
-  /mime@2.6.0:
-    resolution:
-      {
-        integrity: sha512-USPkMeET31rOMiarsBNIHZKLGgvKc/LrjofAnBlOttf5ajRvqiRA8QsenbcooctK6d6Ts6aqZXBA+XbkKthiQg==,
-      }
-    engines: { node: '>=4.0.0' }
-    hasBin: true
-    dev: false
 
   /mimic-fn@2.1.0:
     resolution:
@@ -2319,6 +2283,17 @@ packages:
     hasBin: true
     dev: false
 
+  /node-ts@6.0.1:
+    resolution:
+      {
+        integrity: sha512-nxFz4tJYv9Yu6u4e3B1rmfh45Zmge7rD/MlTA5V98+Q5eFsqzCWTWDYvbrNEPGtnzhkqNLk4E2r3C6VSfNoZNQ==,
+      }
+    engines: { node: '>=18.0.0' }
+    dependencies:
+      '@rauschma/stringio': 1.4.0
+      '@types/node': 20.8.6
+    dev: false
+
   /normalize-package-data@3.0.3:
     resolution:
       {
@@ -2368,6 +2343,7 @@ packages:
         integrity: sha512-geUvdk7c+eizMNUDkRpW1wJwgfOiOeHbxBR/hLXK1aT6zmVSO0jsQcs7fj6MGw89jC/cjGfLcNOrtMYtGqm81g==,
       }
     dev: false
+    optional: true
 
   /on-finished@2.4.1:
     resolution:
@@ -2560,13 +2536,6 @@ packages:
       minimist: 1.2.6
     dev: false
 
-  /process-nextick-args@2.0.1:
-    resolution:
-      {
-        integrity: sha512-3ouUOpQhtgrbOa17J7+uxOTpITYWaGP7/AhoR3+A+/1e9skrzelGi/dXzEYyvbxubEF6Wn2ypscTKiKJFFn1ag==,
-      }
-    dev: false
-
   /proxy-addr@2.0.7:
     resolution:
       {
@@ -2617,6 +2586,7 @@ packages:
     dependencies:
       side-channel: 1.0.4
     dev: false
+    optional: true
 
   /quick-lru@6.1.1:
     resolution:
@@ -2688,21 +2658,6 @@ packages:
       type-fest: 2.19.0
     dev: false
 
-  /readable-stream@2.3.7:
-    resolution:
-      {
-        integrity: sha512-Ebho8K4jIbHAxnuxi7o42OrZgF/ZTNcsZj6nRKyUmkhLFq8CHItp/fy6hQZuZmP/n3yZ9VBUbp4zz/mX8hmYPw==,
-      }
-    dependencies:
-      core-util-is: 1.0.3
-      inherits: 2.0.4
-      isarray: 1.0.0
-      process-nextick-args: 2.0.1
-      safe-buffer: 5.1.2
-      string_decoder: 1.1.1
-      util-deprecate: 1.0.2
-    dev: false
-
   /readable-stream@3.6.0:
     resolution:
       {
@@ -2755,13 +2710,6 @@ packages:
     dev: false
     optional: true
 
-  /safe-buffer@5.1.2:
-    resolution:
-      {
-        integrity: sha512-Gd2UZBJDkXlY7GbJxfsE8/nvKkUEU1G38c1siN6QP6a9PT9MmHB8GnpscSmMJSoF8LOIrt8ud/wPtojys4G6+g==,
-      }
-    dev: false
-
   /safe-buffer@5.2.1:
     resolution:
       {
@@ -2782,14 +2730,6 @@ packages:
       {
         integrity: sha512-YZo3K82SD7Riyi0E1EQPojLz7kpepnSQI9IyPbHHg1XXXevb5dJI7tpyN2ADxGcQbHG7vcyRHk0cbwqcQriUtg==,
       }
-    dev: false
-
-  /semver@6.3.0:
-    resolution:
-      {
-        integrity: sha512-b39TBaTSfV6yBrapU89p5fKekE2m/NwnDocOVruQFS1/veMgdzuPcnOM34M6CwxW8jH/lxEa5rBoDeUwu5HHTw==,
-      }
-    hasBin: true
     dev: false
 
   /semver@7.4.0:
@@ -2887,6 +2827,7 @@ packages:
       get-intrinsic: 1.1.3
       object-inspect: 1.12.3
     dev: false
+    optional: true
 
   /signal-exit@3.0.7:
     resolution:
@@ -3074,15 +3015,6 @@ packages:
       strip-ansi: 7.1.0
     dev: true
 
-  /string_decoder@1.1.1:
-    resolution:
-      {
-        integrity: sha512-n/ShnvDi6FHbbVfviro+WojiFzv+s8MPMHBczVePfUpDJLwoLT0ht1l4YwBCbi8pJAveEEdnkHyPyTP/mzRfwg==,
-      }
-    dependencies:
-      safe-buffer: 5.1.2
-    dev: false
-
   /string_decoder@1.3.0:
     resolution:
       {
@@ -3128,29 +3060,6 @@ packages:
     engines: { node: '>=12' }
     dependencies:
       min-indent: 1.0.1
-    dev: false
-
-  /superagent@5.2.2:
-    resolution:
-      {
-        integrity: sha512-pMWBUnIllK4ZTw7p/UaobiQPwAO5w/1NRRTDpV0FTVNmECztsxKspj3ZWEordVEaqpZtmOQJJna4yTLyC/q7PQ==,
-      }
-    engines: { node: '>= 7.0.0' }
-    deprecated: Please upgrade to v7.0.2+ of superagent.  We have fixed numerous issues with streams, form-data, attach(), filesystem errors not bubbling up (ENOENT on attach()), and all tests are now passing.  See the releases tab for more information at <https://github.com/visionmedia/superagent/releases>.
-    dependencies:
-      component-emitter: 1.3.0
-      cookiejar: 2.1.4
-      debug: 4.3.4
-      fast-safe-stringify: 2.1.1
-      form-data: 3.0.1
-      formidable: 1.2.6
-      methods: 1.1.2
-      mime: 2.6.0
-      qs: 6.11.0
-      readable-stream: 3.6.0
-      semver: 6.3.0
-    transitivePeerDependencies:
-      - supports-color
     dev: false
 
   /supports-color@2.0.0:
@@ -3347,6 +3256,13 @@ packages:
     dev: false
     optional: true
 
+  /undici-types@5.25.3:
+    resolution:
+      {
+        integrity: sha512-Ga1jfYwRn7+cP9v8auvEXN1rX3sWqlayd4HP7OKk4mZWylEmu3KzXDUGrQUN6Ol7qo1gPvB2e5gX6udnyEPgdA==,
+      }
+    dev: false
+
   /universalify@0.1.2:
     resolution:
       {
@@ -3427,31 +3343,6 @@ packages:
     dependencies:
       isexe: 2.0.0
     dev: true
-
-  /winston-discord-transport@1.3.0:
-    resolution:
-      {
-        integrity: sha512-oyns2ea9cQie+qBTTgfZq17pTRie41tEIE38s4ZR5ifSp4E0n8hAD7XBoLXxV0xJwLjm8IPBKzETtG8L9AvVfg==,
-      }
-    dependencies:
-      logform: 2.1.2
-      superagent: 5.2.2
-      winston-transport: 4.3.0
-    transitivePeerDependencies:
-      - supports-color
-    dev: false
-
-  /winston-transport@4.3.0:
-    resolution:
-      {
-        integrity: sha512-B2wPuwUi3vhzn/51Uukcao4dIduEiPOcOt9HJ3QeaXgkJ5Z7UwpBzxS4ZGNHtrxrUvTwemsQiSys0ihOf8Mp1A==,
-      }
-    engines: { node: '>= 6.4.0' }
-    dependencies:
-      logform: 2.4.2
-      readable-stream: 2.3.7
-      triple-beam: 1.3.0
-    dev: false
 
   /winston-transport@4.6.0:
     resolution:
