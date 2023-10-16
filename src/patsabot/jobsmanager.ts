@@ -182,4 +182,43 @@ export class JobsManager {
       data: job.data,
     };
   }
+  stop(name: string) {
+    if (!this.#jobsName.includes(name)) {
+      logger.log('error', `${name} is not exist`);
+      if (!this.#options.ignoreError) throw new Error(`${name} is not exist`);
+      return;
+    }
+    this.jobs[name].cron.stop();
+    logger.log('info', `${name} stopped`);
+  }
+  stopAll() {
+    for (const name in this.jobs) {
+      this.stop(name);
+    }
+  }
+  /**
+   * Remove job from list
+   * @param name name of the job
+   */
+  remove(name: string) {
+    if (!this.#jobsName.includes(name)) {
+      logger.log('error', `${name} is not exist`);
+      if (!this.#options.ignoreError) throw new Error(`${name} is not exist`);
+      return;
+    }
+    this.jobs[name].cron.stop();
+    delete this.jobs[name];
+    this.#jobsName.splice(this.#jobsName.indexOf(name), 1);
+    logger.log('info', `${name} removed`);
+  }
+  /**
+   * Remove all job from list
+   */
+  removeAll() {
+    for (const name in this.jobs) {
+      this.remove(name);
+    }
+
+    logger.log('info', `removed all jobs`);
+  }
 }
