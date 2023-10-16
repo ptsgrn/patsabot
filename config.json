@@ -27,7 +27,7 @@
   },
   "replica": {
     "provider": "mysql",
-    "host": "thwiki.analytics.db.svc.wikimedia.cloud",
+    "host": "localhost",
     "port": 3306,
     "database": "thwiki_p"
   }

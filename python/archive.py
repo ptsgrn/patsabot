@@ -96,7 +96,8 @@ def ucfirst(s: str):
 
 def make_key(title, target):
     """echo -en "${salt}\n${title}\n${target}" | sha256sum"""
-    sha256sum = hashlib.new("sha256", os.environ["PATSABOT_SALT"].encode("utf8"))
+    sha256sum = hashlib.new(
+        "sha256", os.environ["PATSABOT_ARCHIVE_KEY_SALT"].encode("utf8"))
     sha256sum.update(b'\n')
     sha256sum.update(title.encode("utf8"))
     sha256sum.update(b'\n')
