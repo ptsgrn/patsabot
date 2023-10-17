@@ -1,5 +1,5 @@
 <script lang="ts">
-  const BASE = 'http://localhost:3000';
+  const BASE = 'https://patsabot.toolforge.org/';
   const lang =
     new URL(window.location.href).searchParams.get('lang') ||
     navigator.language;
