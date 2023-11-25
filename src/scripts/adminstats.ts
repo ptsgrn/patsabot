@@ -106,37 +106,60 @@ class AdminStats {
   async run() {
     let admins = await this.getAdmins();
     this.updateAt = new Date().toISOString();
-    let adminStatsData = await Promise.all(
+    Promise.all(
       admins.map(async (admin) => {
+        const stats = await this.getAdminStats(admin.userid, admin.name);
         return {
           ...admin,
-          ...(await this.getAdminStats(admin.userid, admin.name)),
+          ...stats,
         };
       })
-    );
-    let adminStatsDataLastSixMonths = await Promise.all(
-      admins.map(async (admin) => {
-        return {
-          ...admin,
-          ...(await this.getAdminStats(admin.userid, admin.name, true)),
-        };
+    )
+      .then((adminStatsData) => {
+        console.log(adminStatsData);
       })
-    );
-    this.connection.end();
-    this.connection = null;
-    let formattedTable = this.formatAdminsTable(adminStatsData);
-    let formattedTableLastSixMonths = this.formatAdminsTable(
-      adminStatsDataLastSixMonths
-    );
-    if (this.config.dryRun) {
-      console.log(formattedTable);
-      console.log(formattedTableLastSixMonths);
-      return;
-    }
-    await this.updateAdminStats(
-      await formattedTable,
-      await formattedTableLastSixMonths
-    );
+      .catch((err) => {
+        logger.error('cannot get admin stats', { err });
+        process.exit(1);
+        return [];
+      });
+    // let adminStatsData = await Promise.all(
+    //   admins.map(async (admin) => {
+    //     const stats = await this.getAdminStats(admin.userid, admin.name);
+    //     return {
+    //       ...admin,
+    //       ...stats,
+    //     };
+    //   })
+    // );
+    // let adminStatsDataLastSixMonths = await Promise.all(
+    //   admins.map(async (admin) => {
+    //     const stats = await this.getAdminStats(admin.userid, admin.name, true);
+    //     return {
+    //       ...admin,
+    //       ...stats,
+    //     };
+    //   })
+    // ).catch((err) => {
+    //   logger.error('cannot get admin stats', { err });
+    //   process.exit(1);
+    //   return [];
+    // });
+    // this.connection.end();
+    // this.connection = null;
+    // let formattedTable = this.formatAdminsTable(adminStatsData);
+    // let formattedTableLastSixMonths = this.formatAdminsTable(
+    //   adminStatsDataLastSixMonths
+    // );
+    // if (this.config.dryRun) {
+    //   console.log(formattedTable);
+    //   console.log(formattedTableLastSixMonths);
+    //   return;
+    // }
+    // await this.updateAdminStats(
+    //   await formattedTable,
+    //   await formattedTableLastSixMonths
+    // );
   }
 
   async getAdminStats(
@@ -144,86 +167,102 @@ class AdminStats {
     username: string,
     onlyLastSixMonths = false
   ) {
-    const log_delete_count = await this.queryReplica(
+    const log_delete_count = this.queryReplica(
       "SELECT count(log_action) AS count FROM logging_userindex INNER JOIN actor_logging ON log_actor = actor_id  WHERE `actor_user` = '?' AND `log_type` = 'delete' AND `log_action` = 'delete'",
       [userid],
       onlyLastSixMonths
     );
-    const log_revdel_count = await this.queryReplica(
+    const log_revdel_count = this.queryReplica(
       "SELECT count(log_action) AS count FROM logging_userindex INNER JOIN actor_logging ON log_actor = actor_id  WHERE `actor_user` = '?' AND `log_type` = 'delete' AND `log_action` = 'revision'",
       [userid],
       onlyLastSixMonths
     );
-    const log_restore_count = await this.queryReplica(
+    const log_restore_count = this.queryReplica(
       "SELECT count(log_action) AS count FROM logging_userindex INNER JOIN actor_logging ON log_actor = actor_id  WHERE `actor_user` = '?' AND `log_type` = 'delete' AND `log_action` = 'restore'",
       [userid],
       onlyLastSixMonths
     );
-    const log_block_count = await this.queryReplica(
+    const log_block_count = this.queryReplica(
       "SELECT count(log_action) AS count FROM logging_userindex INNER JOIN actor_logging ON log_actor = actor_id  WHERE `actor_user` = '?' AND `log_type` = 'block' AND `log_action` = 'block'",
       [userid],
       onlyLastSixMonths
     );
-    const log_unblock_count = await this.queryReplica(
+    const log_unblock_count = this.queryReplica(
       "SELECT count(log_action) AS count FROM logging_userindex INNER JOIN actor_logging ON log_actor = actor_id  WHERE `actor_user` = '?' AND `log_type` = 'block' AND `log_action` = 'unblock'",
       [userid],
       onlyLastSixMonths
     );
-    const log_protected_count = await this.queryReplica(
+    const log_protected_count = this.queryReplica(
       "SELECT count(log_action) AS count FROM logging_userindex INNER JOIN actor_logging ON log_actor = actor_id  WHERE `actor_user` = '?' AND `log_type` = 'protect' AND `log_action` = 'protect'",
       [userid],
       onlyLastSixMonths
     );
-    const log_unprotected_count = await this.queryReplica(
+    const log_unprotected_count = this.queryReplica(
       "SELECT count(log_action) AS count FROM logging_userindex INNER JOIN actor_logging ON log_actor = actor_id  WHERE `actor_user` = '?' AND `log_type` = 'protect' AND `log_action` = 'unprotect'",
       [userid],
       onlyLastSixMonths
     );
-    const log_rights_count = await this.queryReplica(
+    const log_rights_count = this.queryReplica(
       "SELECT count(log_action) AS count FROM logging_userindex INNER JOIN actor_logging ON log_actor = actor_id  WHERE `actor_user` = '?' AND `log_type` = 'rights' AND `log_action` = 'rights'",
       [userid],
       onlyLastSixMonths
     );
-    const log_reblock_count = await this.queryReplica(
+    const log_reblock_count = this.queryReplica(
       "SELECT count(log_action) AS count FROM logging_userindex INNER JOIN actor_logging ON log_actor = actor_id  WHERE `actor_user` = '?' AND `log_type` = 'block' AND `log_action` = 'reblock'",
       [userid],
       onlyLastSixMonths
     );
-    const log_modifyprotect_count = await this.queryReplica(
+    const log_modifyprotect_count = this.queryReplica(
       "SELECT count(log_action) AS count FROM logging_userindex INNER JOIN actor_logging ON log_actor = actor_id  WHERE `actor_user` = '?' AND `log_type` = 'protect' AND `log_action` = 'modify'",
       [userid],
       onlyLastSixMonths
     );
-    const log_abusefilter_count = await this.queryReplica(
+    const log_abusefilter_count = this.queryReplica(
       "SELECT count(log_action) AS count FROM logging_userindex INNER JOIN actor_logging ON log_actor = actor_id  WHERE `actor_user` = '?' AND `log_type` = 'abusefilter'",
       [userid],
       onlyLastSixMonths
     );
-    const log_merge_count = await this.queryReplica(
+    const log_merge_count = this.queryReplica(
       "SELECT count(log_action) AS count FROM logging_userindex INNER JOIN actor_logging ON log_actor = actor_id  WHERE `actor_user` = '?' AND `log_type` = 'block' AND `log_action` = 'reblock'",
       [userid],
       onlyLastSixMonths
     );
-    const log_import_count = await this.queryReplica(
+    const log_import_count = this.queryReplica(
       "SELECT count(log_action) AS count FROM logging_userindex INNER JOIN actor_logging ON log_actor = actor_id  WHERE `actor_user` = '?' AND `log_type` = 'import'",
       [userid],
       onlyLastSixMonths
     );
-    return {
-      delete: log_delete_count,
-      revdel: log_revdel_count,
-      restore: log_restore_count,
-      block: log_block_count,
-      unblock: log_unblock_count,
-      protected: log_protected_count,
-      unprotected: log_unprotected_count,
-      rights: log_rights_count,
-      reblock: log_reblock_count,
-      modifyprotect: log_modifyprotect_count,
-      abusefilter: log_abusefilter_count,
-      merge: log_merge_count,
-      import: log_import_count,
-    };
+    return Promise.all([
+      log_delete_count,
+      log_revdel_count,
+      log_restore_count,
+      log_block_count,
+      log_unblock_count,
+      log_protected_count,
+      log_unprotected_count,
+      log_rights_count,
+      log_reblock_count,
+      log_modifyprotect_count,
+      log_abusefilter_count,
+      log_merge_count,
+      log_import_count,
+    ]).then((res) => {
+      return {
+        delete: res[0],
+        revdel: res[1],
+        restore: res[2],
+        block: res[3],
+        unblock: res[4],
+        protected: res[5],
+        unprotected: res[6],
+        rights: res[7],
+        reblock: res[8],
+        modifyprotect: res[9],
+        abusefilter: res[10],
+        merge: res[11],
+        import: res[12],
+      };
+    });
   }
 
   async getAdmins() {
@@ -241,13 +280,7 @@ class AdminStats {
 
   async queryReplica(query: string, value: any[], onlyLastSixMonths?: boolean) {
     if (!this.connection) {
-      this.connection = await conn.catch((err) => {
-        logger.error(`cannot connect to replica database: ${err.message}`, {
-          err,
-        });
-        process.exit(1);
-        return null;
-      });
+      this.connection = conn;
     }
     if (onlyLastSixMonths) {
       query += ` AND log_timestamp > '${new Date(
@@ -261,7 +294,9 @@ class AdminStats {
         process.exit(1);
         return [];
       })
-      .then((res) => res[0][0].count);
+      .then((res) => {
+        return res[0][0].count;
+      });
   }
 
   private async formatAdminsTable(statsDatas: AdminStatsData[]) {
@@ -331,22 +366,23 @@ class AdminStats {
         // sysop then interface-admin then checkuser then bureaucrat
         if (a === 'sysop') {
           return -1;
-        } else if (b === 'sysop') {
-          return 1;
-        } else if (a === 'interface-admin') {
+        } else if (a === 'interface-admin' && b !== 'sysop') {
           return -1;
-        } else if (b === 'interface-admin') {
-          return 1;
-        } else if (a === 'checkuser') {
+        } else if (
+          a === 'checkuser' &&
+          b !== 'sysop' &&
+          b !== 'interface-admin'
+        ) {
           return -1;
-        } else if (b === 'checkuser') {
-          return 1;
-        } else if (a === 'bureaucrat') {
+        } else if (
+          a === 'bureaucrat' &&
+          b !== 'sysop' &&
+          b !== 'interface-admin' &&
+          b !== 'checkuser'
+        ) {
           return -1;
-        } else if (b === 'bureaucrat') {
-          return 1;
         } else {
-          return 0;
+          return 1;
         }
       })
       .map((group) => {

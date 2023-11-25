@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # use bash strict mode
-set -euo pipefail
+# set -euo pipefail || exit 1
 
 # create the venv
 python3 -m venv ~/pyvenv

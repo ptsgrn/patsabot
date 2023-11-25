@@ -10,7 +10,7 @@ import chalk from 'chalk';
 import { fileURLToPath } from 'url';
 import fs from 'fs';
 import logger from './logger.js';
-import { spawn } from 'child_process';
+import { spawn } from 'node:child_process';
 import { version } from './version.js';
 
 const argv = process.argv.splice(2);
@@ -69,11 +69,11 @@ if (argv[0] === '--help' || argv[0] === '-h') {
 
 if (argv[0] !== undefined && argv[0] != '--help' && argv[0] != '-h') {
   const ls = spawn(
-    'node',
+    '.bun/bin/bun',
     [
       resolve(
         dirname(fileURLToPath(import.meta.url)),
-        `../scripts/${argv[0]}.js`
+        `../scripts/${argv[0]}.ts`
       ),
       ...argv.splice(1),
     ],
