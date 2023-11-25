@@ -37,7 +37,7 @@
   const fetchData = (
     input: URL | RequestInfo,
     method: 'get' | 'post' = 'get',
-    init?: RequestInit
+    init?: RequestInit,
   ) => {
     const url = typeof input === 'string' ? new URL(input, BASE) : input;
     const headers = new Headers(init?.headers);
@@ -73,6 +73,7 @@
     } else {
       alert('Job cannot start!');
     }
+    refreshJobs();
   };
   const stopJob = async (jobName: string) => {
     const answer = await openConfirmModal({
@@ -86,6 +87,11 @@
     } else {
       alert('Job cannot stop!');
     }
+    refreshJobs();
+  };
+  let jobStatus = getJobsStatus();
+  const refreshJobs = async () => {
+    jobStatus = getJobsStatus();
   };
   const formatDateIntl = Intl.DateTimeFormat(lang, {
     dateStyle: 'full',
@@ -108,7 +114,7 @@
     heading,
     body,
     onSubmit,
-    isDanger,
+    isDanger = false,
   }: {
     heading: string;
     body: string;
@@ -182,7 +188,7 @@
     >
   </ButtonSet>
   <div class="my-6">
-    {#await getJobsStatus()}
+    {#await jobStatus}
       <DataTableSkeleton
         headers={['Name', 'Status', 'Last run', 'Next run', 'Actions']}
         rows={7}
