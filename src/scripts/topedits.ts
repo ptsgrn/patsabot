@@ -118,10 +118,7 @@ function rightTransform(rights) {
 }
 
 async function run() {
-  const connection = await conn.catch((err) => {
-    logger.log('error', 'cannot access replica', err);
-    process.exit(1);
-  });
+  const connection = conn;
   const data = await connection
     .execute(
       `

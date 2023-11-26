@@ -12,7 +12,7 @@
 import type { Connection } from 'mysql2/promise';
 import Logger from '../patsabot/logger.js';
 import bot from '../patsabot/bot.js';
-import { conn } from '../patsabot/replica.js';
+import { conn, query } from '../patsabot/replica.js';
 import meow from 'meow';
 
 const cli = meow(
@@ -106,7 +106,19 @@ class AdminStats {
   async run() {
     let admins = await this.getAdmins();
     this.updateAt = new Date().toISOString();
-    Promise.all(
+    let adminsStatsData: AdminStatsData[] = [];
+    console.log(admins.map((a) => a.name));
+    for (const admin of admins) {
+      const stats = await this.getAdminStats(admin.userid, admin.name);
+      console.log(admin.name, stats.unblock);
+      adminsStatsData.push({
+        ...admin,
+        ...stats,
+      });
+      // wait 2 seconds
+      await new Promise((resolve) => setTimeout(resolve, 2000));
+    }
+    let adminStatsData = await Promise.all(
       admins.map(async (admin) => {
         const stats = await this.getAdminStats(admin.userid, admin.name);
         return {
@@ -114,52 +126,35 @@ class AdminStats {
           ...stats,
         };
       })
-    )
-      .then((adminStatsData) => {
-        console.log(adminStatsData);
+    );
+    let adminStatsDataLastSixMonths = await Promise.all(
+      admins.map(async (admin) => {
+        const stats = await this.getAdminStats(admin.userid, admin.name, true);
+        return {
+          ...admin,
+          ...stats,
+        };
       })
-      .catch((err) => {
-        logger.error('cannot get admin stats', { err });
-        process.exit(1);
-        return [];
-      });
-    // let adminStatsData = await Promise.all(
-    //   admins.map(async (admin) => {
-    //     const stats = await this.getAdminStats(admin.userid, admin.name);
-    //     return {
-    //       ...admin,
-    //       ...stats,
-    //     };
-    //   })
-    // );
-    // let adminStatsDataLastSixMonths = await Promise.all(
-    //   admins.map(async (admin) => {
-    //     const stats = await this.getAdminStats(admin.userid, admin.name, true);
-    //     return {
-    //       ...admin,
-    //       ...stats,
-    //     };
-    //   })
-    // ).catch((err) => {
-    //   logger.error('cannot get admin stats', { err });
-    //   process.exit(1);
-    //   return [];
-    // });
-    // this.connection.end();
-    // this.connection = null;
-    // let formattedTable = this.formatAdminsTable(adminStatsData);
-    // let formattedTableLastSixMonths = this.formatAdminsTable(
-    //   adminStatsDataLastSixMonths
-    // );
-    // if (this.config.dryRun) {
-    //   console.log(formattedTable);
-    //   console.log(formattedTableLastSixMonths);
-    //   return;
-    // }
-    // await this.updateAdminStats(
-    //   await formattedTable,
-    //   await formattedTableLastSixMonths
-    // );
+    ).catch((err) => {
+      logger.error('cannot get admin stats', { err });
+      process.exit(1);
+      return [];
+    });
+    this.connection.end();
+    this.connection = null;
+    let formattedTable = this.formatAdminsTable(adminStatsData);
+    let formattedTableLastSixMonths = this.formatAdminsTable(
+      adminStatsDataLastSixMonths
+    );
+    if (this.config.dryRun) {
+      console.log(formattedTable);
+      console.log(formattedTableLastSixMonths);
+      return;
+    }
+    await this.updateAdminStats(
+      await formattedTable,
+      await formattedTableLastSixMonths
+    );
   }
 
   async getAdminStats(
@@ -167,102 +162,70 @@ class AdminStats {
     username: string,
     onlyLastSixMonths = false
   ) {
-    const log_delete_count = this.queryReplica(
-      "SELECT count(log_action) AS count FROM logging_userindex INNER JOIN actor_logging ON log_actor = actor_id  WHERE `actor_user` = '?' AND `log_type` = 'delete' AND `log_action` = 'delete'",
-      [userid],
-      onlyLastSixMonths
-    );
-    const log_revdel_count = this.queryReplica(
-      "SELECT count(log_action) AS count FROM logging_userindex INNER JOIN actor_logging ON log_actor = actor_id  WHERE `actor_user` = '?' AND `log_type` = 'delete' AND `log_action` = 'revision'",
-      [userid],
-      onlyLastSixMonths
-    );
-    const log_restore_count = this.queryReplica(
-      "SELECT count(log_action) AS count FROM logging_userindex INNER JOIN actor_logging ON log_actor = actor_id  WHERE `actor_user` = '?' AND `log_type` = 'delete' AND `log_action` = 'restore'",
-      [userid],
-      onlyLastSixMonths
-    );
-    const log_block_count = this.queryReplica(
-      "SELECT count(log_action) AS count FROM logging_userindex INNER JOIN actor_logging ON log_actor = actor_id  WHERE `actor_user` = '?' AND `log_type` = 'block' AND `log_action` = 'block'",
-      [userid],
-      onlyLastSixMonths
-    );
-    const log_unblock_count = this.queryReplica(
-      "SELECT count(log_action) AS count FROM logging_userindex INNER JOIN actor_logging ON log_actor = actor_id  WHERE `actor_user` = '?' AND `log_type` = 'block' AND `log_action` = 'unblock'",
-      [userid],
-      onlyLastSixMonths
-    );
-    const log_protected_count = this.queryReplica(
-      "SELECT count(log_action) AS count FROM logging_userindex INNER JOIN actor_logging ON log_actor = actor_id  WHERE `actor_user` = '?' AND `log_type` = 'protect' AND `log_action` = 'protect'",
-      [userid],
-      onlyLastSixMonths
-    );
-    const log_unprotected_count = this.queryReplica(
-      "SELECT count(log_action) AS count FROM logging_userindex INNER JOIN actor_logging ON log_actor = actor_id  WHERE `actor_user` = '?' AND `log_type` = 'protect' AND `log_action` = 'unprotect'",
-      [userid],
-      onlyLastSixMonths
-    );
-    const log_rights_count = this.queryReplica(
-      "SELECT count(log_action) AS count FROM logging_userindex INNER JOIN actor_logging ON log_actor = actor_id  WHERE `actor_user` = '?' AND `log_type` = 'rights' AND `log_action` = 'rights'",
-      [userid],
-      onlyLastSixMonths
-    );
-    const log_reblock_count = this.queryReplica(
-      "SELECT count(log_action) AS count FROM logging_userindex INNER JOIN actor_logging ON log_actor = actor_id  WHERE `actor_user` = '?' AND `log_type` = 'block' AND `log_action` = 'reblock'",
-      [userid],
-      onlyLastSixMonths
-    );
-    const log_modifyprotect_count = this.queryReplica(
-      "SELECT count(log_action) AS count FROM logging_userindex INNER JOIN actor_logging ON log_actor = actor_id  WHERE `actor_user` = '?' AND `log_type` = 'protect' AND `log_action` = 'modify'",
-      [userid],
-      onlyLastSixMonths
-    );
-    const log_abusefilter_count = this.queryReplica(
-      "SELECT count(log_action) AS count FROM logging_userindex INNER JOIN actor_logging ON log_actor = actor_id  WHERE `actor_user` = '?' AND `log_type` = 'abusefilter'",
-      [userid],
-      onlyLastSixMonths
-    );
-    const log_merge_count = this.queryReplica(
-      "SELECT count(log_action) AS count FROM logging_userindex INNER JOIN actor_logging ON log_actor = actor_id  WHERE `actor_user` = '?' AND `log_type` = 'block' AND `log_action` = 'reblock'",
-      [userid],
-      onlyLastSixMonths
-    );
-    const log_import_count = this.queryReplica(
-      "SELECT count(log_action) AS count FROM logging_userindex INNER JOIN actor_logging ON log_actor = actor_id  WHERE `actor_user` = '?' AND `log_type` = 'import'",
-      [userid],
-      onlyLastSixMonths
-    );
-    return Promise.all([
-      log_delete_count,
-      log_revdel_count,
-      log_restore_count,
-      log_block_count,
-      log_unblock_count,
-      log_protected_count,
-      log_unprotected_count,
-      log_rights_count,
-      log_reblock_count,
-      log_modifyprotect_count,
-      log_abusefilter_count,
-      log_merge_count,
-      log_import_count,
-    ]).then((res) => {
-      return {
-        delete: res[0],
-        revdel: res[1],
-        restore: res[2],
-        block: res[3],
-        unblock: res[4],
-        protected: res[5],
-        unprotected: res[6],
-        rights: res[7],
-        reblock: res[8],
-        modifyprotect: res[9],
-        abusefilter: res[10],
-        merge: res[11],
-        import: res[12],
-      };
+    let q = `SELECT
+        (SELECT count(log_action) AS count FROM logging_userindex INNER JOIN actor_logging ON log_actor = actor_id  WHERE actor_user = ? AND log_type = 'delete' AND log_action = 'delete') AS log_delete_count,
+        (SELECT count(log_action) AS count FROM logging_userindex INNER JOIN actor_logging ON log_actor = actor_id  WHERE actor_user = ? AND log_type = 'delete' AND log_action = 'revision') AS log_revdel_count,
+        (SELECT count(log_action) AS count FROM logging_userindex INNER JOIN actor_logging ON log_actor = actor_id  WHERE actor_user = ? AND log_type = 'delete' AND log_action = 'restore') AS log_restore_count,
+        (SELECT count(log_action) AS count FROM logging_userindex INNER JOIN actor_logging ON log_actor = actor_id  WHERE actor_user = ? AND log_type = 'block' AND log_action = 'block') AS log_block_count,
+        (SELECT count(log_action) AS count FROM logging_userindex INNER JOIN actor_logging ON log_actor = actor_id  WHERE actor_user = ? AND log_type = 'block' AND log_action = 'unblock') AS log_unblock_count,
+        (SELECT count(log_action) AS count FROM logging_userindex INNER JOIN actor_logging ON log_actor = actor_id  WHERE actor_user = ? AND log_type = 'protect' AND log_action = 'protect') AS log_protected_count,
+        (SELECT count(log_action) AS count FROM logging_userindex INNER JOIN actor_logging ON log_actor = actor_id  WHERE actor_user = ? AND log_type = 'protect' AND log_action = 'unprotect') AS log_unprotected_count,
+        (SELECT count(log_action) AS count FROM logging_userindex INNER JOIN actor_logging ON log_actor = actor_id  WHERE actor_user = ? AND log_type = 'rights' AND log_action = 'rights') AS log_rights_count,
+        (SELECT count(log_action) AS count FROM logging_userindex INNER JOIN actor_logging ON log_actor = actor_id  WHERE actor_user = ? AND log_type = 'block' AND log_action = 'reblock') AS log_reblock_count,
+        (SELECT count(log_action) AS count FROM logging_userindex INNER JOIN actor_logging ON log_actor = actor_id  WHERE actor_user = ? AND log_type = 'protect' AND log_action = 'modify') AS log_modifyprotect_count,
+        (SELECT count(log_action) AS count FROM logging_userindex INNER JOIN actor_logging ON log_actor = actor_id  WHERE actor_user = ? AND log_type = 'abusefilter') AS log_abusefilter_count,
+        (SELECT count(log_action) AS count FROM logging_userindex INNER JOIN actor_logging ON log_actor = actor_id  WHERE actor_user = ? AND (log_type = 'merge' OR log_type = 'mergeuser') AND log_action = 'merge') AS log_merge_count,
+        (SELECT count(log_action) AS count FROM logging_userindex INNER JOIN actor_logging ON log_actor = actor_id  WHERE actor_user = ? AND log_type = 'import') AS log_import_count
+      `;
+    if (onlyLastSixMonths) {
+      q = `SELECT
+        (SELECT count(log_action) AS count FROM logging_userindex INNER JOIN actor_logging ON log_actor = actor_id  WHERE actor_user = ? AND log_type = 'delete' AND log_action = 'delete')
+        (SELECT count(log_action) AS count FROM logging_userindex INNER JOIN actor_logging ON log_actor = actor_id  WHERE actor_user = ? AND log_type = 'delete' AND log_action = 'revision') AS log_revdel_count,
+        (SELECT count(log_action) AS count FROM logging_userindex INNER JOIN actor_logging ON log_actor = actor_id  WHERE actor_user = ? AND log_type = 'delete' AND log_action = 'restore') AS log_restore_count,
+        (SELECT count(log_action) AS count FROM logging_userindex INNER JOIN actor_logging ON log_actor = actor_id  WHERE actor_user = ? AND log_type = 'block' AND log_action = 'block') AS log_block_count,
+        (SELECT count(log_action) AS count FROM logging_userindex INNER JOIN actor_logging ON log_actor = actor_id  WHERE actor_user = ? AND log_type = 'block' AND log_action = 'unblock') AS log_unblock_count,
+        (SELECT count(log_action) AS count FROM logging_userindex INNER JOIN actor_logging ON log_actor = actor_id  WHERE actor_user = ? AND log_type = 'protect' AND log_action = 'protect') AS log_protected_count,
+        (SELECT count(log_action) AS count FROM logging_userindex INNER JOIN actor_logging ON log_actor = actor_id  WHERE actor_user = ? AND log_type = 'protect' AND log_action = 'unprotect') AS log_unprotected_count,
+        (SELECT count(log_action) AS count FROM logging_userindex INNER JOIN actor_logging ON log_actor = actor_id  WHERE actor_user = ? AND log_type = 'rights' AND log_action = 'rights') AS log_rights_count,
+        (SELECT count(log_action) AS count FROM logging_userindex INNER JOIN actor_logging ON log_actor = actor_id  WHERE actor_user = ? AND log_type = 'block' AND log_action = 'reblock') AS log_reblock_count,
+        (SELECT count(log_action) AS count FROM logging_userindex INNER JOIN actor_logging ON log_actor = actor_id  WHERE actor_user = ? AND log_type = 'protect' AND log_action = 'modify') AS log_modifyprotect_count,
+        (SELECT count(log_action) AS count FROM logging_userindex INNER JOIN actor_logging ON log_actor = actor_id  WHERE actor_user = ? AND log_type = 'abusefilter') AS log_abusefilter_count,
+        (SELECT count(log_action) AS count FROM logging_userindex INNER JOIN actor_logging ON log_actor = actor_id  WHERE actor_user = ? AND (log_type = 'merge' OR log_type = 'mergeuser') AND log_action = 'merge') AS log_merge_count,
+        (SELECT count(log_action) AS count FROM logging_userindex INNER JOIN actor_logging ON log_actor = actor_id  WHERE actor_user = ? AND log_type = 'import') AS log_import_count
+      `;
+    }
+    const results = await query(q, [
+      userid,
+      userid,
+      userid,
+      userid,
+      userid,
+      userid,
+      userid,
+      userid,
+      userid,
+      userid,
+      userid,
+      userid,
+      userid,
+    ]).catch((err) => {
+      logger.error('cannot execute query', { err });
     });
+    return {
+      delete: results[0][0].log_delete_count,
+      revdel: results[0][0].log_revdel_count,
+      restore: results[0][0].log_restore_count,
+      block: results[0][0].log_block_count,
+      unblock: results[0][0].log_unblock_count,
+      reblock: results[0][0].log_reblock_count,
+      protected: results[0][0].log_protected_count,
+      unprotected: results[0][0].log_unprotected_count,
+      modifyprotect: results[0][0].log_modifyprotect_count,
+      rights: results[0][0].log_rights_count,
+      abusefilter: results[0][0].log_abusefilter_count,
+      merge: results[0][0].log_merge_count,
+      import: results[0][0].log_import_count,
+    };
   }
 
   async getAdmins() {
@@ -291,10 +254,11 @@ class AdminStats {
       .query(query, value)
       .catch((err) => {
         logger.error('cannot execute query', { err });
-        process.exit(1);
-        return [];
       })
       .then((res) => {
+        if (res[0][0] === undefined) {
+          return null;
+        }
         return res[0][0].count;
       });
   }
