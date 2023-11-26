@@ -2,31 +2,31 @@
   {
     "name": "updatestatus",
     "crontab": "0 0,8,16 * * *",
-    "command": "node $HOME/bot/src/patsabot/run.js updatestatus"
+    "command": "node $HOME/bot/dist/patsabot/run.js updatestatus"
   },
   {
     "name": "afccat",
     "crontab": "0 0 * * *",
-    "command": "node $HOME/bot/src/patsabot/run.js afccat"
+    "command": "node $HOME/bot/dist/patsabot/run.js afccat"
   },
   {
     "name": "topedits",
     "crontab": "0 1 * * 0",
-    "command": "node $HOME/bot/src/patsabot/run.js topedits"
+    "command": "node $HOME/bot/dist/patsabot/run.js topedits"
   },
   {
     "name": "removedrafttemplate",
     "crontab": "15 2 * * *",
-    "command": "node $HOME/bot/src/patsabot/run.js removedrafttemplate"
+    "command": "node $HOME/bot/dist/patsabot/run.js removedrafttemplate"
   },
   {
     "name": "adminstats",
     "crontab": "30 2 * * 1",
-    "command": "node $HOME/bot/src/patsabot/run.js adminstats"
+    "command": "node $HOME/bot/dist/patsabot/run.js adminstats"
   },
   {
     "name": "archive",
     "crontab": "0 15 * * *",
-    "command": "node $HOME/bot/src/patsabot/run.js archive"
+    "command": "node $HOME/bot/dist/patsabot/run.js archive"
   }
 ]
