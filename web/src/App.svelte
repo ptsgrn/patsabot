@@ -1,5 +1,6 @@
 <script lang="ts">
   const BASE = 'https://patsabot.toolforge.org/';
+  // const BASE = 'http://localhost:3000/';
   const lang =
     new URL(window.location.href).searchParams.get('lang') ||
     navigator.language;
@@ -143,6 +144,19 @@
         },
       };
     });
+  };
+  let log = '';
+  const readLog = async () => {
+    // read log from readable stream
+    const res = await fetchData('/api/logs');
+    const reader = res.body?.getReader();
+    if (!reader) return;
+    const decoder = new TextDecoder();
+    let result = await reader.read();
+    while (!result.done) {
+      log += decoder.decode(result.value, { stream: true });
+      result = await reader.read();
+    }
   };
 </script>
 
@@ -303,5 +317,12 @@
       placeholder="Enter PatsaBot API key here..."
     />
     <Button size="small" on:click={testAPIKey}>Test API Key</Button>
+  </div>
+  <div>
+    <h2 class="my-6">Realtime Log</h2>
+    <pre class="bg-stone-100 p-3 font-mono">{log}</pre>
+    <div class="my-6">
+      <Button size="small" kind="secondary" on:click={() => (log = '')}>Clear Log</Button>
+    </div>
   </div>
 </Content>

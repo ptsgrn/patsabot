@@ -3,29 +3,25 @@ import ExpressStatusMonitor from 'express-status-monitor';
 import { JobsManager } from './jobsmanager.js';
 import baselogger from './logger.js';
 import bodyParser from 'body-parser';
-import express, { type RequestHandler } from 'express';
+import express from 'express';
 import { join } from 'path';
 import { credentials } from './config.js';
 import { resolveRelativePath } from './utils.js';
 import { timingSafeEqual } from 'crypto';
-
 import cors from 'cors';
-
 const logger = baselogger.child({
   script: 'jobrunner',
 });
-
 if (!Array.isArray(schedule)) {
   logger.log('error', "'tasks' is not define in schedule.json or not an array");
 }
-
 const app = express();
 const jobs = new JobsManager({
   timezone: 'Asia/Bangkok',
   ignoreError: true,
   autostart: true,
 });
-const apiGuard = ((req, res, next) => {
+const apiGuard = (req, res, next) => {
   const key = req.get('x-api-key');
   if (!key) return res.status(400).send('bad request');
   if (
@@ -36,21 +32,16 @@ const apiGuard = ((req, res, next) => {
   )
     return res.status(401).send('unauthorized');
   next();
-}) as RequestHandler;
-
+};
 jobs.addJobs(schedule);
-
 const apiRoute = express.Router();
-
 apiRoute.get('/job', (req, res) => {
   const jobList = jobs.listJobsSerialized();
   res.status(200).send(jobList);
 });
-
 apiRoute.options('/job', (req, res) => {
   res.status(200).send('OK');
 });
-
 apiRoute.post('/testapikey', (req, res) => {
   const key = req.get('x-api-key');
   if (!key) return res.status(400).send('bad request');
@@ -58,7 +49,6 @@ apiRoute.post('/testapikey', (req, res) => {
     ? res.status(200).send('OK')
     : res.status(401).send('unauthorized');
 });
-
 // stream realtime logs
 apiRoute.get('/logs', (req, res) => {
   res.writeContinue();
@@ -67,9 +57,7 @@ apiRoute.get('/logs', (req, res) => {
     res.write(chunk);
   });
 });
-
 apiRoute.use(apiGuard);
-
 apiRoute.get('/job/:jobname', (req, res) => {
   const { jobname } = req.params;
   const job = jobs.job(jobname);
@@ -81,7 +69,6 @@ apiRoute.get('/job/:jobname', (req, res) => {
     next: job.next.toISO(),
   });
 });
-
 apiRoute.post('/job/:jobname/:action', (req, res) => {
   const { jobname, action } = req.params;
   const job = jobs.job(jobname);
@@ -92,20 +79,17 @@ apiRoute.post('/job/:jobname/:action', (req, res) => {
   else job.cron.stop();
   res.status(200).send('OK');
 });
-
 apiRoute.get('/job/:jobname/log', (req, res) => {
   const { jobname } = req.params;
   const job = jobs.job(jobname);
   if (!job) return res.status(404).send('not found');
   res.status(200).sendFile(join(loggerDir, `${jobname}.log`));
 });
-
 app.use(cors());
 app.use(ExpressStatusMonitor());
 app.use(bodyParser.json());
 app.use('/logs', express.static(join(loggerDir)));
 app.use('/api', apiRoute);
-
 app.get('/job/:jobname/:get', (req, res) => {
   const { jobname, get } = req.params;
   const job = jobs.job(jobname);
@@ -126,7 +110,6 @@ app.get('/job/:jobname/:get', (req, res) => {
     color: job.running ? 'green' : 'gray',
   });
 });
-
 app.get('/job/:jobname', (req, res) => {
   const { jobname } = req.params;
   const job = jobs.job(jobname);
@@ -144,20 +127,16 @@ app.get('/job/:jobname', (req, res) => {
     color: job.running ? 'green' : 'gray',
   });
 });
-
 app.all('/ping', (req, res) => {
   res.status(200).send('OK');
 });
-
 app.get(
   '*',
   express.static(resolveRelativePath(import.meta.url, '../../web/dist'))
 );
-
 app.use((req, res) => {
   res.status(404).send('not found');
 });
-
 app.listen(process.env.PORT ?? 3000, () => {
   console.log(`app listening on port ${process.env.PORT ?? 3000}`);
 });
