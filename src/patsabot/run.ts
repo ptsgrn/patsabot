@@ -69,7 +69,7 @@ if (argv[0] === '--help' || argv[0] === '-h') {
 
 if (argv[0] !== undefined && argv[0] != '--help' && argv[0] != '-h') {
   const ls = spawn(
-    '.bun/bin/bun',
+    '$HOME/.bun/bin/bun',
     [
       resolve(
         dirname(fileURLToPath(import.meta.url)),
