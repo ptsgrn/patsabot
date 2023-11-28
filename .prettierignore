@@ -1,6 +1,6 @@
 # Exepct typescript files
 
 src/**/*.js
-
 !*.ts
 !*.json
+web/**/*.{js,ts,css,scss,html}
