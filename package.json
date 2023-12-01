@@ -6,7 +6,8 @@
   "exports": "./src/index.js",
   "type": "module",
   "engines": {
-    "node": ">=16.0.0"
+    "node": ">=18.0.0",
+    "npm": ">=9"
   },
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
