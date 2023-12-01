@@ -4,14 +4,15 @@
 // https://opensource.org/licenses/MIT
 
 import { mwnVersion, version } from './version.js';
-import { site, user } from './config.js';
-import log from './logger.js';
 import { mwn } from 'mwn';
 
 const bot = new mwn({
-  apiUrl: site.siteUrl,
+  apiUrl: process.env.BOT_API_URL || 'https://th.wikipedia.org/w/api.php',
   OAuthCredentials: {
-    ...user.OAuthCredentials,
+    consumerToken: process.env.BOT_CONSUMER_TOKEN,
+    consumerSecret: process.env.BOT_CONSUMER_SECRET,
+    accessToken: process.env.BOT_ACCESS_TOKEN,
+    accessSecret: process.env.BOT_ACCESS_SECRET,
   },
   // Set your user agent (required for WMF wikis, see https://meta.wikimedia.org/wiki/User-Agent_policy):
   userAgent: `PatsaBot/${version} ([[m:User:Patsagorn Y.]]) mwn/${mwnVersion}`,

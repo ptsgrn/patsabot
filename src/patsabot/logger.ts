@@ -1,7 +1,12 @@
-import { loggerDir, credentials } from './config.js';
 import winston from 'winston';
 const { createLogger, format, transports, addColors } = winston;
 import DiscordTransport from './discord-transport.js';
+
+let loggerDir = '$HOME';
+
+if ('TOOL_DATA_DIR' in process.env) {
+  loggerDir = process.env.TOOL_DATA_DIR;
+}
 
 addColors({
   done: 'green',
@@ -48,7 +53,7 @@ const logger = createLogger({
       ),
     }),
     new DiscordTransport({
-      webhook: credentials.discord.webhook.logger,
+      webhook: process.env.BOT_DISCORD_WEBHOOK_LOGGER,
       defaultMeta: { service: 'patsabot' },
     }),
   ],

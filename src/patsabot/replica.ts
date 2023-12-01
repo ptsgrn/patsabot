@@ -1,13 +1,12 @@
 import mysql from 'mysql2/promise';
-import { replicaConfig, replicaCredentials } from './config.js';
 import logger from './logger.js';
 
 export const conn = await mysql.createConnection({
-  user: replicaCredentials.username,
-  password: replicaCredentials.password,
-  host: replicaConfig.dbHost,
-  database: replicaConfig.dbName,
-  port: replicaConfig.dbPort,
+  user: process.env.BOT_REPLICA_USERNAME,
+  password: process.env.BOT_REPLICA_PASSWORD,
+  host: process.env.BOT_REPLICA_HOST || '127.0.0.1',
+  database: process.env.BOT_REPLICA_DATABASE || 'thwiki_p',
+  port: Number(process.env.BOT_REPLICA_PORT || 3306),
   waitForConnections: true,
 });
 

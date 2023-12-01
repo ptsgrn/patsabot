@@ -1,4 +1,3 @@
-export * as config from './config.js';
 export * as apis from './apis.js';
 export * as bot from './bot.js';
 export * as error from './errorfactory.js';

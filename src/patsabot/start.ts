@@ -31,7 +31,7 @@ const apiGuard = ((req, res, next) => {
   if (
     !timingSafeEqual(
       Buffer.from(key),
-      Buffer.from(credentials.botAPIAccessToken)
+      Buffer.from(process.env.BOT_CONTROL_API_ACCESS_TOKEN)
     )
   )
     return res.status(401).send('unauthorized');
@@ -54,7 +54,10 @@ apiRoute.options('/job', (req, res) => {
 apiRoute.post('/testapikey', (req, res) => {
   const key = req.get('x-api-key');
   if (!key) return res.status(400).send('bad request');
-  timingSafeEqual(Buffer.from(key), Buffer.from(credentials.botAPIAccessToken))
+  timingSafeEqual(
+    Buffer.from(key),
+    Buffer.from(process.env.BOT_CONTROL_API_ACCESS_TOKEN)
+  )
     ? res.status(200).send('OK')
     : res.status(401).send('unauthorized');
 });
