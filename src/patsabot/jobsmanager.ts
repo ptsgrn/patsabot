@@ -53,6 +53,7 @@ export interface Job {
   cron: CronJob;
   running: boolean;
   last: DateTime;
+  s;
   next: DateTime;
   data: JobOption;
 }
@@ -173,7 +174,7 @@ export class JobsManager {
     };
   }
   listJobs() {
-    let list: Job[] = [];
+    let list: ReturnType<JobsManager['job']>[] = [];
     for (const name in this.jobs) {
       list.push(this.job(name));
     }
@@ -190,7 +191,7 @@ export class JobsManager {
           // @ts-ignore
           cron: jobs[job].cron.cronTime.source,
           running: jobs[job].cron.running,
-          last: jobs[job]?.last ? jobs[job]?.last?.toISO() : undefined,
+          last: jobs[job]?.last ? jobs[job]?.last?.toISOString() : undefined,
           next: jobs[job]?.next ? jobs[job]?.next?.toISO() : undefined,
           // @ts-ignore
           nexts: jobs[job]?.cron?.nextDates(5).map((date) => date.toISO()),

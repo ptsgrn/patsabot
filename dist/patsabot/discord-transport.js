@@ -1,8 +1,9 @@
 import Transport from 'winston-transport';
-import axios from 'axios';
 import os from 'os';
-import rateLimit from 'axios-rate-limit';
-const http = rateLimit(axios.create(), {
+import Axios from 'axios';
+import RateLimit from '@hokify/axios-rate-limit';
+// @ts-ignore
+const http = RateLimit.default(Axios.create(), {
   maxRequests: 1,
   perMilliseconds: 1000,
 });

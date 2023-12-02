@@ -1,8 +1,8 @@
 import Transport, { TransportStreamOptions } from 'winston-transport';
 
-import axios from 'axios';
 import os from 'os';
-import rateLimit from 'axios-rate-limit';
+import Axios from 'axios';
+import RateLimit from '@hokify/axios-rate-limit';
 
 /**
  * Options for Discord transport for winston
@@ -14,7 +14,8 @@ interface DiscordTransportOptions extends TransportStreamOptions {
   defaultMeta: any;
 }
 
-const http = rateLimit(axios.create(), {
+// @ts-ignore
+const http = RateLimit.default(Axios.create(), {
   maxRequests: 1,
   perMilliseconds: 1000,
 });
