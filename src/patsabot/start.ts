@@ -1,19 +1,25 @@
-import { loggerDir, schedule } from './config.js';
 import ExpressStatusMonitor from 'express-status-monitor';
 import { JobsManager } from './jobsmanager.js';
 import baselogger from './logger.js';
 import bodyParser from 'body-parser';
 import express, { type RequestHandler } from 'express';
 import { join } from 'path';
-import { credentials } from './config.js';
 import { resolveRelativePath } from './utils.js';
 import { timingSafeEqual } from 'crypto';
+import fs from 'fs';
 
 import cors from 'cors';
 
 const logger = baselogger.child({
   script: 'jobrunner',
 });
+
+const schedule = JSON.parse(
+  fs.readFileSync(
+    resolveRelativePath(import.meta.url, '../../schedule.json'),
+    'utf-8'
+  )
+);
 
 if (!Array.isArray(schedule)) {
   logger.log('error', "'tasks' is not define in schedule.json or not an array");
@@ -100,13 +106,13 @@ apiRoute.get('/job/:jobname/log', (req, res) => {
   const { jobname } = req.params;
   const job = jobs.job(jobname);
   if (!job) return res.status(404).send('not found');
-  res.status(200).sendFile(join(loggerDir, `${jobname}.log`));
+  res.status(200).sendFile(join('./log', `${jobname}.log`));
 });
 
 app.use(cors());
 app.use(ExpressStatusMonitor());
 app.use(bodyParser.json());
-app.use('/logs', express.static(join(loggerDir)));
+app.use('/logs', express.static(join('./log')));
 app.use('/api', apiRoute);
 
 app.get('/job/:jobname/:get', (req, res) => {

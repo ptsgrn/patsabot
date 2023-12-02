@@ -13,6 +13,12 @@
     "module": "node16",
     "moduleResolution": "node16",
     "target": "ES2020",
-    "typeRoots": ["./src/types"]
+    "baseUrl": ".",
+    "typeRoots": [
+      // This is the default, but it's good to be explicit
+      "node_modules/@types",
+      // This is where our types will go
+      "src/types"
+    ]
   }
 }

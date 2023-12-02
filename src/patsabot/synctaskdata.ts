@@ -151,7 +151,7 @@ async function main() {
           console.error(err);
           return '';
         });
-        return { file, ...readJsdoc(scriptString) };
+        return { file, ...readJsdoc(scriptString.toString()) };
       })
     ).catch((error) => {
       console.error(error);

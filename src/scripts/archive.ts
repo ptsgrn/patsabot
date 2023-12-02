@@ -10,7 +10,6 @@
  */
 
 import baselogger from '../patsabot/logger.js';
-import { credentials } from '../patsabot/config.js';
 import { resolveRelativePath } from '../patsabot/utils.js';
 import { spawn } from 'child_process';
 
@@ -35,8 +34,8 @@ async function archive() {
         env: {
           ...process.env,
           PATSABOT_ARCHIVE_KEY_SALT:
-            credentials?.scripts?.archive?.key_salt ?? '',
-          PATSABOT_PASSWORD: credentials.password ?? '',
+            process.env.BOT_SCRIPT_ARCHIVE_KEY_SALT ?? '',
+          PATSABOT_PASSWORD: process.env.BOT_PASSWORD ?? '',
         },
       }
     );
