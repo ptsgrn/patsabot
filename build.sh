@@ -18,7 +18,7 @@ echo -e ">> ${BLUE}Building web app...${NC}"
 cd $CDIR/web
 
 # install dependencies
-npm ci
+npm i
 npm run build
 
 echo -e ">> ${GREEN}Web app build complete${NC}"
