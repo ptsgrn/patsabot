@@ -52,10 +52,11 @@ const logger = createLogger({
         )
       ),
     }),
-    new DiscordTransport({
-      webhook: process.env.BOT_DISCORD_WEBHOOK_LOGGER,
-      defaultMeta: { service: 'patsabot' },
-    }),
+    // until discord transport is fixed
+    // new DiscordTransport({
+    //   webhook: process.env.BOT_DISCORD_WEBHOOK_LOGGER,
+    //   defaultMeta: { service: 'patsabot' },
+    // }),
   ],
   exceptionHandlers: [
     new transports.File({

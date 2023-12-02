@@ -15,7 +15,7 @@ interface DiscordTransportOptions extends TransportStreamOptions {
 }
 
 // @ts-ignore
-const http = RateLimit.default(Axios.create(), {
+const http = RateLimit(Axios.create(), {
   maxRequests: 1,
   perMilliseconds: 1000,
 });
@@ -103,7 +103,7 @@ export default class DiscordTransport extends Transport {
             this.sendToDiscord(info);
           })
           .catch((err) => {
-            console.log('Error sending message to discord', err);
+            console.error('Error sending message to discord', err.message);
           });
       });
     }
