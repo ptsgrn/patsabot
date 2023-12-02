@@ -1,9 +1,8 @@
 {
   "name": "patsabot",
-  "version": "2.2.0",
+  "version": "3.0.0",
   "private": "true",
-  "description": "NodeJS bot to go with Thai wikipedia",
-  "exports": "./src/index.js",
+  "description": "NodeJS for Thai wikipedia",
   "type": "module",
   "engines": {
     "node": ">=18.0.0"
@@ -11,8 +10,6 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "format": "prettier --write . --ignore-unknown",
-    "setup": "echo \">> This process will add 'patsabot' as a global command.\" && npm install -g .",
-    "postsetup": ">> Done! You can now run 'patsabot' to start the bot.",
     "start": "node ./dist/patsabot/start.js",
     "build": "tsc",
     "prepare": "husky install"
