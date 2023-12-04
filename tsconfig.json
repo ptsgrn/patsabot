@@ -20,5 +20,6 @@
       // This is where our types will go
       "src/types"
     ]
-  }
+  },
+  "types": ["node"]
 }

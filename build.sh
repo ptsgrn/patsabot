@@ -15,7 +15,7 @@ NC='\033[0m' # No Color
 
 # build web app
 echo -e ">> ${BLUE}Building web app...${NC}"
-cd $CDIR/web
+cd web
 
 # install dependencies
 npm i
