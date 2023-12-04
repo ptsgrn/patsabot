@@ -17,7 +17,7 @@ NC='\033[0m' # No Color
 echo -e ">> ${BLUE}Building web app...${NC}"
 cd web
 
-ืecho -e ">> ${BLUE}Current directory: ${NC}"
+echo -e ">> ${BLUE}Current directory: ${NC}"
 echo $(pwd)
 
 # install dependencies
