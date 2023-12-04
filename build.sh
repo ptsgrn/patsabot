@@ -17,11 +17,9 @@ NC='\033[0m' # No Color
 echo -e ">> ${BLUE}Building web app...${NC}"
 cd web
 
-echo -e ">> ${BLUE}Current directory: ${NC}"
-echo $(pwd)
-
-# install dependencies
-npm i
+# install dependencies in web/ subdirectory
+npm install --production=false
+# build web app
 npm run build
 
 echo -e ">> ${GREEN}Web app build complete${NC}"
