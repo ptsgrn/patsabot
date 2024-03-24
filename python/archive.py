@@ -27,7 +27,7 @@ from ceterach import exceptions as exc
 import mwparserfromhell as mwp
 
 API_URL = "https://th.wikipedia.org/w/api.php"
-LOGIN_INFO = "PatsaBot", os.environ["PATSABOT_PASSWORD"]
+LOGIN_INFO = "PatsaBot", os.environ["BOT_PASSWORD"]
 SHUTOFF = u"ผู้ใช้:PatsaBot/shutoff/archive"
 ARCHIVE_TPL = u"แม่แบบ:เก็บอภิปรายอัตโนมัติ"
 FREQ = 30
