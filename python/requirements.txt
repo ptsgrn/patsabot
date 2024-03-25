@@ -1,0 +1,7 @@
+pywikibot
+requests>=2.20.1
+mwparserfromhell>=0.5.2
+twiggy
+arrow
+mwparserfromhell
+git+https://github.com/Riamse/ceterach.git#egg=ceterach

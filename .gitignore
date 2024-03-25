@@ -8,3 +8,5 @@ configstore/
 .tmp/
 *.log
 errlog
+
+pyvenv/

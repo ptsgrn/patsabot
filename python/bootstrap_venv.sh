@@ -14,8 +14,4 @@ source pyvenv/bin/activate
 # upgrade pip inside the venv and add support for the wheel package format
 pip install -U pip wheel
 
-# install packages
-pip install twiggy
-pip install arrow
-pip install mwparserfromhell
-pip install git+https://github.com/Riamse/ceterach.git#egg=ceterach
+pip install -r requirements.txt

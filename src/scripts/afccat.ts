@@ -4,21 +4,14 @@
  * @name afccat
  * @desc สร้างหน้าหมวดหมู่สำหรับ AfC แบบรายวัน เช่น [[:หมวดหมู่:ฉบับร่างเรียงตามวันที่ส่ง/04 พฤศจิกายน 2021]], ไม่แก้ไขหากมีการสร้างแล้ว
  * @script https://github.com/ptsgrn/patsabot/blob/main/src/scripts/afccat.ts
- * @cron 0 0 * * *
  * @author Patsagorn Y. (mpy@toolforge.org)
  * @license MIT
  */
 
-import baseLogger from "../patsabot/logger.js";
 import bot from "../patsabot/bot.js";
 import { cuid } from "../patsabot/utils.js";
 import meow from "meow";
 import moment from "moment";
-
-const logger = baseLogger.child({
-  script: "afccat",
-  runId: `run-${cuid()}`,
-});
 
 const cli = meow(
   `
@@ -57,7 +50,7 @@ const cli = meow(
  * @function afccat
  */
 async function afccat() {
-  logger.debug("script parameters", cli.flags);
+  console.debug("script parameters", cli.flags);
   process.env.TZ = "Asia/Bangkok";
   moment.locale("th");
   if (cli.flags.date.length === 0)
@@ -86,11 +79,11 @@ async function afccat() {
     .filter((c, i, a) => a.indexOf(c) === i);
 
   if (isNaN(categories.length) || categories.length === 0) {
-    logger.log("info", "No categories to create.");
+    console.log("info", "No categories to create.");
     process.exit(0);
   }
 
-  logger.log("debug", "categories", { categories });
+  console.log("debug", "categories", { categories });
 
   bot
     .batchOperation(
@@ -98,7 +91,7 @@ async function afccat() {
       (page) => {
         return new Promise((resolve, reject) => {
           if (cli.flags.dryRun) {
-            logger.log("info", "[W] Dry run, not creating category: " + page);
+            console.log("info", "[W] Dry run, not creating category: " + page);
             resolve("dryrun");
           }
           if (
@@ -118,7 +111,7 @@ async function afccat() {
             )
             .then(resolve)
             .catch((error) => {
-              logger.log("error", error.message, { article: page });
+              console.log("error", error.message, { article: page });
               reject(error);
             });
         });
@@ -127,10 +120,10 @@ async function afccat() {
       1
     )
     .then(() => {
-      logger.log("debug", "done");
+      console.log("debug", "done");
     })
     .catch((err) => {
-      logger.log("error", err.message);
+      console.log("error", err.message);
     });
 }
 
