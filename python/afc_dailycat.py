@@ -9,18 +9,6 @@ opt = {
     'summary': 'สร้างหมวดหมู่ฉบับร่างสำหรับ [[WP:AfC]]',
 }
 
-# if no .env file, skip
-if not os.path.exists('.env'):
-    print('No .env file found, skipping')
-    exit()
-else:
-    with open('.env', 'r') as fh:
-        vars_dict = dict(
-            tuple(line.replace('\n', '').split('='))
-            for line in fh.readlines() if not line.startswith('#')
-        )
-    os.environ.update(vars_dict)
-
 site = Site('th', 'wikipedia')
 
 _month_name = {
@@ -52,7 +40,7 @@ def main():
 
 def create_new_page(date_str):
     pagename = opt['category'].format(date=date_str)
-    print("Creating page: " + pagename)
+    pywikibot.output('Creating page: ' + pagename)
     page = pywikibot.Page(site, pagename)
     if page.exists():
         print('Page already exists')
@@ -61,5 +49,4 @@ def create_new_page(date_str):
     page.save(summary=opt['summary'])
 
 
-if __name__ == '__main__':
-    main()
+main()

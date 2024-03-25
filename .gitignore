@@ -10,3 +10,7 @@ configstore/
 errlog
 
 pyvenv/
+user-password.py
+apicache/
+*.lwp
+*/throttle.ctrl
