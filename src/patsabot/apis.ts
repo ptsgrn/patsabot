@@ -1,4 +1,4 @@
-import bot from "./bot.js";
+import bot from "../../core/bot.js";
 import log from "./logger.js";
 
 /**

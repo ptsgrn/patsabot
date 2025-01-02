@@ -10,7 +10,7 @@
  */
 
 import type { ApiParams } from "mwn";
-import bot from "../patsabot/bot.js";
+import bot from "../../core/bot.js";
 import { cuid } from "../patsabot/utils.js";
 import logger from "../patsabot/logger.js";
 import meow from "meow";

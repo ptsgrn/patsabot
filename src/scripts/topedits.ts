@@ -9,7 +9,7 @@
  */
 
 import baseLogger from "../patsabot/logger.js";
-import bot from "../patsabot/bot.js";
+import bot from "../../core/bot.js";
 import { conn } from "../patsabot/replica.js";
 
 const logger = baseLogger.child({

@@ -9,7 +9,7 @@
  */
 
 import baselogger from "../patsabot/logger.js";
-import bot from "../patsabot/bot.js";
+import bot from "../../core/bot.js";
 
 const logger = baselogger.child({
   script: "updatestatus",

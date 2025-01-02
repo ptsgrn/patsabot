@@ -5,7 +5,7 @@
  * @license MIT
  */
 
-import bot from "../patsabot/bot.js";
+import bot from "../../core/bot.js";
 import chalk from "chalk";
 import moment from "moment";
 import { version } from "../patsabot/version.js";

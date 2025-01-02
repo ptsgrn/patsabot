@@ -1,7 +1,7 @@
 node_modules/
 logs/
 dist/
-credentials.json
+config.toml
 configstore/
 .*.sw*
 .env

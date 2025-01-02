@@ -8,7 +8,7 @@
  * @license MIT
  */
 
-import bot from "../patsabot/bot.js";
+import bot from "../../core/bot.js";
 import { cuid } from "../patsabot/utils.js";
 import meow from "meow";
 import moment from "moment";
@@ -50,81 +50,6 @@ const cli = meow(
  * @function afccat
  */
 async function afccat() {
-  console.debug("script parameters", cli.flags);
-  process.env.TZ = "Asia/Bangkok";
-  moment.locale("th");
-  if (cli.flags.date.length === 0)
-    cli.flags.date = [moment().format("YYYY-MM-DD")];
-  let categories = cli.flags.date.map((date) => {
-    if (date === "today") date = moment().format("YYYY-MM-DD");
-    if (!moment(date, "YYYY-MM-DD").isValid()) return null;
-    return `หมวดหมู่:ฉบับร่างเรียงตามวันที่ส่ง/${moment(date).format(
-      "DD MMMM yyyy"
-    )}`;
-  });
-
-  cli.flags.date.forEach((date) => {
-    if (date === "today") date = moment().format("YYYY-MM-DD");
-    categories.push(
-      `หมวดหมู่:ฉบับร่างเรียงตามวันที่ส่ง/${moment(date).format("MMMM yyyy")}`
-    );
-    categories.push(
-      `หมวดหมู่:ฉบับร่างเรียงตามวันที่ส่ง/${moment(date).format("yyyy")}`
-    );
-  });
-
-  // no null and unique
-  categories = categories
-    .filter((c) => c !== null)
-    .filter((c, i, a) => a.indexOf(c) === i);
-
-  if (isNaN(categories.length) || categories.length === 0) {
-    console.log("info", "No categories to create.");
-    process.exit(0);
-  }
-
-  console.log("debug", "categories", { categories });
-
-  bot
-    .batchOperation(
-      categories,
-      (page) => {
-        return new Promise((resolve, reject) => {
-          if (cli.flags.dryRun) {
-            console.log("info", "[W] Dry run, not creating category: " + page);
-            resolve("dryrun");
-          }
-          if (
-            page.indexOf("หมวดหมู่:ฉบับร่างเรียงตามวันที่ส่ง/") === -1 ||
-            page === "หมวดหมู่:ฉบับร่างเรียงตามวันที่ส่ง/Invalid date"
-          )
-            return reject();
-          bot
-            .save(
-              page,
-              "{{AfC submission category header}}",
-              "สร้างหมวดหมู่ฉบับร่าง ([[user:PatsaBot/task/1|Task #1]])",
-              {
-                // do not edit the page if it already exists
-                createonly: true,
-              }
-            )
-            .then(resolve)
-            .catch((error) => {
-              console.log("error", error.message, { article: page });
-              reject(error);
-            });
-        });
-      },
-      10,
-      1
-    )
-    .then(() => {
-      console.log("debug", "done");
-    })
-    .catch((err) => {
-      console.log("error", err.message);
-    });
 }
 
 afccat();

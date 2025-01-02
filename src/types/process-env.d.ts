@@ -8,6 +8,7 @@ declare global {
       HOOK_SECRET: string;
 
       BOT_USERNAME: string;
+      BOT_CONTACT: string;
       BOT_PASSWORD: string;
 
       BOT_CONTROL_API_ACCESS_TOKEN: string;

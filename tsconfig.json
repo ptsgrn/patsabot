@@ -1,25 +1,27 @@
 {
-  // Change this to match your project
-  "include": ["src/**/*"],
   "compilerOptions": {
-    // Tells TypeScript to read JS files, as
-    // normally they are ignored as source files
+    // Enable latest features
+    "lib": ["ESNext", "DOM"],
+    "target": "ESNext",
+    "module": "ESNext",
+    "moduleDetection": "force",
+    "jsx": "react-jsx",
     "allowJs": true,
-    // Types should go into this directory.
-    // Removing this would place the .d.ts files
-    // next to the .js files
-    "outDir": "dist",
-    "esModuleInterop": true,
-    "module": "node16",
-    "moduleResolution": "node16",
-    "target": "ES2020",
-    "baseUrl": ".",
-    "typeRoots": [
-      // This is the default, but it's good to be explicit
-      "node_modules/@types",
-      // This is where our types will go
-      "src/types"
-    ]
-  },
-  "types": ["node"]
+
+    // Bundler mode
+    "moduleResolution": "bundler",
+    "allowImportingTsExtensions": true,
+    "verbatimModuleSyntax": true,
+    "noEmit": true,
+
+    // Best practices
+    "strict": true,
+    "skipLibCheck": true,
+    "noFallthroughCasesInSwitch": true,
+
+    // Some stricter flags (disabled by default)
+    "noUnusedLocals": false,
+    "noUnusedParameters": false,
+    "noPropertyAccessFromIndexSignature": false
+  }
 }

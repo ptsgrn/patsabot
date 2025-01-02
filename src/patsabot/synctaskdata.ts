@@ -12,7 +12,7 @@ import "cronstrue/locales/th.js";
 
 import { readFile, readdir, writeFile } from "fs/promises";
 
-import bot from "./bot.js";
+import bot from "../../core/bot.js";
 import cronstrue from "cronstrue";
 import meow from "meow";
 import { resolveRelativePath } from "./utils.js";
