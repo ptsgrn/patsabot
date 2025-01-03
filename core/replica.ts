@@ -30,6 +30,12 @@ export class Replica {
         host: '127.0.0.1',
         database,
       }
+    } else {
+      this._replicaOptions = {
+        ...this._replicaOptions,
+        host: config.replica.host,
+        database: config.replica.dbname,
+      }
     }
     this.conn = await mysql.createConnection(this._replicaOptions)
   }
