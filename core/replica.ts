@@ -11,6 +11,22 @@ if (!config.replica.username || !config.replica.password) {
   throw new Error("Please fill in the replica credentials in config.toml");
 }
 
+function getReplicaHost(dbname: string, cluster: string = "web") {
+  if (!['web', 'analytics'].includes(cluster)) {
+    throw new Error('Invalid cluster name')
+  }
+  const domain = `${cluster}.db.svc.wikimedia.cloud`
+  if (dbname.endsWith("_p")) {
+    dbname = dbname.slice(0, -2)
+  }
+  let host = `${dbname}.${domain}`
+  if (dbname == "meta") {
+    host = `s7.${domain}`
+  }
+  return host
+}
+
+
 export class Replica {
   private _replicaOptions: mysql.PoolOptions = {
     user: config.replica.username,
@@ -33,7 +49,7 @@ export class Replica {
     } else {
       this._replicaOptions = {
         ...this._replicaOptions,
-        host: config.replica.host,
+        host: getReplicaHost(config.replica.dbname),
         database: config.replica.dbname,
       }
     }
@@ -44,17 +60,8 @@ export class Replica {
     if (!config.toolforge.login) {
       throw new Error('Please fill in the Toolforge login in config.toml')
     }
-    if (!['web', 'analytics'].includes(cluster)) {
-      throw new Error('Invalid cluster name')
-    }
-    const domain = `${cluster}.db.svc.wikimedia.cloud`
-    if (dbname.endsWith("_p")) {
-      dbname = dbname.slice(0, -2)
-    }
-    let host = `${dbname}.${domain}`
-    if (dbname == "meta") {
-      host = `s7.${domain}`
-    }
+
+    const host = getReplicaHost(dbname, cluster)
 
     console.log(`Connecting to ${host} on port ${port}...`)
     console.log(`> ssh -N ${config.toolforge.login} -L ${port}:${host}:3306`)
