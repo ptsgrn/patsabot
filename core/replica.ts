@@ -37,6 +37,8 @@ export class Replica {
 
   public conn: mysql.Connection | null = null
 
+  constructor() { }
+
   public async init() {
     if (!this.isRunOnToolforge()) {
       console.warn("Not running on Toolforge, don't forget to set up SSH tunnel using `. replica-tunnel` in separate terminal.")
