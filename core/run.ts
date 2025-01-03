@@ -40,7 +40,13 @@ class ScriptRunner {
           .name('run ' + scriptName)
           .description(scriptModule.scriptDescription)
         scriptModule.cli.parse(process.argv.slice(2))
-        await scriptModule.run()
+        try {
+          await scriptModule.beforeRun()
+          await scriptModule.run()
+        } catch (e) {
+          console.error(e)
+        }
+        await scriptModule.afterRun()
       });
     this.cli
       .command('schedule <script>')

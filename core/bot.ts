@@ -89,9 +89,17 @@ export class Bot {
     return this._botOptions;
   }
 
+  async beforeRun() { }
+
   async run() {
     console.error('Please implement run() method')
     process.exit(1)
+  }
+
+  async afterRun() {
+    if (this.replica.conn) {
+      this.replica.end()
+    }
   }
 
   async schedule(options: ScheduleOptions) {

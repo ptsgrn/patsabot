@@ -15,7 +15,6 @@ export default class Login extends Bot {
   }
 
   async run() {
-    this.replica.init()
     const siteAndUserInfo = await this.bot
       .request({
         action: "query",
