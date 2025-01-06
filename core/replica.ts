@@ -1,15 +1,7 @@
 import mysql from "mysql2/promise";
-import { $, type Server } from "bun"
-
-const config = await import('../config.toml')
-
-if (!config.replica) {
-  throw new Error("No replica config found.");
-}
-
-if (!config.replica.username || !config.replica.password) {
-  throw new Error("Please fill in the replica credentials in config.toml");
-}
+import { $ } from "bun"
+import { ServiceBase } from '@core/base';
+import { config } from '@core/config';
 
 function getReplicaHost(dbname: string, cluster: string = "web") {
   if (!['web', 'analytics'].includes(cluster)) {
@@ -27,22 +19,24 @@ function getReplicaHost(dbname: string, cluster: string = "web") {
 }
 
 
-export class Replica {
+export class Replica extends ServiceBase {
   private _replicaOptions: mysql.PoolOptions = {
-    user: config.replica.username,
-    password: config.replica.password,
-    port: Number(config.replica.port || 3306),
+    user: this.config.replica.username,
+    password: this.config.replica.password,
+    port: Number(this.config.replica.port || 3306),
     waitForConnections: true,
   }
 
   public conn: mysql.Connection | null = null
 
-  constructor() { }
+  constructor() {
+    super()
+  }
 
   public async init() {
     if (!this.isRunOnToolforge()) {
       console.warn("Not running on Toolforge, don't forget to set up SSH tunnel using `. replica-tunnel` in separate terminal.")
-      const database = config.replica.dbname
+      const database = this.config.replica.dbname
       this._replicaOptions = {
         ...this._replicaOptions,
         host: '127.0.0.1',
@@ -51,8 +45,8 @@ export class Replica {
     } else {
       this._replicaOptions = {
         ...this._replicaOptions,
-        host: getReplicaHost(config.replica.dbname),
-        database: config.replica.dbname,
+        host: getReplicaHost(this.config.replica.dbname),
+        database: this.config.replica.dbname,
       }
     }
     this.conn = await mysql.createConnection(this._replicaOptions)
@@ -60,7 +54,7 @@ export class Replica {
 
   public static async createReplicaTunnel(dbname: string, cluster: string = "web", port: number = 3306) {
     if (!config.toolforge.login) {
-      throw new Error('Please fill in the Toolforge login in config.toml')
+      throw new Error('Please fill in the Toolforge login in this.config.toml')
     }
 
     const host = getReplicaHost(dbname, cluster)
@@ -71,7 +65,7 @@ export class Replica {
   }
 
   private isRunOnToolforge() {
-    return process.env.USER == config.toolforge.tooluser
+    return process.env.USER == this.config.toolforge.tooluser
   }
 
   public async query(sql: string, values: any[] = []) {

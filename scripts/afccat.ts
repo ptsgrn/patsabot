@@ -1,4 +1,4 @@
-import { Bot } from '../core/bot';
+import { Bot } from '@core/bot';
 import { Command } from '@commander-js/extra-typings';
 
 export default class Afccat extends Bot {
@@ -41,11 +41,11 @@ export default class Afccat extends Bot {
       .filter((c, i, a) => a.indexOf(c) === i);
 
     if (isNaN(categories.length) || categories.length === 0) {
-      this.log("[I] No categories to create.");
+      this.log.info("No categories to create.");
       process.exit(0);
     }
 
-    this.log(`[D] categories ${JSON.stringify(categories)}`);
+    this.log.info(`Creating categories for categories ${JSON.stringify(categories)}`);
 
     this.bot
       .batchOperation(
@@ -54,8 +54,8 @@ export default class Afccat extends Bot {
           if (!page) return Promise.reject();
           return new Promise((resolve, reject) => {
             if (this.cli.opts().dryRun) {
-              this.log("[W] Dry run, not creating category: " + page);
-              resolve("dryrun");
+              this.log.warn("Dry run, not creating category: " + page);
+              return resolve("dryrun");
             }
             if (
               page.indexOf("หมวดหมู่:ฉบับร่างเรียงตามวันที่ส่ง/") === -1 ||
@@ -74,7 +74,7 @@ export default class Afccat extends Bot {
               )
               .then(resolve)
               .catch((error) => {
-                this.log(`[E] ${error.message} ${page}`);
+                this.log.error(`${error.message} ${page}`);
                 reject(error);
               });
           });
@@ -83,10 +83,10 @@ export default class Afccat extends Bot {
         1
       )
       .then(() => {
-        this.log("[I] done");
+        this.log.info("done");
       })
       .catch((err) => {
-        this.log(`[E] ${err.message}`);
+        this.log.error(`${err.message}`);
       });
   }
 }

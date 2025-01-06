@@ -6,36 +6,22 @@
 import { Mwn, type MwnOptions } from "mwn";
 import { version, dependencies } from '../package.json'
 import { Command } from "@commander-js/extra-typings"
+import { Replica } from '@core/replica';
 import { Cron, type CronOptions } from 'croner';
 import chalk from 'chalk';
-import { Replica } from './replica';
+import { ServiceBase } from './base';
 
-interface ScheduleOptions {
-  pattern: string | Date;
-  options: CronOptions;
-}
-
-if (!Bun.file('../config.toml').exists()) {
-  throw new Error('Please create config.toml')
-}
-
-const config = await import('../config.toml')
-
-if (!config.oauth.consumerToken || !config.oauth.consumerSecret || !config.oauth.accessToken || !config.oauth.accessSecret) {
-  throw new Error('Please fill in the OAuth credentials in config.toml')
-}
-
-export class Bot {
+export class Bot extends ServiceBase {
   private _botOptions: MwnOptions = {
-    apiUrl: config.bot.apiUrl || "https://th.wikipedia.org/w/api.php",
+    apiUrl: this.config.bot.apiUrl || "https://th.wikipedia.org/w/api.php",
     OAuthCredentials: {
-      consumerToken: config.oauth.consumerToken || process.env.BOT_CONSUMER_TOKEN,
-      consumerSecret: config.oauth.consumerSecret || process.env.BOT_CONSUMER_SECRET,
-      accessToken: config.oauth.accessToken || process.env.BOT_ACCESS_TOKEN,
-      accessSecret: config.oauth.accessSecret || process.env.BOT_ACCESS_SECRET,
+      consumerToken: this.config.oauth.consumerToken,
+      consumerSecret: this.config.oauth.consumerSecret,
+      accessToken: this.config.oauth.accessToken,
+      accessSecret: this.config.oauth.accessSecret,
     },
     // Set your user agent (required for WMF wikis, see https://meta.wikimedia.org/wiki/User-Agent_policy):
-    userAgent: `${config.bot.username}/${version} (${config.bot.contact}) mwn/${dependencies.mwn}`,
+    userAgent: `${this.config.bot.username}/${version} (${this.config.bot.contact}) mwn/${dependencies.mwn}`,
     defaultParams: {
       assert: "user",
     },
@@ -49,10 +35,6 @@ export class Bot {
 
   public job?: Cron
 
-  public log(obj: any) {
-    return Mwn.log(obj)
-  }
-
   public bot = new Mwn({
     ...this._botOptions
   });
@@ -62,6 +44,7 @@ export class Bot {
   public replica = new Replica()
 
   constructor() {
+    super()
     this.info = {
       id: "bot",
       name: "Bot",
@@ -102,10 +85,13 @@ export class Bot {
     }
   }
 
-  async schedule(options: ScheduleOptions) {
+  async schedule(options: {
+    pattern: string | Date;
+    options: CronOptions;
+  }) {
     this.job = new Cron(options.pattern, {
       name: this.info.id,
-      timezone: config.bot.timezone,
+      timezone: this.config.bot.timezone,
       ...options.options
     })
     this.job.schedule(() => this.run())

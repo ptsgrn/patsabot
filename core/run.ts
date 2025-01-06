@@ -1,24 +1,34 @@
+import { Bot } from '@core/bot'
+import { Replica } from '@core/replica'
+import { createId } from '@paralleldrive/cuid2'
 import { Command, InvalidArgumentError, Option } from '@commander-js/extra-typings'
-import { Bot } from './bot'
 import { version } from "../package.json"
-import { $ } from "bun"
-import { Replica } from './replica'
+import { ServiceBase } from './base'
 
-class ScriptRunner {
+class ScriptRunner extends ServiceBase {
   private cli = new Command()
 
   async scriptModule(scriptName: string) {
     if (!scriptName) {
       throw new Error('No script name provided')
     }
-    if (!scriptName.match(/^[a-z0-9-]+$/)) {
+    if (!scriptName.match(/^[a-z0-9-\/]+$/)) {
       throw new Error('Invalid script name')
     }
-    if (!Bun.file(`./scripts/${scriptName}.ts`).exists()) {
+    if (!Bun.file(`@scripts/${scriptName}.ts`).exists()) {
       throw new Error('Script not found')
     }
 
-    const scriptModule = await import(`../scripts/${scriptName}.ts`)
+    const scriptModule = await import(`@scripts/${scriptName}.ts`)
+
+    if (!scriptModule.default) {
+      throw new Error('Script must have a default export')
+    }
+
+    // check if scriptModule is a Bot instance
+    if (!(Object.getPrototypeOf(scriptModule.default) === Bot || Object.getPrototypeOf(scriptModule.default.prototype) === Bot)) {
+      throw new Error('Script must be a Bot instance')
+    }
 
     return (new scriptModule.default) as unknown as Bot
   }
@@ -39,7 +49,17 @@ class ScriptRunner {
         scriptModule.cli
           .name('run ' + scriptName)
           .description(scriptModule.scriptDescription)
+        // Global cli options
+        scriptModule.cli.option("-v, --verbose", "Show debug logging")
         scriptModule.cli.parse(process.argv.slice(2))
+        scriptModule.log.defaultMeta = {
+          script: scriptName,
+          rid: createId(),
+        }
+        // @ts-ignore
+        if (scriptModule.cli.opts().verbose) {
+          scriptModule.log.level = 'debug'
+        }
         try {
           await scriptModule.beforeRun()
           await scriptModule.run()

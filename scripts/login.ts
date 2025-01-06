@@ -1,5 +1,5 @@
 import chalk from 'chalk';
-import { Bot } from '../core/bot'
+import { Bot } from '@core/bot'
 import { version } from '../package.json'
 import moment from 'moment';
 

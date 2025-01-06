@@ -1,5 +1,5 @@
 import { Command, Option } from '@commander-js/extra-typings';
-import { Bot } from '../core/bot';
+import { Bot } from '@core/bot';
 
 interface UserEdit {
   user_name: string
@@ -41,9 +41,8 @@ export default class TopEdits extends Bot {
   }
 
   async getTopEdits() {
-    console.debug('Getting top edits')
-    console.time('getTopEdits')
-    let start = Date.now()
+    this.log.info('Getting top edits')
+    this.log.profile('getTopEdits')
     const results = await this.replica.query(`
       /* topedits.ts SLOW_OK */
       SELECT
@@ -54,7 +53,7 @@ export default class TopEdits extends Bot {
       ORDER BY user_editcount DESC
       LIMIT ${this.options.maxQuerySize};
     `)
-    console.timeEnd('getTopEdits')
+    this.log.profile('getTopEdits')
     if (!results) {
       throw new Error('Query returned no results');
     }
@@ -66,8 +65,8 @@ export default class TopEdits extends Bot {
   }
 
   async getBotUserList() {
-    console.debug('Getting bot user list')
-    console.time('getBotUserList')
+    this.log.info('Getting bot user list')
+    this.log.profile('getBotUserList')
     const results = await this.replica.query(`
       /* editcount.rs SLOW_OK */
       SELECT
@@ -77,7 +76,7 @@ export default class TopEdits extends Bot {
       ON user_id = ug_user
       WHERE ug_group = 'bot';
     `)
-    console.timeEnd('getBotUserList')
+    this.log.profile('getBotUserList')
     if (!results) {
       throw new Error('Query returned no results');
     }
@@ -86,10 +85,10 @@ export default class TopEdits extends Bot {
   }
 
   async getUserAnonymousList() {
-    console.debug('Getting anonymous user list')
-    console.time('getUserAnonymousList')
+    this.log.info('Getting anonymous user list')
+    this.log.profile('getUserAnonymousList')
     const page = await this.bot.read(this.options.anonymousList)
-    console.timeEnd('getUserAnonymousList')
+    this.log.profile('getUserAnonymousList')
     if (!page.revisions) {
       throw new Error('Failed to get page content')
     }
@@ -98,7 +97,7 @@ export default class TopEdits extends Bot {
   }
 
   async getUserGroup(user: string) {
-    console.time('getUserGroup ' + user)
+    this.log.profile('getUserGroup ' + user, { level: 'debug' })
     const results = await this.replica.query(`
       /* topedits.rs SLOW_OK */
       SELECT
@@ -108,7 +107,7 @@ export default class TopEdits extends Bot {
       ON user_id = ug_user
       WHERE user_name = ?;
     `, [user])
-    console.timeEnd('getUserGroup ' + user)
+    this.log.profile('getUserGroup ' + user, { level: 'debug' })
     if (!results) {
       throw new Error('Query returned no results');
     }
@@ -118,8 +117,8 @@ export default class TopEdits extends Bot {
 
   async getActiveUsers() {
     let activeusers: string[] = [];
-    console.debug('Getting active users')
-    console.time('getActiveUsers')
+    this.log.info('Getting active users')
+    this.log.profile('getActiveUsers')
     for await (let json of this.bot.continuedQueryGen({
       action: "query",
       list: "allusers",
@@ -129,7 +128,7 @@ export default class TopEdits extends Bot {
       let users = json.query?.allusers.map((user: { name: string }) => user.name) as string[];
       activeusers = activeusers.concat(users);
     }
-    console.timeEnd('getActiveUsers')
+    this.log.profile('getActiveUsers')
     return activeusers
   }
 
@@ -180,8 +179,7 @@ export default class TopEdits extends Bot {
     const withBotContent = this.createTable(userList, this.options.listTop)
 
     if (this.cli.opts().dryRun) {
-      console.log('Dry run enabled, skipping edit')
-      console.log('No bot content:')
+      this.log.warn('Dry run enabled, skipping edit')
       const noBotRead = (await this.bot.read(this.options.targetPage.noBot)).revisions?.[0].content
       if (!noBotRead) {
         throw new Error('Failed to get page content')
@@ -189,7 +187,6 @@ export default class TopEdits extends Bot {
       console.table({
         noBotContent: this.processListPageContent(noBotRead, noBotContent),
       })
-      console.log('With bot content:')
       const withBotRead = (await this.bot.read(this.options.targetPage.withBot)).revisions?.[0].content
       if (!withBotRead) {
         throw new Error('Failed to get page content')
@@ -223,8 +220,8 @@ export default class TopEdits extends Bot {
 
     let userList: UserEdit[] = []
     let noBotCount = 0
-    console.log('Processing top edits')
-    console.time('processTopEdits')
+    this.log.info('Processing top edits')
+    this.log.profile('processTopEdits')
     for (let user of topEdits) {
       const userGroup = await this.getUserGroup(user.user_name)
       userList.push({
@@ -241,9 +238,8 @@ export default class TopEdits extends Bot {
         noBotCount++
       }
     }
-    console.timeEnd('processTopEdits')
-    console.log('Saving to wiki')
+    this.log.profile('processTopEdits')
+    this.log.info('Saving to wiki')
     await this.saveToWiki(userList)
-    await this.replica.end()
   }
 }
