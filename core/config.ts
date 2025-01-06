@@ -4,7 +4,7 @@ if (!Bun.file('../config.toml').exists()) {
   throw new Error('Please create config.toml')
 }
 
-export const config = await z.object({
+export const config = z.object({
   oauth: z.object({
     consumerToken: z.string(),
     consumerSecret: z.string(),
@@ -43,4 +43,4 @@ export const config = await z.object({
       webhook: z.string().optional(),
     }),
   }),
-}).parseAsync(await import('../config.toml'))
+}).parse(await import('../config.toml'))

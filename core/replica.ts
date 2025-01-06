@@ -34,8 +34,9 @@ export class Replica extends ServiceBase {
   }
 
   public async init() {
+    this.log.debug('Initializing replica connection')
     if (!this.isRunOnToolforge()) {
-      console.warn("Not running on Toolforge, don't forget to set up SSH tunnel using `. replica-tunnel` in separate terminal.")
+      this.log.warn("Not running on Toolforge, don't forget to set up SSH tunnel using `. replica-tunnel` in separate terminal.")
       const database = this.config.replica.dbname
       this._replicaOptions = {
         ...this._replicaOptions,
@@ -48,6 +49,7 @@ export class Replica extends ServiceBase {
         host: getReplicaHost(this.config.replica.dbname),
         database: this.config.replica.dbname,
       }
+      this.log.debug(`Connecting to ${this._replicaOptions.database} on ${this._replicaOptions.host}`)
     }
     this.conn = await mysql.createConnection(this._replicaOptions)
   }
@@ -70,17 +72,20 @@ export class Replica extends ServiceBase {
 
   public async query(sql: string, values: any[] = []) {
     if (!this.conn) {
+      this.log.debug('Replica connection not initialized, initializing...')
       await this.init()
     }
     return this.conn?.execute(sql, values)
   }
 
   public end() {
+    this.log.debug('Closing replica connection')
     return this.conn?.end()
   }
 
 
   set replicaOptions(options: mysql.PoolOptions) {
+    this.log.debug('Setting replica options')
     this._replicaOptions = {
       ...this._replicaOptions,
       ...options

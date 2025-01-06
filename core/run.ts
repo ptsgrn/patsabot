@@ -25,9 +25,9 @@ class ScriptRunner extends ServiceBase {
       throw new Error('Script must have a default export')
     }
 
-    // check if scriptModule is a Bot instance
-    if (!(Object.getPrototypeOf(scriptModule.default) === Bot || Object.getPrototypeOf(scriptModule.default.prototype) === Bot)) {
-      throw new Error('Script must be a Bot instance')
+    // check if scriptModule is a Bot instance, or a class that extends Bot
+    if (!(scriptModule.default.prototype instanceof Bot)) {
+      throw new Error('Script must be an instance of Bot')
     }
 
     return (new scriptModule.default) as unknown as Bot
