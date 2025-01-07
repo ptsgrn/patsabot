@@ -1,6 +1,6 @@
 import { Elysia } from "elysia"
 import { $ } from "bun"
-import config from '../config.toml'
+import { config } from '@core/config'
 
 const now = () => new Date().toISOString()
 
@@ -26,7 +26,6 @@ export const app = new Elysia()
         console.log(`[${now()}]`, line.trim())
         yield `[${now()}] ${line.trim()}\n`
       }
-      await Bun.sleep(5000)
     }
     const end = Date.now()
     yield `[${now()}] Deployment completed in ${end - start}ms\n`

@@ -10,6 +10,7 @@ export class DatabaseReportBot extends Bot {
   reportFrequencyText: string = 'สัปดาห์ละครั้ง'
   reportFooter: string = "\n{{ส่วนท้ายรายงานฐานข้อมูล}}"
   summary: string = "อัปเดตรายงาน"
+  id: string = ""
 
   query: string = ""
   headers: string[] = ['ที่']
@@ -84,3 +85,5 @@ export class DatabaseReportBot extends Bot {
     return []
   }
 }
+
+export default class RunScheduleDatabaseReport extends Bot { }

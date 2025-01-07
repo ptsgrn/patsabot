@@ -2,13 +2,15 @@ import { Bot } from '@core/bot';
 
 export default class UpdateStatusBot extends Bot {
   public info: { id: string; name: string; description: string; } = {
-    id: '0',
+    id: 'updatestatus',
     description: 'อัปเดตสถานะบอต',
     name: 'updatestatus',
   }
+
   constructor() {
     super()
   }
+
   async run() {
     await this.bot.save(
       `ผู้ใช้:${this.config.bot.username}/timestamp`,

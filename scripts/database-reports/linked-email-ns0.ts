@@ -12,6 +12,7 @@ export default class LinkedEmailNs0 extends DatabaseReportBot {
   reportDescription = 'บทความที่มีการใช้ลิงก์แต่ลิงก์ไปที่อยู่อีเมล (ด้วย <code>mailto:</code>)'
   reportFrequency = '@weekly' // cron schedule
   reportFrequencyText = 'สัปดาห์ละครั้ง'
+  id = "linked-email-ns0"
 
   query = `
     /* linked-email-ns0.ts SLOW_OK */

@@ -10,6 +10,7 @@ export default class LongStubs extends DatabaseReportBot {
   reportDescription = 'รายการที่มีแม่แบบโครงแต่มีขนาดยาว (จำกัด 1000 อันดับแรก)'
   reportFrequency = '@weekly' // cron schedule
   reportFrequencyText = 'สัปดาห์ละครั้ง'
+  id = "long-stubs"
 
   query = `
     /* long-stubs.ts SLOW_OK */

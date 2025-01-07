@@ -10,6 +10,7 @@ export default class DraftsWithCats extends DatabaseReportBot {
   reportDescription = 'บทความที่มีลิงก์ไปยังหน้าผู้ใช้หรือหน้าคุยกับผู้ใช้'
   reportFrequency = '@weekly' // cron schedule
   reportFrequencyText = 'สัปดาห์ละครั้ง'
+  id = "linked-user-ns0"
 
   query = `
     /* draft-with-cats.ts SLOW_OK */
