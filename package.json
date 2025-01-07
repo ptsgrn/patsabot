@@ -61,5 +61,5 @@
     "start": "/data/project/patsabot/.bun/bin/bun i && /data/project/patsabot/.bun/bin/bun ./core/web.ts",
     "prepare": "husky"
   },
-  "type": "module",
+  "type": "module"
 }
