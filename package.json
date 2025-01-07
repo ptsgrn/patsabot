@@ -34,7 +34,6 @@
     "@types/js-yaml": "^4.0.9",
     "@types/node": "^22.10.3",
     "@types/ssh2": "^1.15.1",
-    "bun": "^1.1.42",
     "husky": "^9.1.7",
     "lint-staged": "^15.3.0",
     "prettier": "3.4.2",
