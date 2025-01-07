@@ -32,3 +32,5 @@ export const app = new Elysia()
     yield `</pre></body></html>`
   })
   .listen(process.env.PORT || 3000)
+
+console.log(`Server running at :${process.env.PORT || 3000}`)
