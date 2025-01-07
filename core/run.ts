@@ -12,7 +12,7 @@ class ScriptRunner extends ServiceBase {
     if (!scriptName) {
       throw new Error('No script name provided')
     }
-    if (!scriptName.match(/^[a-z0-9-\/]+$/)) {
+    if (!scriptName.match(/^[a-z0-9-\/\.]+$/)) {
       throw new Error('Invalid script name')
     }
     if (!Bun.file(`@scripts/${scriptName}.ts`).exists()) {
@@ -45,6 +45,7 @@ class ScriptRunner extends ServiceBase {
       .argument('[args...]', 'Script arguments')
       .passThroughOptions()
       .action(async (scriptName, options) => {
+        scriptName = scriptName.replace(/^scripts\//, "").replace(/\.ts$/, "")
         const scriptModule = await this.scriptModule(scriptName)
         scriptModule.cli
           .name('run ' + scriptName)
