@@ -10,18 +10,17 @@ export const app = new Elysia()
     if (!token) return { status: 401, body: "Unauthorized" }
     if (token !== config.toolforge.deploykey) return { status: 403, body: "Forbidden" }
     const commands = [
-      $`git fetch`,
-      $`git reset --hard origin/main`,
-      $`git pull`,
-      $`bun i`,
+      [$`git fetch`, "git fetch"],
+      [$`git reset --hard origin/main`, "git reset --hard origin/main"],
+      [$`git pull`, "git pull"],
+      [$`bun i`, "bun i"],
     ]
 
     // yield simple html response prepend for simple style
-    yield `<html><body><pre>`
     yield `[${now()}] Starting deployment...\n`
     const start = Date.now()
     for (const command of commands) {
-      yield `[${now()}] Running: ${command}\n`
+      yield `[${now()}] Running: ${command[Symbol]}\n`
       for await (const line of command.lines()) {
         console.log(`[${now()}]`, line.trim())
         yield `[${now()}] ${line.trim()}\n`
@@ -29,7 +28,12 @@ export const app = new Elysia()
     }
     const end = Date.now()
     yield `[${now()}] Deployment completed in ${end - start}ms\n`
-    yield `</pre></body></html>`
+  })
+  .onError(async ({ code }) => {
+    if (code === 'NOT_FOUND') {
+      const currentHash = await $`git rev-parse --short HEAD | tr -d '\n'`
+      return `404 Not Found (${config.bot.username} ${currentHash.text()})`
+    }
   })
   .listen(process.env.PORT || 3000)
 
