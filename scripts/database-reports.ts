@@ -13,7 +13,11 @@ export class DatabaseReportBot extends Bot {
 
   query: string = ""
   headers: string[] = ['ที่']
-  preTableHeader: string = `\n\n{| class="wikitable sortable static-row-numbers static-row-header-text"\n|- style="white-space: nowrap;"`
+  preTableTemplates: string[] = []
+
+  get preTableHeader() {
+    return `\n\n${this.preTableTemplates.join("\n")}\n{| class="wikitable sortable static-row-numbers static-row-header-text"\n|- style="white-space: nowrap;"`
+  }
 
   public cli = new Command()
     .addOption(new Option("-s, --save", "Save the report to a page specified in scripts, instead of printing to console."))
@@ -27,7 +31,7 @@ export class DatabaseReportBot extends Bot {
   }
 
   get pageDescription() {
-    return `${this.reportDescription} รายงานนี้อัปเดต${this.reportFrequencyText} อัปเดตล่าสุดเมื่อ <onlyinclude>{{subst:#timel:r}}</onlyinclude>`
+    return `${this.reportDescription} รายงานนี้อัปเดต${this.reportFrequencyText} อัปเดตล่าสุดเมื่อ <onlyinclude>{{subst:#timel:H:i, j F xkY}}</onlyinclude>`
   }
 
 
@@ -37,12 +41,15 @@ export class DatabaseReportBot extends Bot {
 
   async run() {
     this.log.profile('Querying database')
-    const [rows, fields] = await this.replica.query(this.query)
+    const result = await this.replica.query(this.query)
+    if (!result) {
+      throw new Error('Query returned undefined')
+    }
+    const [rows, fields] = result
     this.log.profile('Querying database')
     this.log.info(`Found ${rows.length} rows`)
     this.log.debug('Creating wiki table')
     const table = this.createWikiTable(this.headers, rows)
-    this.log.info('Saving page')
     await this.savePage(this.pageDescription, table, this.reportFooter)
   }
 
