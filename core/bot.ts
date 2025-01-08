@@ -31,6 +31,7 @@ export class Bot extends ServiceBase {
     id: string;
     name: string;
     description: string;
+    frequency?: string;
   }
 
   public job?: Cron
@@ -87,7 +88,7 @@ export class Bot extends ServiceBase {
 
   async schedule(options: {
     pattern: string | Date;
-    options: CronOptions;
+    options?: CronOptions;
   }) {
     this.job = new Cron(options.pattern, {
       name: this.info.id,

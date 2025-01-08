@@ -10,7 +10,7 @@ interface UserEdit {
 }
 
 export default class TopEdits extends Bot {
-  info = {
+  info: Bot['info'] = {
     id: "topedits",
     name: "TopEdits",
     description: "อัปเดตตาราง[[วิกิพีเดีย:รายชื่อชาววิกิพีเดียที่แก้ไขมากที่สุด 500 อันดับ]] และ[[วิกิพีเดีย:รายชื่อชาววิกิพีเดียที่แก้ไขมากที่สุด 500 อันดับ (รวมบอต)]]",

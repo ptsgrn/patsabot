@@ -2,7 +2,6 @@ node_modules/
 node_modules
 logs/
 dist/
-config.toml
 configstore/
 .*.sw*
 .env
@@ -15,3 +14,7 @@ user-password.py
 apicache/
 *.lwp
 */throttle.ctrl
+
+
+config.toml
+config-*.toml

@@ -4,7 +4,7 @@ import { version } from '../package.json'
 import moment from 'moment';
 
 export default class Login extends Bot {
-  info = {
+  info: Bot['info'] = {
     id: "login",
     name: "Login",
     description: "Get site and user info"

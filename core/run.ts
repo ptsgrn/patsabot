@@ -7,6 +7,10 @@ import { ServiceBase } from './base'
 
 class ScriptRunner extends ServiceBase {
   private cli = new Command()
+  private config = {
+    logLevel: "info",
+    configFile: "config.toml"
+  }
 
   async scriptModule(scriptName: string) {
     if (!scriptName) {
@@ -38,29 +42,54 @@ class ScriptRunner extends ServiceBase {
       .name('patsabot')
       .version(version)
       .enablePositionalOptions()
+      .configureHelp({
+        showGlobalOptions: true,
+        sortOptions: true,
+        sortSubcommands: true,
+      })
+
     this.cli
       .command('run')
       .description('Run a script')
       .argument('<script>', 'Script name')
       .argument('[args...]', 'Script arguments')
       .passThroughOptions()
-      .action(async (scriptName, options) => {
+      .action(async (scriptName) => {
         scriptName = scriptName.replace(/^scripts\//, "").replace(/\.ts$/, "")
         const scriptModule = await this.scriptModule(scriptName)
         scriptModule.cli
           .name('run ' + scriptName)
           .description(scriptModule.scriptDescription)
-        // Global cli options
-        scriptModule.cli.option("-v, --verbose", "Show debug logging")
+
+        // Ensure that we pass the global options correctly to the script
+        scriptModule.cli.addOption(new Option("-l, --log-level <level>", "Log level")
+          .choices(['debug', 'info', 'warn', 'error'])
+          .default(this.config.logLevel)
+        )
+        scriptModule.cli.addOption(new Option("-c, --config <file>", "Config file")
+          .default(this.config.configFile)
+        )
+
+        // Handle global options within the script
+        scriptModule.cli.opts = () => ({
+          logLevel: this.config.logLevel,
+          configFile: this.config.configFile,
+          ...scriptModule.cli.opts()
+        })
+
+        // Pass the correct arguments to parse
         scriptModule.cli.parse(process.argv.slice(2))
+
         scriptModule.log.defaultMeta = {
           script: scriptName,
           rid: createId(),
         }
-        // @ts-ignore
-        if (scriptModule.cli.opts().verbose) {
+
+        // Apply global log level
+        if (this.config.logLevel === 'debug') {
           scriptModule.log.level = 'debug'
         }
+
         try {
           await scriptModule.beforeRun()
           await scriptModule.run()
@@ -69,6 +98,7 @@ class ScriptRunner extends ServiceBase {
         }
         await scriptModule.afterRun()
       });
+
     this.cli
       .command('schedule <script>')
       .description('Schedule a script for cron')
@@ -100,6 +130,7 @@ class ScriptRunner extends ServiceBase {
           }
         })
       })
+
     this.cli
       .command("replica-tunnel")
       .description("Set up an SSH tunnel to Wikimedia Replica with specific wiki database")
@@ -111,7 +142,9 @@ class ScriptRunner extends ServiceBase {
       .action(async (wiki, options) => {
         Replica.createReplicaTunnel(wiki, options.cluster, options.port)
       })
-    this.cli.parse(process.argv)
+
+    // Ensure that we parse the correct arguments from process.argv
+    this.cli.parse()
   }
 }
 

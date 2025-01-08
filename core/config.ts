@@ -1,7 +1,22 @@
 import { z } from 'zod'
+import { parseArgs } from "util";
+import { join } from "path"
 
-if (!Bun.file('../config.toml').exists()) {
-  throw new Error('Please create config.toml')
+const { values, positionals } = parseArgs({
+  args: Bun.argv,
+  options: {
+    config: {
+      type: 'string',
+      default: "config.toml",
+    }
+  },
+  strict: false,
+});
+
+let configFile = join(import.meta.dir, "../", typeof values.config === 'string' ? values.config : "config.toml")
+
+if (!Bun.file(configFile).exists()) {
+  throw new Error(`Config file not found: ${configFile}`)
 }
 
 export const config = z.object({
@@ -43,4 +58,6 @@ export const config = z.object({
       webhook: z.string().optional(),
     }),
   }),
-}).parse(await import('../config.toml'))
+}).parse(await import(configFile))
+
+process.env.TZ = config.bot.timezone

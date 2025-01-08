@@ -1,7 +1,7 @@
 import { Bot } from '@core/bot';
 
 export default class UpdateStatusBot extends Bot {
-  public info: { id: string; name: string; description: string; } = {
+  public info: Bot['info'] = {
     id: 'updatestatus',
     description: 'อัปเดตสถานะบอต',
     name: 'updatestatus',

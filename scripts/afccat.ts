@@ -2,10 +2,11 @@ import { Bot } from '@core/bot';
 import { Command } from '@commander-js/extra-typings';
 
 export default class Afccat extends Bot {
-  info = {
+  public info: Bot['info'] = {
     id: "afccat",
     name: "AfC Category Creator",
     description: "Create categories for AfC submissions",
+    frequency: "@daily",
   }
 
   cli = new Command()

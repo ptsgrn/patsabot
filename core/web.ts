@@ -1,26 +1,33 @@
-import { Elysia } from "elysia"
-import { $ } from "bun"
+import { Elysia, t } from "elysia"
+import { jwt } from '@elysiajs/jwt'
+import { swagger } from '@elysiajs/swagger'
+import { $, ShellPromise, type Shell } from "bun"
 import { config } from '@core/config'
 
 const now = () => new Date().toISOString()
 
 export const app = new Elysia()
-  .get("/deploy/:token", async function* ({ params }) {
-    const { token } = params
-    if (!token) return { status: 401, body: "Unauthorized" }
-    if (token !== config.toolforge.deploykey) return { status: 403, body: "Forbidden" }
+  .use(swagger())
+  .use(
+    jwt({
+      name: "jwt",
+      secret: config.toolforge.deploykey
+    })
+  )
+  .get("/deploy", async function* ({ jwt, query }) {
+    const data = await jwt.verify(query.token)
     const commands = [
       [$`git fetch`, "git fetch"],
       [$`git reset --hard origin/main`, "git reset --hard origin/main"],
       [$`git pull`, "git pull"],
       [$`bun i`, "bun i"],
-    ]
+    ] as [ShellPromise, string][]
 
     // yield simple html response prepend for simple style
     yield `[${now()}] Starting deployment...\n`
     const start = Date.now()
-    for (const command of commands) {
-      yield `[${now()}] Running: ${command[Symbol]}\n`
+    for (const [command, rawCommand] of commands) {
+      yield `[${now()}] Running: ${rawCommand}\n`
       for await (const line of command.lines()) {
         console.log(`[${now()}]`, line.trim())
         yield `[${now()}] ${line.trim()}\n`

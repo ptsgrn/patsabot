@@ -1,5 +1,7 @@
 import { Command, Option } from '@commander-js/extra-typings';
 import { Bot } from '@core/bot';
+import { readdir } from "node:fs/promises";
+import { join } from 'node:path';
 import chalk from 'chalk';
 
 export class DatabaseReportBot extends Bot {
@@ -84,6 +86,32 @@ export class DatabaseReportBot extends Bot {
   formatRow(row: any, index: number, rows?: any[]): string[] {
     return []
   }
+
+  async schedule() {
+    await super.schedule({
+      pattern: this.reportFrequency,
+      options: {
+        name: this.id
+      }
+    })
+  }
 }
 
-export default class RunScheduleDatabaseReport extends Bot { }
+export default class RunScheduleDatabaseReport extends Bot {
+  allReports: Record<string, DatabaseReportBot> = {}
+
+  async run() {
+    this.log.info('Running all scheduled database reports')
+    const files = await readdir(join(import.meta.dir, '../scripts/database-reports'))
+    for (const file of files) {
+      if (!file.endsWith('.ts')) {
+        continue
+      }
+      const module = await import(`@scripts/database-reports/${file}`)
+      const report = new module.default() as DatabaseReportBot
+      this.log.info(`Scheduled ${report.id} (${report.reportFrequency})`)
+      this.allReports[report.id] = report
+      await report.schedule()
+    }
+  }
+}
