@@ -1,0 +1,49 @@
+[bot]
+username = "PatsaBot"
+password = ""
+contact = "[[:w:th:User:PatsaBot]]"
+apiUrl = "https://th.wikipedia.org/w/api.php"
+timezone = "Asia/Bangkok"
+
+[toolforge]
+# configuration for toolforge accessing
+login = ""
+tooluser = "tools.patsabot"
+# Important: create it with good long and high entropy password
+# eg. openssl rand -base64 32
+webKey = ""
+
+[oauth]
+# https://www.mediawiki.org/wiki/OAuth/Owner-only_consumers
+consumerToken = ""
+consumerSecret = ""
+accessToken = ""
+accessSecret = ""
+
+[replica]
+# Wikimedia replica database
+# https://wikitech.wikimedia.org/wiki/Help:Toolforge/Database
+username = ""
+password = ""
+dbname = "thwiki_p"
+cluster = "analytics"
+port = 3306
+
+[irc]
+# unused
+nickName = ""
+username = ""
+password = ""
+realName = ""
+server = "irc.libera.chat"
+port = 6667
+
+[scripts.archive]
+# arhive custom basepage keysalt
+key_salt = ""
+
+[logger]
+# on production, I set logPath to "/data/project/patsabot/www/static/logs"
+logPath = "./logs"
+# on production should be less verbose eg. "info"
+level = "debug"
