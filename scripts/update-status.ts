@@ -8,10 +8,6 @@ export default class UpdateStatusBot extends Bot {
     frequency: "@daily",
   }
 
-  constructor() {
-    super()
-  }
-
   async run() {
     await this.bot.save(
       `ผู้ใช้:${this.config.bot.username}/timestamp`,
