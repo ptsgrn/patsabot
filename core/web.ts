@@ -27,6 +27,7 @@ const getTask = ([id, script]: [string, Bot]) => ({
   }
 })
 const runner = new ScriptRunner()
+runner.log.info("Starting scheduled tasks")
 runner.startScheduled()
 
 export const app = new Elysia()
