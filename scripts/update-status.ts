@@ -2,9 +2,9 @@ import { Bot } from '@core/bot';
 
 export default class UpdateStatusBot extends Bot {
   public info: Bot['info'] = {
-    id: 'updatestatus',
+    id: 'update-status',
     description: 'อัปเดตสถานะบอต',
-    name: 'updatestatus',
+    name: 'update-status',
   }
 
   constructor() {

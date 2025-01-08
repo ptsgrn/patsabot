@@ -6,11 +6,13 @@ import { DatabaseReportBot } from '@scripts/database-reports';
  * @see https://github.com/mzmcbride/database-reports/blob/f1c43652ca15263617c477218a318005ffe8839f/dbreps2/src/enwiki/longstubs.rs
  */
 export default class LongStubs extends DatabaseReportBot {
-  reportPage = "บทความโครงขนาดยาว"
-  reportDescription = 'รายการที่มีแม่แบบโครงแต่มีขนาดยาว (จำกัด 1000 อันดับแรก)'
-  reportFrequency = '@weekly' // cron schedule
-  reportFrequencyText = 'สัปดาห์ละครั้ง'
-  id = "long-stubs"
+  info: DatabaseReportBot['info'] = {
+    id: "long-stubs",
+    name: "Long Stubs",
+    description: "A list of long stubs",
+    frequency: '@weekly',
+    frequencyText: 'สัปดาห์ละครั้ง'
+  }
 
   query = `
     /* long-stubs.ts SLOW_OK */

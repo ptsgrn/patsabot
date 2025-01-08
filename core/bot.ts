@@ -32,6 +32,8 @@ export class Bot extends ServiceBase {
     name: string;
     description: string;
     frequency?: string;
+    scriptSource?: string;
+    rid?: string;
   }
 
   public job?: Cron

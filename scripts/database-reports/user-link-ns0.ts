@@ -6,11 +6,13 @@ import { DatabaseReportBot } from '@scripts/database-reports';
  * @see https://github.com/mzmcbride/database-reports/blob/f1c43652ca15263617c477218a318005ffe8839f/dbreps2/src/general/userlinksinarticles.rs
  */
 export default class DraftsWithCats extends DatabaseReportBot {
-  reportPage = "บทความที่มีลิงก์ผู้ใช้"
-  reportDescription = 'บทความที่มีลิงก์ไปยังหน้าผู้ใช้หรือหน้าคุยกับผู้ใช้'
-  reportFrequency = '@weekly' // cron schedule
-  reportFrequencyText = 'สัปดาห์ละครั้ง'
-  id = "linked-user-ns0"
+  info: DatabaseReportBot['info'] = {
+    id: "linked-user-ns0",
+    name: "บทความที่มีลิงก์ผู้ใช้",
+    description: "บทความที่มีลิงก์ไปยังหน้าผู้ใช้หรือหน้าคุยกับผู้ใช้",
+    frequency: '@weekly',
+    frequencyText: 'สัปดาห์ละครั้ง'
+  }
 
   query = `
     /* draft-with-cats.ts SLOW_OK */

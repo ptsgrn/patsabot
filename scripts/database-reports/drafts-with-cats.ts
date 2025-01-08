@@ -6,11 +6,13 @@ import { DatabaseReportBot } from '@scripts/database-reports';
  * @see https://en.wikipedia.org/w/index.php?title=Wikipedia:Database_reports/Drafts_with_categories
  */
 export default class DraftsWithCats extends DatabaseReportBot {
-  reportPage = "ฉบับร่างที่ใช้หมวดหมู่"
-  reportDescription = 'ฉบับร่างที่มีหมวดหมู่จริง จำกัด 1000 รายการ'
-  reportFrequency = '@weekly' // cron schedule
-  reportFrequencyText = 'สัปดาห์ละครั้ง'
-  id = "draft-with-cats"
+  info: DatabaseReportBot['info'] = {
+    id: "draft-with-cats",
+    name: "ฉบับร่างที่ใช้หมวดหมู่",
+    description: "ฉบับร่างที่มีหมวดหมู่จริง จำกัด 1000 รายการ",
+    frequency: '@weekly',
+    frequencyText: 'สัปดาห์ละครั้ง'
+  }
 
   query = `
     /* draft-with-cats.ts SLOW_OK */

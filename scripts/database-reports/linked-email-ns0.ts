@@ -8,11 +8,13 @@ import { DatabaseReportBot } from '@scripts/database-reports';
  * @see https://github.com/mzmcbride/database-reports/blob/f1c43652ca15263617c477218a318005ffe8839f/dbreps2/src/general/linkedemailsinarticles.rs
  */
 export default class LinkedEmailNs0 extends DatabaseReportBot {
-  reportPage = "บทความที่มีลิงก์ที่อยู่อีเมล"
-  reportDescription = 'บทความที่มีการใช้ลิงก์แต่ลิงก์ไปที่อยู่อีเมล (ด้วย <code>mailto:</code>)'
-  reportFrequency = '@weekly' // cron schedule
-  reportFrequencyText = 'สัปดาห์ละครั้ง'
-  id = "linked-email-ns0"
+  info: DatabaseReportBot['info'] = {
+    id: "linked-email-ns0",
+    name: "บทความที่มีลิงก์ที่อยู่อีเมล",
+    description: "บทความที่มีการใช้ลิงก์แต่ลิงก์ไปที่อยู่อีเมล (ด้วย <code>mailto:</code>)",
+    frequency: '@weekly',
+    frequencyText: 'สัปดาห์ละครั้ง'
+  }
 
   query = `
     /* linked-email-ns0.ts SLOW_OK */

@@ -5,9 +5,9 @@ import { Command, InvalidArgumentError, Option } from '@commander-js/extra-typin
 import { version } from "../package.json"
 import { ServiceBase } from './base'
 import { readdir } from 'node:fs/promises'
-import { join } from 'node:path'
+import { join, resolve } from 'node:path'
 
-class ScriptRunner extends ServiceBase {
+export class ScriptRunner extends ServiceBase {
   private cli = new Command()
   public scheduled: Record<string, Bot> = {}
 
@@ -33,12 +33,27 @@ class ScriptRunner extends ServiceBase {
       throw new Error('Script must be an instance of Bot')
     }
 
-    return (new scriptModule.default) as unknown as Bot
+    const bot = new scriptModule.default as unknown as Bot
+
+    bot.info.rid = createId()
+    bot.info.scriptSource = scriptName
+    bot.log.defaultMeta = {
+      script: scriptName,
+      rid: bot.info.rid,
+    }
+
+    return bot
   }
 
   async runScript(scriptName: string) {
     scriptName = scriptName.replace(/^scripts\//, "").replace(/\.ts$/, "")
     const scriptModule = await this.scriptModule(scriptName)
+    scriptModule.info.rid = createId()
+    scriptModule.log.defaultMeta = {
+      script: scriptName,
+      rid: scriptModule.info.rid,
+    }
+
     scriptModule.cli
       .name('run ' + scriptName)
       .description(scriptModule.scriptDescription)
@@ -55,11 +70,6 @@ class ScriptRunner extends ServiceBase {
     // Pass the correct arguments to parse
     scriptModule.cli.parse(process.argv.slice(2))
 
-    scriptModule.log.defaultMeta = {
-      script: scriptName,
-      rid: createId(),
-    }
-
     try {
       await scriptModule.beforeRun()
       await scriptModule.run()
@@ -75,19 +85,20 @@ class ScriptRunner extends ServiceBase {
       if (!file.endsWith('.ts')) {
         continue
       }
-      const module = await import(`@scripts/${file}`)
-      const script = new module.default() as Bot
+      const scriptName = file.replace(/^scripts\//, "").replace(/\.ts$/, "")
+      const script: Bot = await this.scriptModule(scriptName)
       if (!script.info.frequency) {
         this.log.debug(`Script ${script.info.id} has no frequency, skipping`)
         continue
       }
       this.log.info(`Scheduled ${script.info.id} (${script.info.frequency})`)
       this.scheduled[script.info.id] = script
-      await script.schedule()
+      script.schedule()
     }
   }
 
   async run() {
+    this.cli = new Command()
     this.cli
       .name('patsabot')
       .version(version)
@@ -130,6 +141,9 @@ class ScriptRunner extends ServiceBase {
           throw new Error('No schedule provided')
         }
         const pattern = options.date ? options.date as Date : options.cron as string
+        this.scheduled[scriptModule.info.id] = scriptModule
+        scriptModule.info.scriptSource = scriptName
+
         await scriptModule.schedule({
           pattern: pattern,
           options: {
@@ -160,4 +174,7 @@ class ScriptRunner extends ServiceBase {
   }
 }
 
-new ScriptRunner().run();
+// Run the script if this file is the main module
+if (Bun.main === resolve(join(import.meta.path, "../../")) || import.meta.main) {
+  new ScriptRunner().run();
+}

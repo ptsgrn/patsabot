@@ -1,6 +1,7 @@
 import { z } from 'zod'
 import { parseArgs } from "util";
 import { join } from "path"
+import { humanReadableToBytes } from './helper';
 
 const { values, positionals } = parseArgs({
   args: Bun.argv,
@@ -52,6 +53,12 @@ export const config = z.object({
   logger: z.object({
     logPath: z.string(),
     level: z.string().default("info"),
+    maxFileSize: z
+      .string()
+      .default("1MB")
+      .transform((v) => {
+        return humanReadableToBytes(v)
+      })
   }),
   discord: z.object({
     logger: z.object({

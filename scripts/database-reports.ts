@@ -5,23 +5,23 @@ import { join } from 'node:path';
 import chalk from 'chalk';
 
 export class DatabaseReportBot extends Bot {
+  info = {
+    id: "database-report",
+    name: "Database Report",
+    description: "A database report",
+    frequency: '@weekly',
+    frequencyText: 'สัปดาห์ละครั้ง'
+  } satisfies Bot['info'] | {
+    frequencyText: string
+  }
+
   reportPageBase: string = "วิกิพีเดีย:รายงานจากฐานข้อมูล/"
-  reportPage: string = ""
-  reportDescription: string = ""
-  reportFrequency: string = '@weekly'
-  reportFrequencyText: string = 'สัปดาห์ละครั้ง'
   reportFooter: string = "\n{{ส่วนท้ายรายงานฐานข้อมูล}}"
   summary: string = "อัปเดตรายงาน"
-  id: string = ""
 
   query: string = ""
   headers: string[] = ['ที่']
   preTableTemplates: string[] = []
-
-  constructor() {
-    super()
-    this.info.frequency = this.reportFrequency
-  }
 
   get preTableHeader() {
     return `\n\n${this.preTableTemplates.join("\n")}\n{| class="wikitable sortable static-row-numbers static-row-header-text"\n|- style="white-space: nowrap;"`
@@ -31,15 +31,15 @@ export class DatabaseReportBot extends Bot {
     .addOption(new Option("-s, --save", "Save the report to a page specified in scripts, instead of printing to console."))
 
   get scriptDescription() {
-    return `Create a database report about ${this.reportPage}\n${this.reportDescription}`
+    return `Create a database report about ${this.info.name}\n${this.info.description}`
   }
 
   get pageTitle() {
-    return this.reportPageBase + this.reportPage
+    return this.reportPageBase + this.info.name
   }
 
   get pageDescription() {
-    return `${this.reportDescription} รายงานนี้อัปเดต${this.reportFrequencyText} อัปเดตล่าสุดเมื่อ <onlyinclude>{{subst:#timel:H:i, j F xkY}}</onlyinclude>`
+    return `${this.info.description} รายงานนี้อัปเดต${this.info.frequencyText} อัปเดตล่าสุดเมื่อ <onlyinclude>{{subst:#timel:H:i, j F xkY}}</onlyinclude>`
   }
 
 
@@ -55,8 +55,10 @@ export class DatabaseReportBot extends Bot {
     }
     const [rows, fields] = result
     this.log.profile('Querying database')
+    // @ts-ignore
     this.log.info(`Found ${rows.length} rows`)
     this.log.debug('Creating wiki table')
+    // @ts-ignore
     const table = this.createWikiTable(this.headers, rows)
     await this.savePage(this.pageDescription, table, this.reportFooter)
   }
@@ -94,15 +96,20 @@ export class DatabaseReportBot extends Bot {
 
   async schedule() {
     await super.schedule({
-      pattern: this.reportFrequency,
+      pattern: this.info.frequency,
       options: {
-        name: this.id
+        name: this.info.id
       }
     })
   }
 }
 
 export default class RunScheduleDatabaseReport extends Bot {
+  info: Bot['info'] = {
+    id: 'run-schedule-database-report',
+    name: 'Run Schedule Database Report',
+    description: 'Run all scheduled database reports'
+  }
   allReports: Record<string, DatabaseReportBot> = {}
 
   async run() {
@@ -114,8 +121,8 @@ export default class RunScheduleDatabaseReport extends Bot {
       }
       const module = await import(`@scripts/database-reports/${file}`)
       const report = new module.default() as DatabaseReportBot
-      this.log.info(`Scheduled ${report.id} (${report.reportFrequency})`)
-      this.allReports[report.id] = report
+      this.log.info(`Scheduled ${report.info.id} (${report.info.frequency})`)
+      this.allReports[report.info.id] = report
       await report.schedule()
     }
   }
