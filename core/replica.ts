@@ -29,10 +29,6 @@ export class Replica extends ServiceBase {
 
   public conn: mysql.Connection | null = null
 
-  constructor() {
-    super()
-  }
-
   public async init() {
     this.log.debug('Initializing replica connection')
     if (!this.isRunOnToolforge()) {

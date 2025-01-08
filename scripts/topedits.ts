@@ -36,10 +36,6 @@ export default class TopEdits extends Bot {
     summary: 'ปรับปรุงรายการ',
   }
 
-  constructor() {
-    super()
-  }
-
   async getTopEdits() {
     this.log.info('Getting top edits')
     this.log.profile('getTopEdits')

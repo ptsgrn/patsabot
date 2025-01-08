@@ -10,10 +10,6 @@ export default class Login extends Bot {
     description: "Get site and user info"
   }
 
-  constructor() {
-    super()
-  }
-
   async run() {
     const siteAndUserInfo = await this.bot
       .request({

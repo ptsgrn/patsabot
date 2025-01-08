@@ -13,10 +13,6 @@ export default class Afccat extends Bot {
     .option("--date <date>", "Date to create categories for", "today")
     .option("--dry-run", "Dry run, do not create categories", false);
 
-  constructor() {
-    super()
-  }
-
   async run() {
     await this.bot.Date.populateLocaleData("th");
     let categories = [];
