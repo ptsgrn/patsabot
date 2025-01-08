@@ -5,6 +5,7 @@ export default class UpdateStatusBot extends Bot {
     id: 'update-status',
     description: 'อัปเดตสถานะบอต',
     name: 'update-status',
+    frequency: "@daily",
   }
 
   constructor() {
