@@ -167,43 +167,6 @@ export const app = new Elysia()
       "color": script.job?.isRunning() ? "blue" : "orange"
     }
   })
-  .get("/logs/:kind", async function* ({ params, error, query }) {
-    if (!['error', 'exceptions', 'output', 'rejections'].includes(params.kind.replace(/\.log$/, ''))) {
-      return error(404, "Log not found")
-    }
-    const rid = query.rid
-    const file = Bun.file(config.logger.logPath + "/" + params.kind)
-    if (!file.exists()) {
-      error(404, "Log not found")
-    }
-    const stream = file.stream();
-    const decoder = new TextDecoder();
-
-    let remainingData = "";
-
-    for await (const chunk of stream) {
-      const str = decoder.decode(chunk);
-
-      remainingData += str; // Append the chunk to the remaining data
-
-      // Split the remaining data by newline character
-      let lines = remainingData.split(/\r?\n/);
-      // Loop through each line, except the last one
-      while (lines.length > 1) {
-        const linecontent = lines.shift();
-        // if (rid) {
-        //   if (linecontent && linecontent.includes(rid)) {
-        //     yield linecontent + '\n'
-        //   }
-        // } else {
-        //   yield linecontent + '\n'
-        // }
-        
-      }
-      // Update the remaining data with the last incomplete line
-      remainingData = lines[0];
-    }
-  })
   .onError(async ({ code }) => {
     if (code === 'NOT_FOUND') {
       const currentHash = await $`git rev-parse --short HEAD | tr -d '\n'`.quiet()
