@@ -18,6 +18,11 @@ export class DatabaseReportBot extends Bot {
   headers: string[] = ['ที่']
   preTableTemplates: string[] = []
 
+  constructor() {
+    super()
+    this.info.frequency = this.reportFrequency
+  }
+
   get preTableHeader() {
     return `\n\n${this.preTableTemplates.join("\n")}\n{| class="wikitable sortable static-row-numbers static-row-header-text"\n|- style="white-space: nowrap;"`
   }

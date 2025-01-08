@@ -4,13 +4,12 @@ import { createId } from '@paralleldrive/cuid2'
 import { Command, InvalidArgumentError, Option } from '@commander-js/extra-typings'
 import { version } from "../package.json"
 import { ServiceBase } from './base'
+import { readdir } from 'node:fs/promises'
+import { join } from 'node:path'
 
 class ScriptRunner extends ServiceBase {
   private cli = new Command()
-  private config = {
-    logLevel: "info",
-    configFile: "config.toml"
-  }
+  public scheduled: Record<string, Bot> = {}
 
   async scriptModule(scriptName: string) {
     if (!scriptName) {
@@ -37,6 +36,57 @@ class ScriptRunner extends ServiceBase {
     return (new scriptModule.default) as unknown as Bot
   }
 
+  async runScript(scriptName: string) {
+    scriptName = scriptName.replace(/^scripts\//, "").replace(/\.ts$/, "")
+    const scriptModule = await this.scriptModule(scriptName)
+    scriptModule.cli
+      .name('run ' + scriptName)
+      .description(scriptModule.scriptDescription)
+
+    // Ensure that we pass the global options correctly to the script
+    scriptModule.cli.addOption(new Option("-l, --log-level <level>", "Log level")
+      .choices(['debug', 'info', 'warn', 'error'])
+      .default(this.config.logger.level)
+    )
+    scriptModule.cli.addOption(new Option("-c, --config <file>", "Config file")
+      .default(this.config.logger.level)
+    )
+
+    // Pass the correct arguments to parse
+    scriptModule.cli.parse(process.argv.slice(2))
+
+    scriptModule.log.defaultMeta = {
+      script: scriptName,
+      rid: createId(),
+    }
+
+    try {
+      await scriptModule.beforeRun()
+      await scriptModule.run()
+    } catch (e) {
+      console.error(e)
+    }
+    await scriptModule.afterRun()
+  }
+
+  async startScheduled() {
+    const files = await readdir(join(import.meta.dir, '../scripts'), { recursive: true })
+    for (const file of files) {
+      if (!file.endsWith('.ts')) {
+        continue
+      }
+      const module = await import(`@scripts/${file}`)
+      const script = new module.default() as Bot
+      if (!script.info.frequency) {
+        this.log.debug(`Script ${script.info.id} has no frequency, skipping`)
+        continue
+      }
+      this.log.info(`Scheduled ${script.info.id} (${script.info.frequency})`)
+      this.scheduled[script.info.id] = script
+      await script.schedule()
+    }
+  }
+
   async run() {
     this.cli
       .name('patsabot')
@@ -54,50 +104,7 @@ class ScriptRunner extends ServiceBase {
       .argument('<script>', 'Script name')
       .argument('[args...]', 'Script arguments')
       .passThroughOptions()
-      .action(async (scriptName) => {
-        scriptName = scriptName.replace(/^scripts\//, "").replace(/\.ts$/, "")
-        const scriptModule = await this.scriptModule(scriptName)
-        scriptModule.cli
-          .name('run ' + scriptName)
-          .description(scriptModule.scriptDescription)
-
-        // Ensure that we pass the global options correctly to the script
-        scriptModule.cli.addOption(new Option("-l, --log-level <level>", "Log level")
-          .choices(['debug', 'info', 'warn', 'error'])
-          .default(this.config.logLevel)
-        )
-        scriptModule.cli.addOption(new Option("-c, --config <file>", "Config file")
-          .default(this.config.configFile)
-        )
-
-        // Handle global options within the script
-        scriptModule.cli.opts = () => ({
-          logLevel: this.config.logLevel,
-          configFile: this.config.configFile,
-          ...scriptModule.cli.opts()
-        })
-
-        // Pass the correct arguments to parse
-        scriptModule.cli.parse(process.argv.slice(2))
-
-        scriptModule.log.defaultMeta = {
-          script: scriptName,
-          rid: createId(),
-        }
-
-        // Apply global log level
-        if (this.config.logLevel === 'debug') {
-          scriptModule.log.level = 'debug'
-        }
-
-        try {
-          await scriptModule.beforeRun()
-          await scriptModule.run()
-        } catch (e) {
-          console.error(e)
-        }
-        await scriptModule.afterRun()
-      });
+      .action(this.runScript.bind(this));
 
     this.cli
       .command('schedule <script>')
@@ -143,8 +150,13 @@ class ScriptRunner extends ServiceBase {
         Replica.createReplicaTunnel(wiki, options.cluster, options.port)
       })
 
+    this.cli
+      .command("start")
+      .description("Loading all pre-scheduled scripts and start the bot")
+      .action(this.startScheduled.bind(this))
+
     // Ensure that we parse the correct arguments from process.argv
-    this.cli.parse()
+    this.cli.parse(Bun.argv)
   }
 }
 

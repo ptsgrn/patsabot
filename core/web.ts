@@ -1,21 +1,39 @@
 import { Elysia, t } from "elysia"
 import { jwt } from '@elysiajs/jwt'
+import { bearer } from "@elysiajs/bearer"
 import { swagger } from '@elysiajs/swagger'
-import { $, ShellPromise, type Shell } from "bun"
+import { $, ShellPromise } from "bun"
 import { config } from '@core/config'
+import { version } from "../package.json"
 
 const now = () => new Date().toISOString()
 
 export const app = new Elysia()
-  .use(swagger())
-  .use(
-    jwt({
-      name: "jwt",
-      secret: config.toolforge.deploykey
-    })
-  )
-  .get("/deploy", async function* ({ jwt, query }) {
-    const data = await jwt.verify(query.token)
+  .use(swagger({
+    swaggerOptions: {
+      persistAuthorization: true,
+    },
+    documentation: {
+      info: {
+        title: 'PatsaBot API',
+        version: version
+      },
+      components: {
+        securitySchemes: {
+          bearerAuth: {
+            type: 'http',
+            scheme: 'bearer',
+            bearerFormat: 'JWT'
+          }
+        }
+      }
+    }
+  }))
+  .get("/deploy", async function* ({ headers, set, error }) {
+    if (headers.authorization !== `Bearer ${config.toolforge.webKey}`) {
+      return error(401, "Unauthorized")
+    }
+
     const commands = [
       [$`git fetch`, "git fetch"],
       [$`git reset --hard origin/main`, "git reset --hard origin/main"],

@@ -87,10 +87,16 @@ export class Bot extends ServiceBase {
   }
 
   async schedule(options: {
-    pattern: string | Date;
+    pattern?: string | Date;
     options?: CronOptions;
-  }) {
-    this.job = new Cron(options.pattern, {
+  } = {
+      pattern: this.info.frequency
+    }) {
+    const pattern = options.pattern
+    if (!pattern) {
+      throw new Error('No pattern or frequency specified');
+    }
+    this.job = new Cron(pattern, {
       name: this.info.id,
       timezone: this.config.bot.timezone,
       ...options.options

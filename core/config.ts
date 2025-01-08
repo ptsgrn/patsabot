@@ -35,7 +35,7 @@ export const config = z.object({
   toolforge: z.object({
     login: z.string(),
     tooluser: z.string(),
-    deploykey: z.string(),
+    webKey: z.string(),
   }),
   replica: z.object({
     username: z.string(),
