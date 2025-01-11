@@ -3,17 +3,18 @@ import { Bot } from '@core/bot';
 import { readdir } from "node:fs/promises";
 import { join } from 'node:path';
 import chalk from 'chalk';
+import { createId } from '@paralleldrive/cuid2';
 
 export class DatabaseReportBot extends Bot {
-  info = {
-    id: "database-report",
-    name: "Database Report",
-    description: "A database report",
-    frequency: '@weekly',
-    frequencyText: 'สัปดาห์ละครั้ง'
-  } satisfies Bot['info'] | {
+  info: Bot['info'] & {
     frequencyText: string
-  }
+  } = {
+      id: "database-report",
+      name: "Database Report",
+      description: "A database report",
+      frequency: '@weekly',
+      frequencyText: 'สัปดาห์ละครั้ง',
+    }
 
   reportPageBase: string = "วิกิพีเดีย:รายงานจากฐานข้อมูล/"
   reportFooter: string = "\n{{ส่วนท้ายรายงานฐานข้อมูล}}"
@@ -102,6 +103,26 @@ export class DatabaseReportBot extends Bot {
       }
     })
   }
+
+  async lastUpdateTimestamp() {
+    const page = await this.bot.read(this.pageTitle)
+
+    if (!page) {
+      return null
+    }
+
+    if (!page.revisions) {
+      return null
+    }
+
+    const revision = page.revisions[0].timestamp
+
+    if (!revision) {
+      return null
+    }
+
+    return new this.bot.Date(revision)
+  }
 }
 
 export default class RunScheduleDatabaseReport extends Bot {
@@ -111,6 +132,10 @@ export default class RunScheduleDatabaseReport extends Bot {
     description: 'Run all scheduled database reports'
   }
   allReports: Record<string, DatabaseReportBot> = {}
+
+  cli = new Command()
+    .addOption(new Option("-r, --run", "Run all scheduled database reports, instead of scheduling them."))
+    .addOption(new Option("-s, --save", "Save the report to a page specified in scripts, instead of printing to console."))
 
   async run() {
     this.log.info('Running all scheduled database reports')
@@ -123,7 +148,21 @@ export default class RunScheduleDatabaseReport extends Bot {
       const report = new module.default() as DatabaseReportBot
       this.log.info(`Scheduled ${report.info.id} (${report.info.frequency})`)
       this.allReports[report.info.id] = report
-      await report.schedule()
+
+      if (this.cli.opts().run) {
+        this.log.info(`Running ${report.info.id} (${report.info.name})`)
+        this.log.debug(`Last update: ${await report.lastUpdateTimestamp()}`)
+        if (this.input.confirm(`Run ${report.info.id}?`)) {
+          report.info.rid = createId()
+          report.cli.setOptionValue('save', this.cli.opts().save)
+          this.log.debug(`Running ${report.info.id} (${report.info.rid})`)
+          await report.beforeRun()
+          await report.run()
+          await report.afterRun()
+        }
+      } else {
+        await report.schedule()
+      }
     }
   }
 }
