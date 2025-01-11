@@ -8,8 +8,8 @@ import { DatabaseReportBot } from '@scripts/database-reports';
 export default class LongStubs extends DatabaseReportBot {
   info: DatabaseReportBot['info'] = {
     id: "long-stubs",
-    name: "Long Stubs",
-    description: "A list of long stubs",
+    name: "บทความโครงขนาดยาว",
+    description: "รายการที่มีแม่แบบโครงแต่มีขนาดยาว (จำกัด 1000 อันดับแรก)",
     frequency: '@weekly',
     frequencyText: 'สัปดาห์ละครั้ง'
   }
