@@ -51,7 +51,7 @@ export class Replica extends ServiceBase {
       this.conn = await mysql.createConnection(this._replicaOptions)
     } catch (err) {
       if (err instanceof Error && 'code' in err && err.code === "ECONNREFUSED") {
-        this.log.error("Connection refused. Did you set up the SSH tunnel?")
+        this.log.error("Connection refused. Did you forgot to set up the SSH tunnel?")
         process.exit(1)
       }
     }
