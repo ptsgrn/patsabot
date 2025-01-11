@@ -9,7 +9,7 @@ import { Command } from "@commander-js/extra-typings"
 import { Replica } from '@core/replica';
 import { Cron, type CronOptions } from 'croner';
 import chalk from 'chalk';
-import { ServiceBase } from './base';
+import { ServiceBase, Input } from './base';
 
 export class Bot extends ServiceBase {
   private _botOptions: MwnOptions = {
@@ -45,6 +45,8 @@ export class Bot extends ServiceBase {
   public cli = new Command()
 
   public replica = new Replica()
+
+  public input = new Input()
 
   constructor() {
     super()
