@@ -63,7 +63,7 @@ export class Replica extends ServiceBase {
   }
 
   private isRunOnToolforge() {
-    return process.env.USER == this.config.toolforge.tooluser
+    return process.env.TOOLFORGE === "true"
   }
 
   public async query(sql: string, values: any[] = []) {
