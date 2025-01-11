@@ -1,3 +1,16 @@
+/**
+ * Converts a human-readable file size string into bytes.
+ *
+ * @param size - The human-readable file size string (e.g., '5MB', '1.2GB').
+ * @returns The size in bytes.
+ * @throws Will throw an error if the input size format is invalid.
+ *
+ * @example
+ * ```typescript
+ * humanReadableToBytes('5MB'); // Returns 5242880
+ * humanReadableToBytes('1.2GB'); // Returns 1288490188.8
+ * ```
+ */
 export function humanReadableToBytes(size: string) {
   const units = {
     B: 1,

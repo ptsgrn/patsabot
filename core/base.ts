@@ -8,6 +8,10 @@ export class ServiceBase {
   public config = config;
 }
 
+/**
+ * Input service to prompt the user for input
+ * @extends ServiceBase
+ */
 export class Input extends ServiceBase {
   /**
    * Prompt the user for some input from choices

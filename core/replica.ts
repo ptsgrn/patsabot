@@ -3,6 +3,14 @@ import { $ } from "bun"
 import { ServiceBase } from '@core/base';
 import { config } from '@core/config';
 
+/**
+ * Generates the replica host URL for a given database name and cluster.
+ *
+ * @param dbname - The name of the database. If it ends with "_p", the suffix will be removed.
+ * @param cluster - The cluster name, either "web" or "analytics". Defaults to "web".
+ * @returns The replica host URL as a string.
+ * @throws Will throw an error if the cluster name is not "web" or "analytics".
+ */
 function getReplicaHost(dbname: string, cluster: string = "web") {
   if (!['web', 'analytics'].includes(cluster)) {
     throw new Error('Invalid cluster name')
@@ -18,7 +26,6 @@ function getReplicaHost(dbname: string, cluster: string = "web") {
   return host
 }
 
-
 export class Replica extends ServiceBase {
   private _replicaOptions: mysql.PoolOptions = {
     user: this.config.replica.username,
@@ -27,8 +34,16 @@ export class Replica extends ServiceBase {
     waitForConnections: true,
   }
 
+  /**
+   * Represents the MySQL connection instance.
+   * It can be either a `mysql.Connection` object or `null` if the connection is not established.
+   */
   public conn: mysql.Connection | null = null
 
+  /**
+   * Initializes the replica connection.
+   * If the script is not running on Toolforge, it will log a warning message.
+   */
   public async init() {
     this.log.debug('Initializing replica connection')
     if (!this.isRunOnToolforge()) {
@@ -57,6 +72,12 @@ export class Replica extends ServiceBase {
     }
   }
 
+  /**
+   * Creates an SSH tunnel to the replica database via Toolforge.
+   * @param dbname Wiki's database name to connect to.
+   * @param cluster Database cluster of the wiki database. Defaults to "web".
+   * @param port Local port to forward the connection to. Defaults to 3306.
+   */
   public static async createReplicaTunnel(dbname: string, cluster: string = "web", port: number = 3306) {
     if (!config.toolforge.login) {
       throw new Error('Please fill in the Toolforge login in this.config.toml')
@@ -69,10 +90,20 @@ export class Replica extends ServiceBase {
     await $`ssh -N ${config.toolforge.login} -L ${port}:${host}:3306`
   }
 
+  /**
+   * Checks if the script is running on Toolforge.
+   * @returns True if the script is running on Toolforge, false otherwise.
+   */
   private isRunOnToolforge() {
     return process.env.TOOLFORGE === "true"
   }
 
+  /**
+   * Executes a SQL query on the replica database.
+   * @param sql SQL query to execute
+   * @param values Values to bind to the query
+   * @returns The result of the query
+   */
   public async query(sql: string, values: any[] = []) {
     if (!this.conn) {
       this.log.debug('Replica connection not initialized, initializing...')
@@ -86,7 +117,16 @@ export class Replica extends ServiceBase {
     return this.conn?.end()
   }
 
-
+  /**
+   * Sets the replica options and reinitializes the connection.
+   * @param options The replica options to set
+   * @example
+   * ```typescript
+   * replica.setReplicaOptions({
+   *   host: 'enwiki.web.db.svc.wikimedia.cloud',
+   * });
+   * ```
+   */
   set replicaOptions(options: mysql.PoolOptions) {
     this.log.debug('Setting replica options')
     this._replicaOptions = {

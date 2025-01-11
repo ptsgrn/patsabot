@@ -7,8 +7,13 @@ import { ServiceBase } from './base'
 import { readdir } from 'node:fs/promises'
 import { join, resolve } from 'node:path'
 
+/**
+ * The main script runner for the bot
+ * @extends ServiceBase
+ */
 export class ScriptRunner extends ServiceBase {
   private cli = new Command()
+
   public scheduled: Record<string, Bot> = {}
 
   async scriptModule(scriptName: string) {
