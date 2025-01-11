@@ -47,7 +47,14 @@ export class Replica extends ServiceBase {
       }
       this.log.debug(`Connecting to ${this._replicaOptions.database} on ${this._replicaOptions.host}`)
     }
-    this.conn = await mysql.createConnection(this._replicaOptions)
+    try {
+      this.conn = await mysql.createConnection(this._replicaOptions)
+    } catch (err) {
+      if (err.code === "ECONNREFUSED") {
+        this.log.error("Connection refused. Did you set up the SSH tunnel?")
+        process.exit(1)
+      }
+    }
   }
 
   public static async createReplicaTunnel(dbname: string, cluster: string = "web", port: number = 3306) {
