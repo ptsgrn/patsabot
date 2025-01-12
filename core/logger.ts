@@ -68,5 +68,6 @@ export const logger: Logger = createLogger({
       maxsize: config.logger.maxFileSize,
       format: loggerFormat,
     }),
-  ]
+  ],
+  exitOnError: false,
 });
