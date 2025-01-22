@@ -87,7 +87,7 @@ export class Replica extends ServiceBase {
 
     console.log(`Connecting to ${host} on port ${port}...`)
     console.log(`> ssh -N ${config.toolforge.login} -L ${port}:${host}:3306`)
-    await $`ssh -N ${config.toolforge.login} -L ${port}:${host}:3306`
+    await $`ssh -N ${{ raw: config.toolforge.login }} -L ${port}:${host}:3306`
   }
 
   /**

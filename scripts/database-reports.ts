@@ -159,6 +159,7 @@ export default class RunScheduleDatabaseReport extends Bot {
           await this.startLifeCycle();
         }
       } else {
+        report.cli = this.cli
         await report.schedule()
       }
     }
