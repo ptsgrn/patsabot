@@ -35,14 +35,14 @@ export const logger: Logger = createLogger({
   format: loggerFormat,
   transports: [
     new DailyRotateFile({
-      filename: `${config.logger.logPath}/output-%DATE%.log`,
+      filename: `${config.logger.logPath}/output-%DATE%.jsonl`,
       datePattern: 'YYYYMMDD',
       zippedArchive: true,
       maxSize: '20m',
       maxFiles: '7d',
     }),
     new transports.File({
-      filename: `${config.logger.logPath}/error.log`,
+      filename: `${config.logger.logPath}/error.jsonl`,
       level: 'error',
       maxsize: config.logger.maxFileSize,
     }),
@@ -57,14 +57,14 @@ export const logger: Logger = createLogger({
   ],
   exceptionHandlers: [
     new transports.File({
-      filename: `${config.logger.logPath}/exceptions.log`,
+      filename: `${config.logger.logPath}/exceptions.jsonl`,
       maxsize: config.logger.maxFileSize,
       format: loggerFormat,
     })
   ],
   rejectionHandlers: [
     new transports.File({
-      filename: `${config.logger.logPath}/rejections.log`,
+      filename: `${config.logger.logPath}/rejections.jsonl`,
       maxsize: config.logger.maxFileSize,
       format: loggerFormat,
     }),
