@@ -1,6 +1,4 @@
 import { Elysia, t } from "elysia"
-import { jwt } from '@elysiajs/jwt'
-import { bearer } from "@elysiajs/bearer"
 import { swagger } from '@elysiajs/swagger'
 import { $, ShellPromise } from "bun"
 import { config } from '@core/config'
@@ -8,7 +6,6 @@ import { version } from "../package.json"
 import { ScriptRunner } from "@core/run"
 import type { Bot } from '@core/bot'
 import { createId } from '@paralleldrive/cuid2'
-import { join, resolve } from 'node:path'
 
 const now = () => new Date().toISOString()
 const getTask = ([id, script]: [string, Bot]) => ({

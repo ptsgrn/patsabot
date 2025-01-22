@@ -28,11 +28,11 @@ Then try running the bot with `bun . run login` to see if it works.
 ## Bot logs
 ไฟล์ log ของบอตถูกจัดการโดย สามารถเข้าถึงได้ที่ <https://tools-static.wmflabs.org/patsabot/logs/> ความหมายแต่ละไฟล์คือดังนี้
 ```
-error.log                - ถ้ามี error ที่ไม่ร้ายแรงมากจะถูกบันทึกไว้ที่นี่
-exceptions.log           - ถ้ามี error ที่ร้ายแรงจะถูกบันทึกไว้ที่นี่
-rejections.log           - Unhandled rejections จะถูกบันทึกไว้ที่นี่
-output-20250108.log.gz   - ไฟล์ log ของการทำงานในวันที่ 8 มกราคม 2025 ถูกบีบอัดด้วย gzip (เพราะไม่ใช่ไฟล์ปัจจุบัน)
-output-20250109.log      - ไฟล์ log ของการทำงานในวันที่ 9 มกราคม 2025 (ไฟล์ปัจจุบันไม่ถูกบีบอัด)
+error.jsonl                - ถ้ามี error ที่ไม่ร้ายแรงมากจะถูกบันทึกไว้ที่นี่
+exceptions.jsonl           - ถ้ามี error ที่ร้ายแรงจะถูกบันทึกไว้ที่นี่
+rejections.jsonl           - Unhandled rejections จะถูกบันทึกไว้ที่นี่
+output-20250108.jsonl.gz   - ไฟล์ log ของการทำงานในวันที่ 8 มกราคม 2025 ถูกบีบอัดด้วย gzip (เพราะไม่ใช่ไฟล์ปัจจุบัน)
+output-20250109.jsonl      - ไฟล์ log ของการทำงานในวันที่ 9 มกราคม 2025 (ไฟล์ปัจจุบันไม่ถูกบีบอัด)
 ```
 (ให้วันนี้เป็นวันที่ 9 มกราคม 2025)
 
@@ -62,7 +62,7 @@ output-20250109.log      - ไฟล์ log ของการทำงานใ
 ใช้ [jq](https://jqlang.github.io/jq/) และ [gunzip](https://www.geeksforgeeks.org/gunzip-command-in-linux-with-examples/) ในการค้นหาข้อมูลในไฟล์ log ได้ดังนี้
 
 ```bash
-$ curl https://tools-static.wmflabs.org/patsabot/logs/output-20250109.log | jq '"\\(.timestamp) \\(.rid) \\(.level): \\(.message)"'
+$ curl https://tools-static.wmflabs.org/patsabot/logs/output-20250109.jsonl | jq '"\\(.timestamp) \\(.rid) \\(.level): \\(.message)"'
 # Outputs:
 # > "2025-01-08T17:00:00.954Z oud5v38ftzotx5j0tzww4e6e info: done"
 # > "2025-01-08T17:01:45.670Z m45s34rgfg890p1id86x75mk info: Scheduled update-status (@daily)"
@@ -70,7 +70,7 @@ $ curl https://tools-static.wmflabs.org/patsabot/logs/output-20250109.log | jq '
 
 กรณีที่ไฟล์ log ถูกบีบอัดด้วย gzip ให้ใช้ `gunzip` ก่อนจึงจะใช้ `jq` ได้
 ```bash
-$ curl https://tools-static.wmflabs.org/patsabot/logs/output-20250108.log.gz | gunzip | jq '"\\(.timestamp) \\(.rid) \\(.level): \\(.message)"'
+$ curl https://tools-static.wmflabs.org/patsabot/logs/output-20250108.jsonl.gz | gunzip | jq '"\\(.timestamp) \\(.rid) \\(.level): \\(.message)"'
 # Outputs:
 # > "2025-01-08T16:19:50.013Z uhpbka4gq77s7gflxmewqtrc info: Scheduled afccat (@daily)"
 # > "2025-01-08T16:19:50.204Z s7d32ito7amy68e35obscljh info: Scheduled linked-user-ns0 (@weekly)"
@@ -78,13 +78,13 @@ $ curl https://tools-static.wmflabs.org/patsabot/logs/output-20250108.log.gz | g
 
 สำหรับดูเฉพาะ log ที่มี `rid` = `oud5v38ftzotx5j0tzww4e6e`
 ```bash
-curl https://tools-static.wmflabs.org/patsabot/logs/output-20250109.log | jq 'select(.rid == "oud5v38ftzotx5j0tzww4e6e") | "\\(.timestamp) \\(.rid) \\(.level): \\(.message)"'
+curl https://tools-static.wmflabs.org/patsabot/logs/output-20250109.jsonl | jq 'select(.rid == "oud5v38ftzotx5j0tzww4e6e") | "\\(.timestamp) \\(.rid) \\(.level): \\(.message)"'
 # Outputs:
 # > "2025-01-08T17:00:00.265Z oud5v38ftzotx5j0tzww4e6e info: Creating categories for categories [\"หมวดหมู่:ฉบับร่างเรียงตามวันที่ส่ง/09 มกราคม 2025\",\"หมวดหมู่:ฉบับร่างเรียงตามวันที่ส่ง/มกราคม 2025\",\"หมวดหมู่:ฉบับร่างเรียงตามวันที่ส่ง/2025\"]"
 # > "2025-01-08T17:00:00.416Z oud5v38ftzotx5j0tzww4e6e error: articleexists: The page you tried to create has been created already. หมวดหมู่:ฉบับร่างเรียงตามวันที่ส่ง/มกราคม 2025"
 ```
 ```bash
-curl https://tools-static.wmflabs.org/patsabot/logs/output-20250108.log.gz | gunzip | jq 'select(.rid == "oud5v38ftzotx5j0tzww4e6e") | "\\(.timestamp) \\(.rid) \\(.level): \\(.message)"'
+curl https://tools-static.wmflabs.org/patsabot/logs/output-20250108.jsonl.gz | gunzip | jq 'select(.rid == "oud5v38ftzotx5j0tzww4e6e") | "\\(.timestamp) \\(.rid) \\(.level): \\(.message)"'
 # Outputs:
 # > "2025-01-08T16:48:32.323Z oud5v38ftzotx5j0tzww4e6e info: Scheduled linked-email-ns0 (@weekly)"
 ```

@@ -50,7 +50,7 @@ export const logger: Logger = createLogger({
       format: format.combine(
         format.colorize(),
         format.printf(({ level, message, timestamp, durationMs }) => {
-          return `${chalk.dim(`[${timestamp}]`)} ${level}: ${message}${durationMs ? ` ${chalk.dim(`(${durationMs}ms)`)}` : ''}`;
+          return `${chalk.dim(`${timestamp}`)} ${level} ${message}${durationMs ? ` ${chalk.dim(`(${durationMs}ms)`)}` : ''}`;
         })
       )
     }),
