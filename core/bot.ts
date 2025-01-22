@@ -129,6 +129,23 @@ export class Bot extends ServiceBase {
     return this._botOptions;
   }
 
+  async startLifeCycle() {
+    this.info.rid = createId();
+
+    try {
+      await this.beforeRun()
+      await this.run()
+    } catch (err) {
+      if (err instanceof Error) {
+        this.log.error(err.message, {
+          cause: err
+        })
+      }
+    } finally {
+      await this.afterRun()
+    }
+  }
+
   /**
    * Run before the main run method
    */
@@ -170,6 +187,6 @@ export class Bot extends ServiceBase {
       timezone: this.config.bot.timezone,
       ...options.options
     })
-    this.job.schedule(() => this.run())
+    this.job.schedule(() => this.startLifeCycle())
   }
 }

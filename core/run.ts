@@ -76,12 +76,10 @@ export class ScriptRunner extends ServiceBase {
     scriptModule.cli.parse(process.argv.slice(2))
 
     try {
-      await scriptModule.beforeRun()
-      await scriptModule.run()
+      await scriptModule.startLifeCycle()
     } catch (e) {
       console.error(e)
     }
-    await scriptModule.afterRun()
   }
 
   async startScheduled() {
