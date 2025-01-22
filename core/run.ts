@@ -40,13 +40,10 @@ export class ScriptRunner extends ServiceBase {
 
     const bot = new scriptModule.default as unknown as Bot
 
-    bot.info.rid = createId()
     bot.info.scriptSource = scriptName
     bot.log.defaultMeta = {
       script: scriptName,
-      rid: bot.info.rid,
     }
-
     return bot
   }
 
