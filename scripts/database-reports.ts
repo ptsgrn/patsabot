@@ -156,7 +156,7 @@ export default class RunScheduleDatabaseReport extends Bot {
           report.info.rid = createId()
           report.cli.setOptionValue('save', this.cli.opts().save)
           this.log.debug(`Running ${report.info.id} (${report.info.rid})`)
-          await this.startLifeCycle();
+          await report.startLifeCycle();
         }
       } else {
         report.cli = this.cli
