@@ -1,20 +1,25 @@
-import { DatabaseReportBot } from '@scripts/database-reports';
+import { DatabaseReportBot } from "@scripts/database-reports";
+
+interface Row {
+	page_title: Buffer;
+	page_len: number;
+}
 
 /**
  * Report for long stubs
- * 
+ *
  * @see https://github.com/mzmcbride/database-reports/blob/f1c43652ca15263617c477218a318005ffe8839f/dbreps2/src/enwiki/longstubs.rs
  */
 export default class LongStubs extends DatabaseReportBot {
-  info: DatabaseReportBot['info'] = {
-    id: "long-stubs",
-    name: "บทความโครงขนาดยาว",
-    description: "รายการที่มีแม่แบบโครงแต่มีขนาดยาว (จำกัด 1000 อันดับแรก)",
-    frequency: '@weekly',
-    frequencyText: 'สัปดาห์ละครั้ง'
-  }
+	info: DatabaseReportBot["info"] = {
+		id: "long-stubs",
+		name: "บทความโครงขนาดยาว",
+		description: "รายการที่มีแม่แบบโครงแต่มีขนาดยาว (จำกัด 1000 อันดับแรก)",
+		frequency: "@weekly",
+		frequencyText: "สัปดาห์ละครั้ง",
+	};
 
-  query = `
+	query = `
     /* long-stubs.ts SLOW_OK */
     SELECT
       page_title,
@@ -31,14 +36,14 @@ export default class LongStubs extends DatabaseReportBot {
     ORDER BY
       page_len DESC
     LIMIT
-      1000;`
-  headers = ["ที่", "บทความ", "ความยาว (ไบต์)"]
+      1000;`;
+	headers = ["ที่", "บทความ", "ความยาว (ไบต์)"];
 
-  formatRow(row: any, index: number) {
-    return [
-      index + 1, // index is 0-based
-      `[[${row.page_title.toString().replace(/_/g, " ")}]]`, // link to the page
-      row.page_len // page length in bytes
-    ]
-  }
+	formatRow(row: Row, index: number) {
+		return [
+			index + 1, // index is 0-based
+			`[[${row.page_title.toString().replace(/_/g, " ")}]]`, // link to the page
+			row.page_len, // page length in bytes
+		];
+	}
 }

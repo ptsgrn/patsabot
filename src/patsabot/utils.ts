@@ -1,5 +1,5 @@
 /* eslint-disable no-undef */
-/* @ts-ignore */
+/* @ts-expect-error */
 // Copyright (c) 2021 Patsagorn Y.
 //
 // This software is released under the MIT License.
@@ -7,12 +7,11 @@
 
 import "moment/locale/th.js";
 
-import { dirname, resolve } from "path";
-
-import { fileURLToPath } from "url";
+import { readFileSync } from "node:fs";
+import { dirname, resolve } from "node:path";
+import { fileURLToPath } from "node:url";
 import { init } from "@paralleldrive/cuid2";
 import moment from "moment";
-import { readFileSync } from "node:fs";
 
 // // Only god know why this is necessary.
 // /** @type {Promise<?>} */
@@ -29,7 +28,7 @@ export const mm = moment;
  * @returns {string} absolute path to destination
  */
 export function resolveRelativePath(importMeta, path: string) {
-  return resolve(dirname(fileURLToPath(importMeta ?? import.meta.url)), path);
+	return resolve(dirname(fileURLToPath(importMeta ?? import.meta.url)), path);
 }
 
 /**
@@ -38,11 +37,11 @@ export function resolveRelativePath(importMeta, path: string) {
  * @returns {JSON} JSON object of file
  */
 export function parseJsonFile(absolutePath) {
-  try {
-    return JSON.parse(readFileSync(absolutePath).toString());
-  } catch (error) {
-    return {};
-  }
+	try {
+		return JSON.parse(readFileSync(absolutePath).toString());
+	} catch (_err) {
+		return {};
+	}
 }
 
 /**
@@ -51,10 +50,10 @@ export function parseJsonFile(absolutePath) {
  * @returns flattened array
  */
 export function flatten(array) {
-  return array.reduce(
-    (a, b) => a.concat(Array.isArray(b) ? flatten(b) : b),
-    []
-  );
+	return array.reduce(
+		(a, b) => a.concat(Array.isArray(b) ? flatten(b) : b),
+		[],
+	);
 }
 
 /**
@@ -63,7 +62,7 @@ export function flatten(array) {
  * @returns {Object} cloned object
  */
 export function clone(obj) {
-  return JSON.parse(JSON.stringify(obj));
+	return JSON.parse(JSON.stringify(obj));
 }
 
 /**

@@ -1,20 +1,25 @@
-import { DatabaseReportBot } from '@scripts/database-reports';
+import { DatabaseReportBot } from "@scripts/database-reports";
+
+interface Row {
+	draftname: Buffer;
+	categoryname: Buffer;
+}
 
 /**
  * Report for draft articles that have categories.
- * 
+ *
  * @see https://en.wikipedia.org/w/index.php?title=Wikipedia:Database_reports/Drafts_with_categories
  */
 export default class DraftsWithCats extends DatabaseReportBot {
-  info: DatabaseReportBot['info'] = {
-    id: "draft-with-cats",
-    name: "ฉบับร่างที่ใช้หมวดหมู่",
-    description: "ฉบับร่างที่มีหมวดหมู่จริง จำกัด 1000 รายการ",
-    frequency: '@weekly',
-    frequencyText: 'สัปดาห์ละครั้ง'
-  }
+	info: DatabaseReportBot["info"] = {
+		id: "draft-with-cats",
+		name: "ฉบับร่างที่ใช้หมวดหมู่",
+		description: "ฉบับร่างที่มีหมวดหมู่จริง จำกัด 1000 รายการ",
+		frequency: "@weekly",
+		frequencyText: "สัปดาห์ละครั้ง",
+	};
 
-  query = `
+	query = `
     /* draft-with-cats.ts SLOW_OK */
     SELECT draft.page_title AS draftname, cl_to AS categoryname
     FROM categorylinks
@@ -26,19 +31,17 @@ export default class DraftsWithCats extends DatabaseReportBot {
     WHERE draft.page_namespace = 118
       AND pp_page IS NULL
       AND tl_from IS NULL
-      AND cl_to NOT LIKE 'AfC\_%'
+      AND cl_to NOT LIKE 'AfC_%'
       AND cl_to NOT LIKE 'ฉบับร่าง%'
       AND cl_to != 'Namespace_example_pages'
-    LIMIT 1000;`
-  headers = ["ฉบับร่าง", "หมวดหมู่"]
-  preTableTemplates: string[] = [
-    "{{static row numbers}}"
-  ]
+    LIMIT 1000;`;
+	headers = ["ฉบับร่าง", "หมวดหมู่"];
+	preTableTemplates: string[] = ["{{static row numbers}}"];
 
-  formatRow(row: any) {
-    return [
-      `[[ฉบับร่าง:${row.draftname.toString().replace(/_/g, " ")}]]`,
-      `[[:หมวดหมู่:${row.categoryname.toString().replace(/_/g, " ")}|]]`,
-    ]
-  }
+	formatRow(row: Row) {
+		return [
+			`[[ฉบับร่าง:${row.draftname.toString().replace(/_/g, " ")}]]`,
+			`[[:หมวดหมู่:${row.categoryname.toString().replace(/_/g, " ")}|]]`,
+		];
+	}
 }

@@ -1,4 +1,4 @@
-import os from "os";
+import os from "node:os";
 
 /**
  * Converts a human-readable file size string into bytes.
@@ -14,26 +14,28 @@ import os from "os";
  * ```
  */
 export function humanReadableToBytes(size: string) {
-  const units = {
-    B: 1,
-    KB: 1024,
-    MB: 1024 ** 2,
-    GB: 1024 ** 3,
-    TB: 1024 ** 4,
-    PB: 1024 ** 5,
-  };
+	const units = {
+		B: 1,
+		KB: 1024,
+		MB: 1024 ** 2,
+		GB: 1024 ** 3,
+		TB: 1024 ** 4,
+		PB: 1024 ** 5,
+	};
 
-  const regex = /^(\d+(?:\.\d+)?)\s*(B|KB|MB|GB|TB|PB)$/i;
-  const match = size.match(regex);
+	const regex = /^(\d+(?:\.\d+)?)\s*(B|KB|MB|GB|TB|PB)$/i;
+	const match = size.match(regex);
 
-  if (!match) {
-    throw new Error("Invalid size format. Example of valid input: '5MB', '1.2GB'.");
-  }
+	if (!match) {
+		throw new Error(
+			"Invalid size format. Example of valid input: '5MB', '1.2GB'.",
+		);
+	}
 
-  const value = parseFloat(match[1]);
-  const unit = match[2].toUpperCase() as keyof typeof units;
+	const value = parseFloat(match[1]);
+	const unit = match[2].toUpperCase() as keyof typeof units;
 
-  return value * (units[unit] || 0);
+	return value * (units[unit] || 0);
 }
 
 /**
@@ -43,11 +45,10 @@ export function humanReadableToBytes(size: string) {
  * @returns True if the character is a Thai character, false otherwise.
  */
 export function isThaiCharacter(char: string): boolean {
-  const thaiCharacterRange = /^[\u0E00-\u0E7F]$/;
-  return thaiCharacterRange.test(char);
+	const thaiCharacterRange = /^[\u0E00-\u0E7F]$/;
+	return thaiCharacterRange.test(char);
 }
 
-
 export function isOnIacto() {
-  return os.hostname() === 'iacto';
+	return os.hostname() === "iacto";
 }
