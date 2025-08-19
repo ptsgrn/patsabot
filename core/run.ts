@@ -56,21 +56,18 @@ export class ScriptRunner extends ServiceBase {
       rid: scriptModule.info.rid,
     }
 
-    scriptModule.cli
+    // Ensure that we pass the global options correctly to the script
+    const options = scriptModule.cli
       .name('run ' + scriptName)
       .description(scriptModule.scriptDescription)
+      .addOption(new Option("-l, --log-level <level>", "Log level")
+        .choices(['debug', 'info', 'warn', 'error'])
+        .default(this.config.logger.level)
+      )
+      .parse(process.argv.slice(2))
+      .opts()
 
-    // Ensure that we pass the global options correctly to the script
-    scriptModule.cli.addOption(new Option("-l, --log-level <level>", "Log level")
-      .choices(['debug', 'info', 'warn', 'error'])
-      .default(this.config.logger.level)
-    )
-    scriptModule.cli.addOption(new Option("-c, --config <file>", "Config file")
-      .default(this.config.logger.level)
-    )
-
-    // Pass the correct arguments to parse
-    scriptModule.cli.parse(process.argv.slice(2))
+    scriptModule.log.level = options.logLevel
 
     try {
       await scriptModule.startLifeCycle()

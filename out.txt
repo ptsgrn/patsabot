@@ -1,0 +1,151 @@
+{
+  "childNodes": [
+    {
+      "childNodes": [
+        {
+          "data": "Don't edit this line "
+        },
+        {
+          "childNodes": [
+            {
+              "childNodes": [
+                {
+                  "data": "machine code"
+                }
+              ]
+            },
+            {
+              "childNodes": [
+                {
+                  "data": ""
+                }
+              ]
+            }
+          ],
+          "name": "machine code"
+        },
+        {
+          "data": "\n"
+        }
+      ]
+    },
+    {
+      "childNodes": [
+        {
+          "childNodes": [
+            {
+              "data": "rank"
+            }
+          ]
+        },
+        {
+          "childNodes": [
+            {
+              "data": "genus\n"
+            }
+          ]
+        }
+      ],
+      "name": "rank"
+    },
+    {
+      "childNodes": [
+        {
+          "childNodes": [
+            {
+              "data": "link"
+            }
+          ]
+        },
+        {
+          "childNodes": [
+            {
+              "data": "Achlysiella\n"
+            }
+          ]
+        }
+      ],
+      "name": "link"
+    },
+    {
+      "childNodes": [
+        {
+          "childNodes": [
+            {
+              "data": "parent"
+            }
+          ]
+        },
+        {
+          "childNodes": [
+            {
+              "data": "Pratylenchidae\n"
+            }
+          ]
+        }
+      ],
+      "name": "parent"
+    },
+    {
+      "childNodes": [
+        {
+          "childNodes": [
+            {
+              "data": "extinct"
+            }
+          ]
+        },
+        {
+          "childNodes": [
+            {
+              "data": " "
+            },
+            {
+              "childNodes": [
+                {
+                  "data": "leave blank or delete this line for \"not extinct\"; put \"yes\" for \"extinct\" "
+                }
+              ],
+              "closed": true
+            },
+            {
+              "data": "\n"
+            }
+          ]
+        }
+      ],
+      "name": "extinct"
+    },
+    {
+      "childNodes": [
+        {
+          "childNodes": [
+            {
+              "data": "refs"
+            }
+          ]
+        },
+        {
+          "childNodes": [
+            {
+              "data": " "
+            },
+            {
+              "childNodes": [
+                {
+                  "data": "Shown on this page only; don't include <ref> tags "
+                }
+              ],
+              "closed": true
+            },
+            {
+              "data": "\n"
+            }
+          ]
+        }
+      ],
+      "name": "refs"
+    }
+  ],
+  "name": "Template:Don't_edit_this_line_{{{machine_code|}}}"
+}

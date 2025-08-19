@@ -1,3 +1,5 @@
+import os from "os";
+
 /**
  * Converts a human-readable file size string into bytes.
  *
@@ -32,4 +34,20 @@ export function humanReadableToBytes(size: string) {
   const unit = match[2].toUpperCase() as keyof typeof units;
 
   return value * (units[unit] || 0);
+}
+
+/**
+ * Checks if a character is a Thai character.
+ *
+ * @param char - The character to check.
+ * @returns True if the character is a Thai character, false otherwise.
+ */
+export function isThaiCharacter(char: string): boolean {
+  const thaiCharacterRange = /^[\u0E00-\u0E7F]$/;
+  return thaiCharacterRange.test(char);
+}
+
+
+export function isOnIacto() {
+  return os.hostname() === 'iacto';
 }

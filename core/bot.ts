@@ -9,8 +9,9 @@ import { Command } from "@commander-js/extra-typings"
 import { Replica } from '@core/replica';
 import { Cron, type CronOptions } from 'croner';
 import chalk from 'chalk';
-import { ServiceBase, Input } from './base';
+import { ServiceBase, Input, Output } from './base';
 import { createId } from '@paralleldrive/cuid2';
+import Parser from "wikiparser-node"
 
 export class Bot extends ServiceBase {
   private _botOptions: MwnOptions = {
@@ -87,6 +88,16 @@ export class Bot extends ServiceBase {
    */
   public input = new Input()
 
+  /**
+   * Utility functions
+   */
+  public output = new Output()
+
+  /**
+   * WikiText Parser
+   */
+  public wikitextParser = Parser
+
   constructor() {
     super()
     this.info = {
@@ -94,7 +105,6 @@ export class Bot extends ServiceBase {
       name: "Bot",
       description: "A bot",
     }
-    this.initBot()
   }
 
   /**
@@ -149,7 +159,9 @@ export class Bot extends ServiceBase {
   /**
    * Run before the main run method
    */
-  async beforeRun() { }
+  async beforeRun() {
+    await this.initBot()
+  }
 
   /**
    * The main run method
