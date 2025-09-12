@@ -80,7 +80,7 @@ export class Input extends ServiceBase {
 				choicesEntry.map((c) => c.value).join("/") +
 				"): ";
 			this.log.debug(question);
-			if (isOnIacto()) {
+			if (isOnIacto() && this.config.options?.iactoNotiPrompt) {
 				this.log.debug("Sending notification...");
 				const stdout =
 					await $`notify-send "${question}" --wait ${{ raw: `--action=${choicesEntry.map((v) => v.name).join(" --action=")}` }} --app-name="${this.config.bot.username}"`

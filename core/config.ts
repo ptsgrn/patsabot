@@ -10,6 +10,10 @@ const { values } = parseArgs({
 			type: "string",
 			default: "config.toml",
 		},
+		iactoNotiPrompt: {
+			type: "boolean",
+			default: false,
+		},
 	},
 	strict: false,
 });
@@ -70,6 +74,11 @@ export const config = z
 				webhook: z.string().optional(),
 			}),
 		}),
+		options: z
+			.object({
+				iactoNotiPrompt: z.boolean().default(false),
+			})
+			.optional(),
 	})
 	.parse(await import(configFile));
 

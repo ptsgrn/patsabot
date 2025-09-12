@@ -69,6 +69,12 @@ export class ScriptRunner extends ServiceBase {
 					.choices(["debug", "info", "warn", "error"])
 					.default(this.config.logger.level),
 			)
+			.addOption(
+				new Option(
+					"--iactoNotiPrompt <boolean>",
+					"Enable IACTO notification prompt",
+				),
+			)
 			.parse(process.argv.slice(2))
 			.opts();
 
