@@ -177,46 +177,27 @@ export default class TaxonomyAddScientificName extends Bot {
 		);
 
 		if (suggestedDisplayName) {
-			const result = await this.input.prompt(
-				`Suggested: "${suggestedDisplayName.linkDisplay}" for ${rank}:"${scientificName}"?`,
-				[
-					{
-						name: "Yes",
-						value: "yes",
-						alias: ["y"],
-					},
-					{
-						name: "No",
-						value: "no",
-						alias: ["n"],
-					},
-					{
-						name: "Custom",
-						value: "custom",
-						alias: ["c"],
-					},
-				],
-			);
+			const result = "yes";
 
-			if (result === "custom") {
-				const customDisplayName = this.input.ask(
-					`Enter a custom display name for ${rank}:"${scientificName}":`,
-				);
-				if (!customDisplayName) {
-					this.log.warn(
-						`No custom display name provided for ${rank}:"${scientificName}".`,
-					);
-					return {
-						ok: false as const,
-						error: "No custom display name provided",
-					};
-				}
-				newContent = this.setDisplayText(
-					newContent,
-					customDisplayName,
-					suggestedDisplayName.linkTarget,
-				);
-			}
+			// if (result === "custom") {
+			// 	const customDisplayName = this.input.ask(
+			// 		`Enter a custom display name for ${rank}:"${scientificName}":`,
+			// 	);
+			// 	if (!customDisplayName) {
+			// 		this.log.warn(
+			// 			`No custom display name provided for ${rank}:"${scientificName}".`,
+			// 		);
+			// 		return {
+			// 			ok: false as const,
+			// 			error: "No custom display name provided",
+			// 		};
+			// 	}
+			// 	newContent = this.setDisplayText(
+			// 		newContent,
+			// 		customDisplayName,
+			// 		suggestedDisplayName.linkTarget,
+			// 	);
+			// }
 
 			if (result === "yes") {
 				newContent = this.setDisplayText(
