@@ -9,6 +9,7 @@ export default class TaxonomyAddScientificName extends Bot {
 		name: "Taxonomy: Add Scientific Name",
 		description: "Adds a scientific name to a taxonomy entry",
 		scriptSource: "scripts/taxo-sci-name.ts",
+		frequency: "@daily",
 	};
 
 	cli = new Command()
