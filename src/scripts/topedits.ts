@@ -1,199 +1,274 @@
-// /**
-//  * @inuse
-//  * @id 3
-//  * @name topedits
-//  * @desc อัปเดตตาราง[[วิกิพีเดีย:รายชื่อชาววิกิพีเดียที่แก้ไขมากที่สุด 500 อันดับ]] และ[[วิกิพีเดีย:รายชื่อชาววิกิพีเดียที่แก้ไขมากที่สุด 500 อันดับ (รวมบอต)]]
-//  * @cron 0 1 * * 0
-//  * @author Patsagorn Y. (mpy@toolforge.org)
-//  * @license MIT
-//  */
+import { Command, Option } from "@commander-js/extra-typings";
+import { Bot } from "@core/bot";
 
-// import baseLogger from "../patsabot/logger.js";
-// import bot from "../../core/bot.js";
-// import { conn } from "../patsabot/replica.js";
+interface UserEdit {
+	user_name: string;
+	user_editcount: number;
+	user_group: string[];
+	is_active: boolean;
+	is_anonymous: boolean;
+}
 
-// const logger = baseLogger.child({
-// 	script: "topedits",
-// });
+export default class TopEdits extends Bot {
+	info: Bot["info"] = {
+		id: "topedits",
+		name: "TopEdits",
+		description:
+			"อัปเดตตาราง[[วิกิพีเดีย:รายชื่อชาววิกิพีเดียที่แก้ไขมากที่สุด 500 อันดับ]] และ[[วิกิพีเดีย:รายชื่อชาววิกิพีเดียที่แก้ไขมากที่สุด 500 อันดับ (รวมบอต)]]",
+	};
 
-// /**
-//  *
-//  * @param {{name: string; editcount: number; group: string[]; exclude: boolean; active: boolean}[]} result
-//  * @returns
-//  */
-// async function save(result) {
-// 	return Promise.all([
-// 		bot.edit(
-// 			"วิกิพีเดีย:รายชื่อชาววิกิพีเดียที่แก้ไขมากที่สุด 500 อันดับ (รวมบอต)/รายการ",
-// 			(rev) => {
-// 				// rev.content gives the revision text
-// 				// rev.timestamp gives the revision timestamp
-// 				result = result.slice(0, 500);
-// 				console.log(contentTransform(rev.content, result));
-// 				return {
-// 					text: contentTransform(rev.content, result),
-// 					summary: "ปรับปรุงรายการ",
-// 				};
-// 			},
-// 		),
-// 		bot.edit("วิกิพีเดีย:รายชื่อชาววิกิพีเดียที่แก้ไขมากที่สุด 500 อันดับ/รายการ", (rev) => {
-// 			// rev.content gives the revision text
-// 			// rev.timestamp gives the revision timestamp
-// 			result = result
-// 				.filter((v) => !v.group.includes("bot"))
-// 				.filter((v) => v.name !== "New user message")
-// 				.slice(0, 500);
-// 			console.log(contentTransform(rev.content, result));
-// 			return {
-// 				text: contentTransform(rev.content, result),
-// 				summary: "ปรับปรุงรายการ",
-// 			};
-// 		}),
-// 	]).catch((err) => logger.log("error", err));
-// }
+	cli = new Command().addOption(
+		new Option("--no-dry-run", "Save change to wiki").default(true),
+	);
 
-// function contentTransform(text, result) {
-// 	const pretext = text.split('<section begin="list500" />')[0];
-// 	const posttext = text.split('<section end="list500" />')[1];
-// 	text = pretext + generateTable(result) + posttext;
-// 	text =
-// 		text.split('<section begin="lastupdate" />')[0] +
-// 		'<section begin="lastupdate" />{{subst:#timel:r}}<section end="lastupdate" />' +
-// 		text.split('<section end="lastupdate" />')[1];
-// 	return text;
-// }
+	options = {
+		// Maximum number of user to get edit count
+		maxQuerySize: 2000,
+		listTop: 500,
+		targetPage: {
+			noBot: "วิกิพีเดีย:รายชื่อชาววิกิพีเดียที่แก้ไขมากที่สุด 500 อันดับ/รายการ",
+			withBot: "วิกิพีเดีย:รายชื่อชาววิกิพีเดียที่แก้ไขมากที่สุด 500 อันดับ (รวมบอต)/รายการ",
+		},
+		anonymousList: "วิกิพีเดีย:รายชื่อชาววิกิพีเดียตามจำนวนการแก้ไข/นิรนาม",
+		anonymousListUserRegex: /ผู้ใช้:(.+)\]\]/g,
+		groupText: {
+			sysop: "Admin",
+			bot: "Bot",
+		} as Record<string, string>,
+		summary: "ปรับปรุงรายการ",
+	};
 
-// async function getExcludeList() {
-// 	const content = await bot.read("วิกิพีเดีย:รายชื่อชาววิกิพีเดียตามจำนวนการแก้ไข/นิรนาม");
-// 	return content.revisions[0].content
-// 		.match(/ผู้ใช้:(.*?)\]\]/gi)
-// 		.map((v) => v.slice(7, -2));
-// }
+	async getTopEdits() {
+		this.log.info("Getting top edits");
+		this.log.profile("getTopEdits");
+		const results = await this.replica.query(`
+      /* topedits.ts SLOW_OK */
+      SELECT
+        user_name,
+        user_editcount
+      FROM user
+      WHERE user_editcount > 0
+      ORDER BY user_editcount DESC
+      LIMIT ${this.options.maxQuerySize};
+    `);
+		this.log.profile("getTopEdits");
+		if (!results) {
+			throw new Error("Query returned no results");
+		}
+		// @ts-expect-error
+		return results[0].map(
+			(row: { user_name: Buffer; user_editcount: number }) => ({
+				user_name: row.user_name.toString(),
+				user_editcount: row.user_editcount,
+			}),
+		) as { user_name: string; user_editcount: number }[];
+	}
 
-// /**
-//  *
-//  * @param {{ name: string; editcount: number; group: string[]; active: boolean; exclude: boolean }[]} data
-//  */
-// function generateTable(data) {
-// 	let content = '<section begin="list500" />';
-// 	let count = 1;
-// 	for (const { name, ...value } of data) {
-// 		if (value.exclude) {
-// 			content += `\n|-\n| ${count} || [นิรนาม] || {{sort|${value.editcount.toString()}|${value.editcount
-// 				.toString()
-// 				.replace(/\B(?=(\d{3})+(?!\d))/g, ",")}}} `;
-// 		} else {
-// 			content += `\n|-\n| ${count} || [[ผู้ใช้:${name}|${
-// 				!value.active ? '<span style="color: gray;">' : ""
-// 			}${name}${!value.active ? "</span>" : ""}]] ${rightTransform(
-// 				value.group,
-// 			)} || {{sort|${value.editcount.toString()}|[[พิเศษ:เรื่องที่เขียน/${name}|${value.editcount
-// 				.toString()
-// 				.replace(/\B(?=(\d{3})+(?!\d))/g, ",")}]]}} `;
-// 		}
-// 		count += 1;
-// 	}
-// 	return content + '\n<section end="list500" />';
-// }
+	async getBotUserList() {
+		this.log.info("Getting bot user list");
+		this.log.profile("getBotUserList");
+		const results = await this.replica.query(`
+      /* editcount.rs SLOW_OK */
+      SELECT
+        user_name
+      FROM user
+      JOIN user_groups
+      ON user_id = ug_user
+      WHERE ug_group = 'bot';
+    `);
+		this.log.profile("getBotUserList");
+		if (!results) {
+			throw new Error("Query returned no results");
+		}
+		// @ts-expect-error
+		return results[0].map((row: { user_name: Buffer }) =>
+			row.user_name.toString(),
+		);
+	}
 
-// /**
-//  *
-//  * @param {string[]} rights
-//  */
-// function rightTransform(rights) {
-// 	if (rights.length === 0) return "";
-// 	return (
-// 		"(" +
-// 		rights
-// 			.map((right) => (right === "sysop" ? "admin" : right))
-// 			.map((string) => string.charAt(0).toUpperCase() + string.slice(1))
-// 			.join(", ") +
-// 		")"
-// 	);
-// }
+	async getUserAnonymousList() {
+		this.log.info("Getting anonymous user list");
+		this.log.profile("getUserAnonymousList");
+		const page = await this.bot.read(this.options.anonymousList);
+		this.log.profile("getUserAnonymousList");
+		if (!page.revisions) {
+			throw new Error("Failed to get page content");
+		}
+		const users = page.revisions?.[0].content?.matchAll(
+			this.options.anonymousListUserRegex,
+		);
+		return Array.from(users || []).map((m) => m[1]);
+	}
 
-// async function run() {
-// 	const connection = conn;
-// 	const data = await connection
-// 		.execute(
-// 			`
-//     SELECT user.user_id AS user_id, user.user_name AS user_name, user.user_editcount AS user_editcount,
-//   	CASE
-//   		WHEN (ug.user_admin > 0 OR ue.user_admin > 0) THEN 1
-//   		ELSE 0
-//   	END AS user_admin,
-//   	CASE
-//   		WHEN (ug.user_bot > 0 OR ue.user_bot > 0) THEN 1
-//   		ELSE 0
-//   	END AS user_bot
-//   FROM user
-//   LEFT JOIN (
-//   	SELECT ug_user, SUM(ug_group="sysop") AS user_admin, SUM(ug_group="bot") AS user_bot FROM user_groups
-//   	GROUP BY ug_user
-//   	HAVING (user_admin = 1 OR user_bot = 1)
-//   ) AS ug ON user.user_id = ug.ug_user
-//   LEFT JOIN (
-//   	SELECT user_id, 0 AS user_admin, 1 AS user_bot FROM user
-//   	INNER JOIN (
-//   		SELECT REPLACE(page_title, "_", " ") AS user_name FROM categorylinks
-//   		INNER JOIN page ON categorylinks.cl_from = page.page_id
-//   		WHERE (page_namespace = 2 AND cl_to = "บอต")
-//   		UNION
-//   		SELECT user_name FROM user
-//   		INNER JOIN pagelinks ON user.user_name = REPLACE(pagelinks.pl_title, "_", " ")
-//   		WHERE (pl_namespace = 2 AND pl_from = 1995229)
-//   	) AS user_exceptions ON user.user_name = user_exceptions.user_name
-//   ) AS ue ON user.user_id = ue.user_id
-//   ORDER BY user_editcount DESC, user_id
-//   LIMIT 580;
-//     `,
-// 		)
-// 		.catch((err) => {
-// 			logger.log("error", err);
-// 			process.exit(1);
-// 		})
-// 		.then(([rows, _]) => {
-// 			// @ts-expect-error-nextline
-// 			return rows.map((u) => ({
-// 				name: u.user_name.toString(),
-// 				editcount: u.user_editcount,
-// 				is_admin: u.user_admin,
-// 				is_bot: u.user_bot,
-// 			}));
-// 		});
+	async getUserGroup(user: string) {
+		this.log.profile(`getUserGroup ${user}`, { level: "debug" });
+		const results = await this.replica.query(
+			`
+      /* topedits.rs SLOW_OK */
+      SELECT
+        ug_group
+      FROM user_groups
+      JOIN user
+      ON user_id = ug_user
+      WHERE user_name = ?;
+    `,
+			[user],
+		);
+		this.log.profile(`getUserGroup ${user}`, { level: "debug" });
+		if (!results) {
+			throw new Error("Query returned no results");
+		}
+		// @ts-expect-error
+		return results[0].map((row: { ug_group: Buffer }) =>
+			row.ug_group.toString(),
+		);
+	}
 
-// 	let activeusers = [];
-// 	for await (const json of bot.continuedQueryGen({
-// 		action: "query",
-// 		list: "allusers",
-// 		auactiveusers: 1,
-// 		aulimit: "max",
-// 	})) {
-// 		const users = json.query.allusers.map((user) => user.name);
-// 		activeusers = activeusers.concat(users);
-// 	}
-// 	/**
-// 	 * @type {{name: string; editcount: number; group: string[]; exclude: boolean; active: boolean}[]}
-// 	 */
-// 	const result = [];
-// 	const excludeList = getExcludeList();
-// 	for (const { name, editcount, is_admin, is_bot } of data) {
-// 		result.push({
-// 			name,
-// 			editcount,
-// 			active: activeusers.includes(name),
-// 			group: [is_admin ? "sysop" : null, is_bot ? "bot" : null].filter(
-// 				(v) => v,
-// 			),
-// 			exclude: (await excludeList).includes(name),
-// 		});
-// 	}
+	async getActiveUsers() {
+		let activeusers: string[] = [];
+		this.log.info("Getting active users");
+		this.log.profile("getActiveUsers");
+		for await (const json of this.bot.continuedQueryGen({
+			action: "query",
+			list: "allusers",
+			auactiveusers: 1,
+			aulimit: "max",
+		})) {
+			const users = json.query?.allusers.map(
+				(user: { name: string }) => user.name,
+			) as string[];
+			activeusers = activeusers.concat(users);
+		}
+		this.log.profile("getActiveUsers");
+		return activeusers;
+	}
 
-// 	await connection.end();
-// 	logger.log("info", "table generated");
-// 	await save(result).catch((err) => {
-// 		logger.log("error", err);
-// 	});
-// }
+	userGroupText(groups: string[]) {
+		const userGroup = groups
+			.map((group) => this.options.groupText[group])
+			.filter((v) => v);
+		if (userGroup.length === 0) {
+			return "";
+		}
+		return ` (${userGroup.join(", ")})`;
+	}
 
-// run();
+	createTable(userList: UserEdit[], limit: number = 500) {
+		let content = '<section begin="list500" />';
+		let count = 1;
+		for (const {
+			user_name,
+			is_active,
+			is_anonymous,
+			user_editcount,
+			user_group,
+		} of userList) {
+			if (is_anonymous) {
+				content +=
+					`\n|-\n| ${count} ` +
+					`|| [นิรนาม] ` +
+					`|| {{sort|${user_editcount.toString()}|${user_editcount.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",")}}}`;
+			} else {
+				content +=
+					`\n|-\n| ${count} ` +
+					`|| [[ผู้ใช้:${user_name}|${!is_active ? `<span style="color: gray;">${user_name}</span>` : user_name}]]${this.userGroupText(user_group)} ` +
+					`|| {{sort|${user_editcount.toString()}|[[พิเศษ:เรื่องที่เขียน/${user_name}|${user_editcount.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",")}]]}}`;
+			}
+			if (count >= limit) {
+				break;
+			}
+			count += 1;
+		}
+		return `${content}\n<section end="list500" />`;
+	}
+
+	processListPageContent(text: string, table: string) {
+		const pretext = text.split('<section begin="list500" />')[0];
+		const posttext = text.split('<section end="list500" />')[1];
+		text = pretext + table + posttext;
+		text =
+			text.split('<section begin="lastupdate" />')[0] +
+			'<section begin="lastupdate" />{{subst:#timel:r}}<section end="lastupdate" />' +
+			text.split('<section end="lastupdate" />')[1];
+		return text;
+	}
+
+	async saveToWiki(userList: UserEdit[]) {
+		const noBotContent = this.createTable(
+			userList
+				.filter((user) => !user.user_group.includes("bot"))
+				.filter((v) => v.user_name !== "New user message"),
+			this.options.listTop,
+		);
+		const withBotContent = this.createTable(userList, this.options.listTop);
+
+		if (this.cli.opts().dryRun) {
+			this.log.warn("Dry run enabled, skipping edit");
+			const noBotRead = (await this.bot.read(this.options.targetPage.noBot))
+				.revisions?.[0].content;
+			if (!noBotRead) {
+				throw new Error("Failed to get page content");
+			}
+			console.table({
+				noBotContent: this.processListPageContent(noBotRead, noBotContent),
+			});
+			const withBotRead = (await this.bot.read(this.options.targetPage.withBot))
+				.revisions?.[0].content;
+			if (!withBotRead) {
+				throw new Error("Failed to get page content");
+			}
+			console.table({
+				withBotContent: this.processListPageContent(
+					withBotRead,
+					withBotContent,
+				),
+			});
+			return;
+		}
+		return Promise.all([
+			this.bot.edit(this.options.targetPage.noBot, (rev) => {
+				return {
+					text: this.processListPageContent(rev.content, noBotContent),
+					summary: this.options.summary,
+				};
+			}),
+			this.bot.edit(this.options.targetPage.withBot, (rev) => {
+				return {
+					text: this.processListPageContent(rev.content, withBotContent),
+					summary: this.options.summary,
+				};
+			}),
+		]);
+	}
+
+	async run(): Promise<void> {
+		await this.replica.init();
+		const topEdits = await this.getTopEdits();
+		const users = await this.getUserAnonymousList();
+		const activeUser = await this.getActiveUsers();
+
+		const userList: UserEdit[] = [];
+		let noBotCount = 0;
+		this.log.info("Processing top edits");
+		this.log.profile("processTopEdits");
+		for (const user of topEdits) {
+			const userGroup = await this.getUserGroup(user.user_name);
+			userList.push({
+				user_name: user.user_name,
+				user_editcount: user.user_editcount,
+				user_group: userGroup,
+				is_active: activeUser.includes(user.user_name),
+				is_anonymous: users.includes(user.user_name),
+			});
+			if (noBotCount >= this.options.listTop) {
+				break;
+			}
+			if (!userGroup.includes("bot")) {
+				noBotCount++;
+			}
+		}
+		this.log.profile("processTopEdits");
+		this.log.info("Saving to wiki");
+		await this.saveToWiki(userList);
+	}
+}

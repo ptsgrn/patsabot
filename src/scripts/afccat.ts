@@ -1,54 +1,92 @@
-// /**
-//  * @inuse
-//  * @id 1
-//  * @name afccat
-//  * @desc สร้างหน้าหมวดหมู่สำหรับ AfC แบบรายวัน เช่น [[:หมวดหมู่:ฉบับร่างเรียงตามวันที่ส่ง/04 พฤศจิกายน 2021]], ไม่แก้ไขหากมีการสร้างแล้ว
-//  * @script https://github.com/ptsgrn/patsabot/blob/main/src/scripts/afccat.ts
-//  * @author Patsagorn Y. (mpy@toolforge.org)
-//  * @license MIT
-//  */
+import { Command } from "@commander-js/extra-typings";
+import { Bot } from "@core/bot";
 
-// import bot from "../../core/bot.js";
-// import { cuid } from "../patsabot/utils.js";
-// import meow from "meow";
-// import moment from "moment";
+export default class Afccat extends Bot {
+	public info: Bot["info"] = {
+		id: "afccat",
+		name: "AfC Category Creator",
+		description: "Create categories for AfC submissions",
+		frequency: "@daily",
+	};
 
-// const cli = meow(
-// 	`
-// 	Usage
-// 	  $ patsabot afccat [options]
+	cli = new Command()
+		.option("--date <date>", "Date to create categories for", "today")
+		.option("--dry-run", "Dry run, do not create categories", false);
 
-// 	Options
-// 	  --date, -d	Date to create the category.
-// 		--dry-run, -n	Do not actually create the category, just test.
+	async run() {
+		await this.bot.Date.populateLocaleData("th");
+		let categories = [];
 
-// 	Examples
-// 	  $ patsabot afccat -d 2020-01-01 -d 2020-01-02 -d 2020-01-03
-// 		Create categories for 2020-01-01, 2020-01-02, and 2020-01-03.
-// `,
-// 	{
-// 		importMeta: import.meta,
-// 		booleanDefault: undefined,
-// 		flags: {
-// 			date: {
-// 				type: "string",
-// 				default: [],
-// 				alias: "d",
-// 				isMultiple: true,
-// 			},
-// 			dryRun: {
-// 				type: "boolean",
-// 				default: false,
-// 				alias: "n",
-// 			},
-// 		},
-// 	},
-// );
+		const date = this.cli.opts().date;
+		let dateObject = new this.bot.Date(date);
+		if (date === "today") {
+			dateObject = new this.bot.Date();
+		}
+		categories.push(
+			`หมวดหมู่:ฉบับร่างเรียงตามวันที่ส่ง/${dateObject.format("DD MMMM YYYY", "Asia/Bangkok")}`,
+		);
+		categories.push(
+			`หมวดหมู่:ฉบับร่างเรียงตามวันที่ส่ง/${dateObject.format("MMMM YYYY", "Asia/Bangkok")}`,
+		);
+		categories.push(
+			`หมวดหมู่:ฉบับร่างเรียงตามวันที่ส่ง/${dateObject.format("YYYY", "Asia/Bangkok")}`,
+		);
 
-// /**
-//  * @async
-//  * @function afccat
-//  */
-// async function afccat() {}
+		// no null and unique
+		categories = categories
+			.filter((c) => c !== null)
+			.filter((c, i, a) => a.indexOf(c) === i);
 
-// afccat();
+		if (Number.isNaN(categories.length) || categories.length === 0) {
+			this.log.info("No categories to create.");
+			process.exit(0);
+		}
+
+		this.log.info(
+			`Creating categories for categories ${JSON.stringify(categories)}`,
+		);
+
+		this.bot
+			.batchOperation(
+				categories,
+				(page) => {
+					if (!page) return Promise.reject();
+					return new Promise((resolve, reject) => {
+						if (this.cli.opts().dryRun) {
+							this.log.warn(`Dry run, not creating category: ${page}`);
+							return resolve("dryrun");
+						}
+						if (
+							page.indexOf("หมวดหมู่:ฉบับร่างเรียงตามวันที่ส่ง/") === -1 ||
+							page === "หมวดหมู่:ฉบับร่างเรียงตามวันที่ส่ง/Invalid date"
+						)
+							return reject();
+
+						this.bot
+							.save(
+								page,
+								"{{AfC submission category header}}",
+								"สร้างหมวดหมู่ฉบับร่าง ([[user:PatsaBot/task/1|Task #1]])",
+								{
+									// do not edit the page if it already exists
+									createonly: true,
+								},
+							)
+							.then(resolve)
+							.catch((error) => {
+								this.log.error(`${error.message} ${page}`);
+								reject(error);
+							});
+					});
+				},
+				10,
+				1,
+			)
+			.then(() => {
+				this.log.info("done");
+			})
+			.catch((err) => {
+				this.log.error(`${err.message}`);
+			});
+	}
+}

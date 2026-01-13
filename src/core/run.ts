@@ -8,7 +8,7 @@ import {
 import { Bot } from "@core/bot";
 import { Replica } from "@core/replica";
 import { createId } from "@paralleldrive/cuid2";
-import { version } from "../package.json";
+import { version } from "../../package.json";
 import { ServiceBase } from "./base";
 
 /**

@@ -10,7 +10,7 @@ import chalk from "chalk";
 import { Cron, type CronOptions } from "croner";
 import { Mwn, type MwnOptions } from "mwn";
 import Parser from "wikiparser-node";
-import { dependencies, version } from "../package.json";
+import { dependencies, version } from "../../package.json";
 import { Input, Output, ServiceBase } from "./base";
 
 export class Bot extends ServiceBase {

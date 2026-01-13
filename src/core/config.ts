@@ -20,7 +20,7 @@ const { values } = parseArgs({
 
 const configFile = join(
 	import.meta.dir,
-	"../",
+	"../../",
 	typeof values.config === "string" ? values.config : "config.toml",
 );
 
