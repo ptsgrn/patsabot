@@ -118,12 +118,11 @@ export class Replica extends ServiceBase {
 	 * @param values Values to bind to the query
 	 * @returns The result of the query
 	 */
-	public async query(sql: string, values: unknown[] = []) {
+	public async query<T extends mysql.QueryResult>(sql: string, values: unknown[] = []) {
 		if (!this.conn) {
-			this.log.debug("Replica connection not initialized, initializing...");
 			await this.init();
 		}
-		return this.conn?.execute(sql, values);
+		return this.conn!.execute<T>(sql, values);
 	}
 
 	public end() {

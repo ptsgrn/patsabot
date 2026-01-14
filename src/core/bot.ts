@@ -24,9 +24,9 @@ export class Bot extends ServiceBase {
 		},
 		// Set your user agent (required for WMF wikis, see https://meta.wikimedia.org/wiki/User-Agent_policy):
 		userAgent: `${this.config.bot.username}/${version} (${this.config.bot.contact}) mwn/${dependencies.mwn}`,
-		defaultParams: {
-			assert: "user",
-		},
+		// defaultParams: {
+		// 	assert: "user",
+		// },
 	};
 
 	/**
