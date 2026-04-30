@@ -39,15 +39,18 @@ export default class TopEdits extends Bot {
 	};
 
 	async getTopEdits() {
-		this.log.info("Getting top edits");
+		this.log.info("Getting top edits with groups");
 		this.log.profile("getTopEdits");
 		const results = await this.replica.query(`
       /* topedits.ts SLOW_OK */
       SELECT
         user_name,
-        user_editcount
+        user_editcount,
+        GROUP_CONCAT(ug_group) AS user_groups
       FROM user
+      LEFT JOIN user_groups ON user_id = ug_user
       WHERE user_editcount > 0
+      GROUP BY user_id, user_name, user_editcount
       ORDER BY user_editcount DESC
       LIMIT ${this.options.maxQuerySize};
     `);
@@ -57,33 +60,12 @@ export default class TopEdits extends Bot {
 		}
 		// @ts-expect-error
 		return results[0].map(
-			(row: { user_name: Buffer; user_editcount: number }) => ({
+			(row: { user_name: Buffer; user_editcount: number; user_groups: string | null }) => ({
 				user_name: row.user_name.toString(),
 				user_editcount: row.user_editcount,
+				user_group: row.user_groups ? row.user_groups.toString().split(",") : [] as string[],
 			}),
-		) as { user_name: string; user_editcount: number }[];
-	}
-
-	async getBotUserList() {
-		this.log.info("Getting bot user list");
-		this.log.profile("getBotUserList");
-		const results = await this.replica.query(`
-      /* editcount.rs SLOW_OK */
-      SELECT
-        user_name
-      FROM user
-      JOIN user_groups
-      ON user_id = ug_user
-      WHERE ug_group = 'bot';
-    `);
-		this.log.profile("getBotUserList");
-		if (!results) {
-			throw new Error("Query returned no results");
-		}
-		// @ts-expect-error
-		return results[0].map((row: { user_name: Buffer }) =>
-			row.user_name.toString(),
-		);
+		) as { user_name: string; user_editcount: number; user_group: string[] }[];
 	}
 
 	async getUserAnonymousList() {
@@ -98,30 +80,6 @@ export default class TopEdits extends Bot {
 			this.options.anonymousListUserRegex,
 		);
 		return Array.from(users || []).map((m) => m[1]);
-	}
-
-	async getUserGroup(user: string) {
-		this.log.profile(`getUserGroup ${user}`, { level: "debug" });
-		const results = await this.replica.query(
-			`
-      /* topedits.rs SLOW_OK */
-      SELECT
-        ug_group
-      FROM user_groups
-      JOIN user
-      ON user_id = ug_user
-      WHERE user_name = ?;
-    `,
-			[user],
-		);
-		this.log.profile(`getUserGroup ${user}`, { level: "debug" });
-		if (!results) {
-			throw new Error("Query returned no results");
-		}
-		// @ts-expect-error
-		return results[0].map((row: { ug_group: Buffer }) =>
-			row.ug_group.toString(),
-		);
 	}
 
 	async getActiveUsers() {
@@ -242,30 +200,26 @@ export default class TopEdits extends Bot {
 	}
 
 	async run(): Promise<void> {
-		await this.replica.init();
-		const topEdits = await this.getTopEdits();
-		const users = await this.getUserAnonymousList();
-		const activeUser = await this.getActiveUsers();
+		const [topEdits, anonymousUsers, activeUsers] = await Promise.all([
+			this.getTopEdits(),
+			this.getUserAnonymousList(),
+			this.getActiveUsers(),
+		]);
 
 		const userList: UserEdit[] = [];
 		let noBotCount = 0;
 		this.log.info("Processing top edits");
 		this.log.profile("processTopEdits");
-		for (const user of topEdits) {
-			const userGroup = await this.getUserGroup(user.user_name);
+		for (const { user_name, user_editcount, user_group } of topEdits) {
+			if (noBotCount >= this.options.listTop) break;
 			userList.push({
-				user_name: user.user_name,
-				user_editcount: user.user_editcount,
-				user_group: userGroup,
-				is_active: activeUser.includes(user.user_name),
-				is_anonymous: users.includes(user.user_name),
+				user_name,
+				user_editcount,
+				user_group,
+				is_active: activeUsers.includes(user_name),
+				is_anonymous: anonymousUsers.includes(user_name),
 			});
-			if (noBotCount >= this.options.listTop) {
-				break;
-			}
-			if (!userGroup.includes("bot")) {
-				noBotCount++;
-			}
+			if (!user_group.includes("bot")) noBotCount++;
 		}
 		this.log.profile("processTopEdits");
 		this.log.info("Saving to wiki");
