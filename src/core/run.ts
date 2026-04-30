@@ -116,13 +116,18 @@ export class ScriptRunner extends ServiceBase {
 			// Copy script-defined options into the subcommand so Commander handles
 			// parsing, validation, and --help automatically.
 			for (const opt of probe.cli.options) {
-				scriptCmd.addOption(opt);
+				scriptCmd.addOption(opt.helpGroup("Script Options"));
 			}
 
 			scriptCmd.addOption(
+				new Option("--no-dry-run", "Save changes to wiki (default: dry run)")
+					.helpGroup("Script Options"),
+			);
+			scriptCmd.addOption(
 				new Option("-l, --log-level <level>", "Log level")
 					.choices(["debug", "info", "warn", "error"] as const)
-					.default(this.config.logger.level),
+					.default(this.config.logger.level)
+					.helpGroup("Global Options"),
 			);
 
 			scriptCmd.action(async () => {
@@ -148,6 +153,7 @@ export class ScriptRunner extends ServiceBase {
 		const ScriptClass = await this.loadScript(scriptName);
 		const instance = new ScriptClass();
 		this.initInstance(instance, scriptName);
+		instance.cli.setOptionValue("dryRun", false);
 		await instance.startLifeCycle();
 	}
 
@@ -177,14 +183,14 @@ export class ScriptRunner extends ServiceBase {
 			// Global options — must be placed before the subcommand name in the CLI.
 			// config.ts reads these independently via parseArgs so they take effect
 			// before any script is loaded.
-			.option(
-				"-u, --user <username>",
-				"Account to use — loads config-<username>.toml",
+			.addOption(
+				new Option("-u, --user <username>", "Account to use — loads config-<username>.toml")
+					.helpGroup("Global Options"),
 			)
-			.option(
-				"--config <path>",
-				"Config file path",
-				"config.toml",
+			.addOption(
+				new Option("--config <path>", "Config file path")
+					.default("config.toml")
+					.helpGroup("Global Options"),
 			)
 			.enablePositionalOptions()
 			.configureHelp({

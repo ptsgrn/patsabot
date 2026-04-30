@@ -1,4 +1,3 @@
-import { Command, Option } from "@commander-js/extra-typings";
 import { Bot } from "@core/bot";
 
 interface UserEdit {
@@ -16,10 +15,6 @@ export default class TopEdits extends Bot {
 		description:
 			"อัปเดตตาราง[[วิกิพีเดีย:รายชื่อชาววิกิพีเดียที่แก้ไขมากที่สุด 500 อันดับ]] และ[[วิกิพีเดีย:รายชื่อชาววิกิพีเดียที่แก้ไขมากที่สุด 500 อันดับ (รวมบอต)]]",
 	};
-
-	cli = new Command().addOption(
-		new Option("--no-dry-run", "Save change to wiki").default(true),
-	);
 
 	options = {
 		// Maximum number of user to get edit count
@@ -160,7 +155,7 @@ export default class TopEdits extends Bot {
 		);
 		const withBotContent = this.createTable(userList, this.options.listTop);
 
-		if (this.cli.opts().dryRun) {
+		if (this.dryRun) {
 			this.log.warn("Dry run enabled, skipping edit");
 			const noBotRead = (await this.bot.read(this.options.targetPage.noBot))
 				.revisions?.[0].content;

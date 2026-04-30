@@ -1,7 +1,6 @@
 import { readdir } from "node:fs/promises";
 import { join } from "node:path";
-import { Command, Option } from "@commander-js/extra-typings";
-import { Bot } from "@core/bot";
+import { Bot, Command } from "@core/bot";
 import { createId } from "@paralleldrive/cuid2";
 import chalk from "chalk";
 
@@ -27,13 +26,6 @@ export class DatabaseReportBot extends Bot {
 	get preTableHeader() {
 		return `\n\n${this.preTableTemplates.join("\n")}\n{| class="wikitable sortable static-row-numbers static-row-header-text"\n|- style="white-space: nowrap;"`;
 	}
-
-	public cli = new Command().addOption(
-		new Option(
-			"-s, --save",
-			"Save the report to a page specified in scripts, instead of printing to console.",
-		),
-	);
 
 	get scriptDescription() {
 		return `Create a database report about ${this.info.name}\n${this.info.description}`;
@@ -78,13 +70,13 @@ export class DatabaseReportBot extends Bot {
 
 	async savePage(header: string, content: string, footer: string) {
 		const page = this.pageTitle;
-		if (this.cli.opts().save) {
+		if (!this.dryRun) {
 			this.log.info(`Saving to "${page}"`);
 			await this.bot.save(page, header + content + footer, this.summary);
 			this.log.info(`Saved to "${page}"`);
 		} else {
 			this.log.warn(
-				"Not saving the report to a page. Use --save option to save.",
+				"Dry run — not saving. Pass --no-dry-run to save.",
 			);
 			console.log(
 				`The following content will be saved to "${chalk.yellowBright(page)}":\n`,
@@ -148,19 +140,7 @@ export default class RunScheduleDatabaseReport extends Bot {
 	};
 	allReports: Record<string, DatabaseReportBot> = {};
 
-	cli = new Command()
-		.addOption(
-			new Option(
-				"-r, --run",
-				"Run all scheduled database reports, instead of scheduling them.",
-			),
-		)
-		.addOption(
-			new Option(
-				"-s, --save",
-				"Save the report to a page specified in scripts, instead of printing to console.",
-			),
-		);
+	cli = new Command().option("-r, --run", "Run all scheduled database reports, instead of scheduling them.");
 
 	async run() {
 		this.log.info("Running all scheduled database reports");
@@ -181,12 +161,14 @@ export default class RunScheduleDatabaseReport extends Bot {
 				this.log.debug(`Last update: ${await report.lastUpdateTimestamp()}`);
 				if (await this.input.confirm(`Run ${report.info.id}?`)) {
 					report.info.rid = createId();
-					report.cli.setOptionValue("save", this.cli.opts().save);
+					report.cli.setOptionValue("dryRun", this.dryRun);
 					this.log.debug(`Running ${report.info.id} (${report.info.rid})`);
 					await report.startLifeCycle();
 				}
 			} else {
-				report.cli = this.cli;
+				for (const [key, value] of Object.entries(this.cli.opts())) {
+					report.cli.setOptionValue(key, value);
+				}
 				await report.schedule();
 			}
 		}

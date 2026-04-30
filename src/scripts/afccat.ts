@@ -1,5 +1,4 @@
-import { Command } from "@commander-js/extra-typings";
-import { Bot } from "@core/bot";
+import { Bot, Command } from "@core/bot";
 
 export default class Afccat extends Bot {
 	public info: Bot["info"] = {
@@ -9,9 +8,7 @@ export default class Afccat extends Bot {
 		frequency: "@daily",
 	};
 
-	cli = new Command()
-		.option("--date <date>", "Date to create categories for", "today")
-		.option("--dry-run", "Dry run, do not create categories", false);
+	cli = new Command().option("--date <date>", "Date to create categories for", "today");
 
 	async run() {
 		await this.bot.Date.populateLocaleData("th");
@@ -52,7 +49,7 @@ export default class Afccat extends Bot {
 				(page) => {
 					if (!page) return Promise.reject();
 					return new Promise((resolve, reject) => {
-						if (this.cli.opts().dryRun) {
+						if (this.dryRun) {
 							this.log.warn(`Dry run, not creating category: ${page}`);
 							return resolve("dryrun");
 						}

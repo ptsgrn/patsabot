@@ -4,6 +4,7 @@
 // https://opensource.org/licenses/MIT
 
 import { Command } from "@commander-js/extra-typings";
+export { Command };
 import { Replica } from "@core/replica";
 import { createId } from "@paralleldrive/cuid2";
 import chalk from "chalk";
@@ -105,6 +106,14 @@ export class Bot extends ServiceBase {
 			name: "Bot",
 			description: "A bot",
 		};
+	}
+
+	get dryRun(): boolean {
+		return (this.cli.opts() as { dryRun?: boolean }).dryRun ?? true;
+	}
+
+	protected option(flags: string, description: string, ...rest: unknown[]): void {
+		(this.cli.option as (...a: unknown[]) => unknown)(flags, description, ...rest);
 	}
 
 	/**

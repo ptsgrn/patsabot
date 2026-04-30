@@ -1,5 +1,4 @@
-import { Command } from "@commander-js/extra-typings";
-import { Bot } from "@core/bot";
+import { Bot, Command } from "@core/bot";
 import { isThaiCharacter } from "@core/helper";
 import type { ApiPage } from "mwn";
 
@@ -14,13 +13,10 @@ export default class TaxonomyAddScientificName extends Bot {
 
 	cli = new Command()
 		.option("-a, --auto", "Automatically yes (with some delay)")
-		.option(
-			"-d, --delay <ms>",
-			"Delay before auto-confirming changes",
-			(v) => +v || 5000,
-		);
+		.option("-d, --delay <ms>", "Delay before auto-confirming changes", (v) => +v || 5000);
 
 	summary = "บอต: เพิ่มชื่อวิทยาศาสตร์ ([[ผู้ใช้:PatsaBot/task/7|task #7]])";
+
 	ranks: Record<string, string> = {
 		subordo: "อันดับย่อย",
 		infraordo: "อันดับฐาน",
