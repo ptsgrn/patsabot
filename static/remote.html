@@ -1,0 +1,1043 @@
+<!doctype html>
+<html lang="en">
+	<head>
+		<meta charset="utf-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1" />
+		<title>PatsaBot Remote</title>
+
+		<!-- Wikimedia Codex Design System -->
+		<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codex-design-tokens/2.3.2/theme-wikimedia-ui.css" />
+		<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codex-design-tokens/2.3.2/theme-wikimedia-ui-mode-dark.css" media="(prefers-color-scheme: dark)" />
+		<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@wikimedia/codex/dist/codex.style.css" />
+
+		<style>
+			* {
+				box-sizing: border-box;
+			}
+
+			body {
+				margin: 0;
+				background: var(--background-color-neutral-subtle, #f8f9fa);
+				color: var(--color-base, #202122);
+				font: 14px/1.45 var(--font-family-system-sans, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif);
+			}
+
+			.app {
+				min-height: 100vh;
+				display: grid;
+				grid-template-rows: auto auto 1fr;
+			}
+
+			/* ── Header ── */
+			header {
+				display: flex;
+				gap: var(--spacing-150, 12px);
+				align-items: center;
+				justify-content: space-between;
+				padding: var(--spacing-150, 14px) var(--spacing-200, 18px);
+				border-bottom: var(--border-width-base, 1px) solid var(--border-color-subtle, #c8ccd1);
+				background: var(--background-color-base, #fff);
+			}
+
+			h1 {
+				margin: 0;
+				font-size: var(--font-size-large, 1.125rem);
+				font-weight: var(--font-weight-bold, 700);
+			}
+
+			.auth {
+				display: flex;
+				gap: var(--spacing-100, 8px);
+				align-items: center;
+				justify-content: flex-end;
+				flex-wrap: wrap;
+			}
+
+			.auth form {
+				display: flex;
+				gap: var(--spacing-100, 8px);
+				align-items: center;
+				flex-wrap: wrap;
+				justify-content: flex-end;
+			}
+
+			.user {
+				color: var(--color-subtle, #72777d);
+				white-space: nowrap;
+			}
+
+			/* ── Tabs ── */
+			.tabs {
+				display: flex;
+				padding: 0 var(--spacing-200, 18px);
+				background: var(--background-color-base, #fff);
+				border-bottom: var(--border-width-base, 1px) solid var(--border-color-subtle, #c8ccd1);
+			}
+
+			.tab {
+				background: transparent;
+				border: none;
+				border-bottom: var(--border-width-thick, 2px) solid transparent;
+				border-radius: 0;
+				color: var(--color-subtle, #72777d);
+				cursor: pointer;
+				font: inherit;
+				font-weight: var(--font-weight-bold, 700);
+				padding: var(--spacing-100, 10px) var(--spacing-150, 14px);
+				margin-bottom: -1px;
+				transition: color 100ms, border-bottom-color 100ms, background-color 100ms;
+			}
+
+			.tab:hover {
+				color: var(--color-base, #202122);
+				background: var(--background-color-interactive-subtle, #f0f0f0);
+			}
+
+			.tab.active {
+				color: var(--color-progressive, #36c);
+				border-bottom-color: var(--color-progressive, #36c);
+			}
+
+			/* ── Main layout ── */
+			main {
+				padding: var(--spacing-200, 18px);
+			}
+
+			.toolbar {
+				display: flex;
+				gap: var(--spacing-100, 8px);
+				align-items: center;
+				flex-wrap: wrap;
+				margin-bottom: var(--spacing-150, 14px);
+			}
+
+			.status {
+				color: var(--color-subtle, #72777d);
+				margin-left: auto;
+				font-size: var(--font-size-small, 0.875rem);
+			}
+
+			/* ── Script cards ── */
+			.grid {
+				display: grid;
+				grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+				gap: var(--spacing-150, 12px);
+			}
+
+			.card {
+				background: var(--background-color-base, #fff);
+				border: var(--border-width-base, 1px) solid var(--border-color-subtle, #c8ccd1);
+				border-radius: var(--border-radius-base, 2px);
+				padding: var(--spacing-150, 14px);
+				display: grid;
+				gap: var(--spacing-150, 12px);
+			}
+
+			.card-head {
+				display: flex;
+				align-items: center;
+				justify-content: space-between;
+				gap: var(--spacing-100, 10px);
+			}
+
+			.name {
+				font-size: var(--font-size-medium, 1rem);
+				font-weight: var(--font-weight-bold, 700);
+				overflow-wrap: anywhere;
+			}
+
+			.badge {
+				border-radius: var(--border-radius-pill, 9999px);
+				border: var(--border-width-base, 1px) solid var(--border-color-base, #a2a9b1);
+				padding: 2px var(--spacing-100, 10px);
+				font-size: var(--font-size-x-small, 0.75rem);
+				font-weight: var(--font-weight-bold, 700);
+				color: var(--color-subtle, #72777d);
+				white-space: nowrap;
+			}
+
+			.badge.running,
+			.badge.busy {
+				color: var(--color-success, #14866d);
+				border-color: color-mix(in srgb, var(--color-success, #14866d), transparent 60%);
+				background: color-mix(in srgb, var(--color-success, #14866d), transparent 90%);
+			}
+
+			.badge.stopped {
+				color: var(--color-destructive, #bf3c2c);
+				border-color: color-mix(in srgb, var(--color-destructive, #bf3c2c), transparent 60%);
+				background: color-mix(in srgb, var(--color-destructive, #bf3c2c), transparent 90%);
+			}
+
+			.meta {
+				display: grid;
+				grid-template-columns: auto 1fr;
+				gap: var(--spacing-75, 6px) var(--spacing-100, 10px);
+				color: var(--color-subtle, #72777d);
+				font-size: var(--font-size-small, 0.875rem);
+			}
+
+			.meta strong {
+				color: var(--color-base, #202122);
+				font-weight: var(--font-weight-semibold, 600);
+			}
+
+			.actions {
+				display: flex;
+				gap: var(--spacing-100, 8px);
+				flex-wrap: wrap;
+			}
+
+			/* ── Logs view — Codex-themed ── */
+			.logs-toolbar {
+				display: grid;
+				grid-template-columns: auto minmax(200px, 1fr) auto auto auto;
+				gap: var(--spacing-150, 12px);
+				align-items: center;
+				margin-bottom: var(--spacing-200, 16px);
+			}
+
+			/* Native select styled to match cdx-text-input */
+			.cdx-select-native {
+				min-height: 32px;
+				border: var(--border-width-base, 1px) solid var(--border-color-base, #a2a9b1);
+				border-radius: var(--border-radius-base, 2px);
+				background: var(--background-color-base, #fff);
+				color: var(--color-base, #202122);
+				padding: 0 var(--spacing-100, 8px);
+				font: inherit;
+				cursor: pointer;
+			}
+
+			.cdx-select-native:hover {
+				border-color: var(--border-color-progressive, #36c);
+			}
+
+			.filter-rid-wrap {
+				width: 130px;
+			}
+
+			.logs-filters {
+				display: flex;
+				gap: var(--spacing-200, 16px);
+				align-items: center;
+				flex-wrap: wrap;
+				margin-bottom: var(--spacing-200, 16px);
+			}
+
+			.logs-filter-toggle {
+				display: inline-flex;
+				align-items: center;
+				gap: var(--spacing-75, 6px);
+				cursor: pointer;
+				color: var(--color-base, #202122);
+				font-size: var(--font-size-small, 0.875rem);
+			}
+
+			.logs-filter-toggle input[type="checkbox"] {
+				width: 16px;
+				height: 16px;
+				accent-color: var(--color-progressive, #36c);
+				cursor: pointer;
+				flex-shrink: 0;
+			}
+
+			/* ── Events chart panel ── */
+			.events-panel,
+			.log-table {
+				border: var(--border-width-base, 1px) solid var(--border-color-subtle, #c8ccd1);
+				border-radius: var(--border-radius-base, 2px);
+				background: var(--background-color-base, #fff);
+				overflow: hidden;
+			}
+
+			.events-panel {
+				margin-bottom: var(--spacing-200, 16px);
+			}
+
+			.events-head {
+				min-height: 54px;
+				display: flex;
+				align-items: center;
+				justify-content: space-between;
+				gap: var(--spacing-150, 12px);
+				padding: 0 var(--spacing-300, 24px);
+				border-bottom: var(--border-width-base, 1px) solid var(--border-color-subtle, #c8ccd1);
+			}
+
+			.events-title {
+				font-weight: var(--font-weight-bold, 700);
+			}
+
+			.events-legend {
+				display: flex;
+				gap: var(--spacing-300, 24px);
+				color: var(--color-subtle, #72777d);
+				white-space: nowrap;
+				font-size: var(--font-size-small, 0.875rem);
+			}
+
+			.legend-dot {
+				display: inline-block;
+				width: 12px;
+				height: 12px;
+				margin-right: var(--spacing-75, 6px);
+				border: var(--border-width-base, 1px) solid currentColor;
+				border-radius: var(--border-radius-pill, 9999px);
+				vertical-align: -1px;
+			}
+
+			.legend-success {
+				color: var(--color-progressive, #36c);
+			}
+
+			.legend-error {
+				color: var(--color-destructive, #bf3c2c);
+			}
+
+			.chart {
+				position: relative;
+				height: 190px;
+				padding: 20px 24px 34px 58px;
+			}
+
+			.chart-grid {
+				position: absolute;
+				inset: 20px 16px 39px 58px;
+				background:
+					linear-gradient(to bottom, transparent calc(33.333% - 1px), var(--border-color-subtle, #c8ccd1) calc(33.333% - 1px) 33.333%, transparent 33.333%),
+					linear-gradient(to bottom, transparent calc(66.666% - 1px), var(--border-color-subtle, #c8ccd1) calc(66.666% - 1px) 66.666%, transparent 66.666%);
+				border-bottom: var(--border-width-base, 1px) solid var(--border-color-base, #a2a9b1);
+				border-left: var(--border-width-base, 1px) solid var(--border-color-base, #a2a9b1);
+			}
+
+			.chart-y {
+				position: absolute;
+				left: 24px;
+				width: 24px;
+				color: var(--color-subtle, #72777d);
+				font-size: var(--font-size-x-small, 0.75rem);
+				text-align: right;
+			}
+
+			.chart-y.top {
+				top: 20px;
+			}
+
+			.chart-y.mid {
+				top: 82px;
+			}
+
+			.chart-y.bottom {
+				bottom: 34px;
+			}
+
+			.chart-bars {
+				position: relative;
+				z-index: 1;
+				height: 100%;
+				display: grid;
+				grid-template-columns: repeat(24, minmax(4px, 1fr));
+				align-items: end;
+				gap: var(--spacing-100, 8px);
+			}
+
+			.chart-bin {
+				min-height: 1px;
+				border-radius: var(--border-radius-base, 2px) var(--border-radius-base, 2px) 0 0;
+				background: color-mix(in srgb, var(--color-progressive, #36c), transparent 20%);
+			}
+
+			.chart-bin.error {
+				background: color-mix(in srgb, var(--color-destructive, #bf3c2c), transparent 20%);
+			}
+
+			/* ── Log table ── */
+			.log-table {
+				--log-columns: 230px 80px minmax(360px, 1fr);
+			}
+
+			.log-table.show-script {
+				--log-columns: 230px 80px 180px minmax(300px, 1fr);
+			}
+
+			.log-table.show-rid {
+				--log-columns: 230px 80px 160px minmax(300px, 1fr);
+			}
+
+			.log-table.show-script.show-rid {
+				--log-columns: 230px 80px 180px 160px minmax(240px, 1fr);
+			}
+
+			.log-header,
+			.log-row {
+				display: grid;
+				grid-template-columns: var(--log-columns);
+				align-items: center;
+				column-gap: var(--spacing-200, 16px);
+			}
+
+			.log-header {
+				min-width: 720px;
+				padding: var(--spacing-100, 10px) var(--spacing-300, 24px);
+				border-bottom: var(--border-width-base, 1px) solid var(--border-color-subtle, #c8ccd1);
+				font-weight: var(--font-weight-bold, 700);
+				font-size: var(--font-size-small, 0.875rem);
+				color: var(--color-base, #202122);
+			}
+
+			.log-header small {
+				margin-left: var(--spacing-75, 6px);
+				color: var(--color-subtle, #72777d);
+				font-size: var(--font-size-x-small, 0.75rem);
+				font-weight: var(--font-weight-semibold, 600);
+			}
+
+			.log-rows {
+				height: min(52vh, 620px);
+				min-height: 340px;
+				overflow: auto;
+				background: var(--background-color-neutral-subtle, #f8f9fa);
+				color: var(--color-base, #202122);
+				font: 13px/1.5 ui-monospace, SFMono-Regular, Menlo, Consolas, "Liberation Mono", monospace;
+			}
+
+			.log-row {
+				position: relative;
+				min-width: 720px;
+				min-height: 44px;
+				padding: var(--spacing-100, 8px) var(--spacing-300, 24px);
+				border-bottom: var(--border-width-base, 1px) solid var(--border-color-subtle, #c8ccd1);
+			}
+
+			.log-row::before {
+				content: "";
+				width: 4px;
+				height: 20px;
+				border-radius: var(--border-radius-pill, 9999px);
+				background: var(--color-progressive, #36c);
+				position: absolute;
+				left: var(--spacing-100, 8px);
+				top: 50%;
+				transform: translateY(-50%);
+			}
+
+			.log-row.debug::before {
+				background: var(--color-subtle, #72777d);
+			}
+
+			.log-row.warn::before {
+				background: var(--color-warning, #ac6600);
+			}
+
+			.log-row.error::before {
+				background: var(--color-destructive, #bf3c2c);
+			}
+
+			.log-cell {
+				min-width: 0;
+				overflow: hidden;
+				text-overflow: ellipsis;
+				white-space: nowrap;
+			}
+
+			.log-message {
+				font-family: ui-sans-serif, system-ui, sans-serif;
+				font-size: var(--font-size-small, 0.875rem);
+			}
+
+			.log-timestamp {
+				color: var(--color-subtle, #72777d);
+				font-size: var(--font-size-x-small, 0.75rem);
+			}
+
+			.level-pill {
+				display: inline-flex;
+				align-items: center;
+				height: 22px;
+				border: var(--border-width-base, 1px) solid transparent;
+				border-radius: var(--border-radius-base, 2px);
+				padding: 0 var(--spacing-75, 6px);
+				font-size: var(--font-size-x-small, 0.75rem);
+				font-weight: var(--font-weight-bold, 700);
+				/* default = info */
+				border-color: color-mix(in srgb, var(--color-progressive, #36c), transparent 60%);
+				background: color-mix(in srgb, var(--color-progressive, #36c), transparent 88%);
+				color: var(--color-progressive, #36c);
+			}
+
+			.level-pill.debug {
+				border-color: color-mix(in srgb, var(--color-subtle, #72777d), transparent 60%);
+				background: color-mix(in srgb, var(--color-subtle, #72777d), transparent 88%);
+				color: var(--color-subtle, #72777d);
+			}
+
+			.level-pill.warn {
+				border-color: color-mix(in srgb, var(--color-warning, #ac6600), transparent 60%);
+				background: color-mix(in srgb, var(--color-warning, #ac6600), transparent 88%);
+				color: var(--color-warning, #ac6600);
+			}
+
+			.level-pill.error {
+				border-color: color-mix(in srgb, var(--color-destructive, #bf3c2c), transparent 60%);
+				background: color-mix(in srgb, var(--color-destructive, #bf3c2c), transparent 88%);
+				color: var(--color-destructive, #bf3c2c);
+			}
+
+			.log-table:not(.show-script) .script-cell,
+			.log-table:not(.show-rid) .rid-cell {
+				display: none;
+			}
+
+			.empty-logs {
+				padding: var(--spacing-300, 24px);
+				color: var(--color-subtle, #72777d);
+				font-family: ui-sans-serif, system-ui, sans-serif;
+			}
+
+			.hidden {
+				display: none !important;
+			}
+
+			/* ── Responsive ── */
+			@media (max-width: 680px) {
+				header {
+					align-items: flex-start;
+					flex-direction: column;
+				}
+
+				.auth,
+				.auth form {
+					width: 100%;
+				}
+
+				.auth .cdx-text-input,
+				.auth button {
+					width: 100%;
+				}
+
+				.toolbar button {
+					width: 100%;
+				}
+
+				.status {
+					width: 100%;
+					margin-left: 0;
+				}
+
+				.logs-toolbar {
+					grid-template-columns: 1fr;
+				}
+
+				.filter-rid-wrap {
+					width: 100%;
+				}
+
+				.events-head {
+					align-items: flex-start;
+					flex-direction: column;
+					padding: var(--spacing-150, 14px);
+				}
+
+				.chart {
+					padding-left: 42px;
+				}
+
+				.chart-grid {
+					left: 42px;
+				}
+
+				.chart-y {
+					left: 8px;
+				}
+			}
+		</style>
+	</head>
+	<body>
+		<div class="app">
+			<header>
+				<h1>PatsaBot Remote</h1>
+				<div class="auth">
+					<form id="login-form">
+						<div class="cdx-text-input">
+							<input id="username" class="cdx-text-input__input" name="username" autocomplete="username" placeholder="Username" />
+						</div>
+						<div class="cdx-text-input">
+							<input id="password" class="cdx-text-input__input" name="password" type="password" autocomplete="current-password" placeholder="Password" />
+						</div>
+						<button class="cdx-button cdx-button--action-progressive cdx-button--weight-primary" type="submit">Login</button>
+					</form>
+					<span id="user" class="user hidden"></span>
+					<button id="logout" class="cdx-button cdx-button--weight-quiet hidden" type="button">Logout</button>
+				</div>
+			</header>
+
+			<nav class="tabs" aria-label="Views">
+				<button id="tab-scripts" class="tab active" type="button">Scripts</button>
+				<button id="tab-logs" class="tab" type="button">Logs</button>
+			</nav>
+
+			<main>
+				<section id="scripts-view">
+					<div class="toolbar">
+						<button id="refresh" class="cdx-button" type="button">Refresh</button>
+						<span id="scripts-status" class="status"></span>
+					</div>
+					<div id="scripts" class="grid"></div>
+				</section>
+
+				<section id="logs-view" class="hidden">
+					<div class="logs-toolbar">
+						<select id="filter-level" class="cdx-select-native" aria-label="Minimum log level">
+							<option value="debug">Debug+</option>
+							<option value="info">Info+</option>
+							<option value="warn">Warn+</option>
+							<option value="error">Error</option>
+						</select>
+						<div class="cdx-text-input">
+							<input id="filter-script" class="cdx-text-input__input" list="script-options" placeholder="Search script name or ID..." />
+						</div>
+						<datalist id="script-options"></datalist>
+						<div class="cdx-text-input filter-rid-wrap">
+							<input id="filter-rid" class="cdx-text-input__input" placeholder="Run ID" />
+						</div>
+						<button id="reconnect" class="cdx-button cdx-button--action-progressive" type="button">Live</button>
+						<button id="clear" class="cdx-button cdx-button--weight-quiet" type="button">Clear</button>
+					</div>
+
+					<div class="logs-filters">
+						<label class="logs-filter-toggle">
+							<input id="show-script-name" type="checkbox" />
+							Script
+						</label>
+						<label class="logs-filter-toggle">
+							<input id="show-run-id" type="checkbox" />
+							Run ID
+						</label>
+						<span id="logs-status" class="status"></span>
+					</div>
+
+					<div class="events-panel">
+						<div class="events-head">
+							<div class="events-title">Events <small>(last hour)</small></div>
+							<div class="events-legend">
+								<span><span class="legend-dot legend-success"></span><span id="success-count">0</span> Success</span>
+								<span><span class="legend-dot legend-error"></span><span id="error-count">0</span> Errors</span>
+							</div>
+						</div>
+						<div class="chart">
+							<div class="chart-grid"></div>
+							<div class="chart-y top" id="chart-y-top">0</div>
+							<div class="chart-y mid" id="chart-y-mid">0</div>
+							<div class="chart-y bottom">0</div>
+							<div id="events-chart" class="chart-bars"></div>
+						</div>
+					</div>
+
+					<div id="log-table" class="log-table">
+						<div class="log-header">
+							<div>Timestamp <small id="timezone-label"></small></div>
+							<div>Level</div>
+							<div class="script-cell">Script</div>
+							<div class="rid-cell">Run ID</div>
+							<div>Message</div>
+						</div>
+						<div id="log-shell" class="log-rows" role="log" aria-live="polite"></div>
+					</div>
+				</section>
+			</main>
+		</div>
+
+		<script>
+			const state = {
+				token: localStorage.getItem("remote.token") || "",
+				role: localStorage.getItem("remote.role") || "",
+				username: localStorage.getItem("remote.username") || "",
+				source: null,
+				activeTab: "scripts",
+				tasks: [],
+				logEntries: [],
+				minLogLevel: localStorage.getItem("remote.minLogLevel") || "debug",
+				showScriptName: localStorage.getItem("remote.showScriptName") !== "false",
+				showRunId: localStorage.getItem("remote.showRunId") !== "false",
+			};
+
+			const $ = (id) => document.getElementById(id);
+			const loginForm = $("login-form");
+			const userLabel = $("user");
+			const logoutButton = $("logout");
+			const scriptsNode = $("scripts");
+			const scriptsStatus = $("scripts-status");
+			const logsStatus = $("logs-status");
+			const logShell = $("log-shell");
+			const logTable = $("log-table");
+			const eventsChart = $("events-chart");
+			const successCount = $("success-count");
+			const errorCount = $("error-count");
+			const chartYTop = $("chart-y-top");
+			const chartYMid = $("chart-y-mid");
+			const timezoneLabelNode = $("timezone-label");
+			const filterScript = $("filter-script");
+			const filterRid = $("filter-rid");
+			const filterLevel = $("filter-level");
+			const scriptOptions = $("script-options");
+			const showScriptName = $("show-script-name");
+			const showRunId = $("show-run-id");
+
+			function authHeaders() {
+				return state.token ? { Authorization: `Bearer ${state.token}` } : {};
+			}
+
+			function updateAuthUI() {
+				const loggedIn = Boolean(state.token);
+				loginForm.classList.toggle("hidden", loggedIn);
+				userLabel.classList.toggle("hidden", !loggedIn);
+				logoutButton.classList.toggle("hidden", !loggedIn);
+				userLabel.textContent = loggedIn ? `${state.username} (${state.role})` : "";
+				document.body.dataset.role = state.role || "public";
+				loadTasks();
+				reconnectLogs();
+			}
+
+			function setTab(tab) {
+				state.activeTab = tab;
+				$("tab-scripts").classList.toggle("active", tab === "scripts");
+				$("tab-logs").classList.toggle("active", tab === "logs");
+				$("scripts-view").classList.toggle("hidden", tab !== "scripts");
+				$("logs-view").classList.toggle("hidden", tab !== "logs");
+			}
+
+			function formatDate(value) {
+				if (!value) return "-";
+				const date = new Date(value);
+				return Number.isNaN(date.getTime()) ? String(value) : date.toLocaleString();
+			}
+
+			function taskStatus(task) {
+				return task.job?.status || "idle";
+			}
+
+			function timezoneLabel() {
+				const offset = -new Date().getTimezoneOffset();
+				const sign = offset >= 0 ? "+" : "-";
+				const hours = Math.floor(Math.abs(offset) / 60);
+				const minutes = Math.abs(offset) % 60;
+				return `GMT${sign}${hours}${minutes ? `:${String(minutes).padStart(2, "0")}` : ""}`;
+			}
+
+			function formatTimestamp(value) {
+				const date = value ? new Date(value) : new Date();
+				if (Number.isNaN(date.getTime())) return String(value || "");
+				const pad = (number, length = 2) => String(number).padStart(length, "0");
+				return `${date.getFullYear()}-${pad(date.getMonth() + 1)}-${pad(date.getDate())} ${pad(date.getHours())}:${pad(date.getMinutes())}:${pad(date.getSeconds())}.${pad(date.getMilliseconds(), 3)}`;
+			}
+
+			async function api(path, options = {}) {
+				const response = await fetch(path, {
+					...options,
+					headers: {
+						...authHeaders(),
+						...(options.headers || {}),
+					},
+				});
+				if (!response.ok) {
+					const text = await response.text();
+					throw new Error(text || `${response.status} ${response.statusText}`);
+				}
+				const type = response.headers.get("content-type") || "";
+				return type.includes("application/json") ? response.json() : response.text();
+			}
+
+			async function loadTasks() {
+				try {
+					const tasks = await api("/tasks");
+					state.tasks = tasks;
+					scriptsStatus.textContent = `${tasks.length} scripts`;
+					renderScriptOptions(tasks);
+					renderTasks(tasks);
+					if (state.logEntries.length > 0) renderLogs();
+				} catch (error) {
+					scriptsStatus.textContent = error.message;
+					scriptsNode.innerHTML = "";
+				}
+			}
+
+			function renderScriptOptions(tasks) {
+				scriptOptions.innerHTML = "";
+				const seen = new Set();
+				for (const task of tasks) {
+					const values = [
+						[task.info?.name, task.id],
+						[task.id, task.info?.name || task.info?.scriptSource || ""],
+						[task.info?.scriptSource, task.info?.name || task.id],
+					];
+					for (const [value, label] of values) {
+						if (!value || seen.has(value)) continue;
+						seen.add(value);
+						const option = document.createElement("option");
+						option.value = value;
+						option.label = label || value;
+						scriptOptions.appendChild(option);
+					}
+				}
+			}
+
+			function renderTasks(tasks) {
+				scriptsNode.innerHTML = "";
+				for (const task of tasks) {
+					const card = document.createElement("article");
+					card.className = "card";
+					const status = taskStatus(task);
+					const showControls = state.role === "admin";
+					card.innerHTML = `
+						<div class="card-head">
+							<div class="name"></div>
+							<span class="badge ${status}">${status}</span>
+						</div>
+						<div class="meta">
+							<span>ID</span><strong class="task-id"></strong>
+							<span>Next</span><strong>${formatDate(task.job?.next)}</strong>
+							<span>Previous</span><strong>${formatDate(task.job?.previous)}</strong>
+							<span>Cron</span><strong>${task.job?.pattern || "-"}</strong>
+						</div>
+						<div class="actions ${showControls ? "" : "hidden"}">
+							<button data-action="run" class="cdx-button cdx-button--action-progressive" type="button">Start</button>
+							<button data-action="pause" class="cdx-button cdx-button--weight-quiet" type="button">Pause</button>
+							<button data-action="resume" class="cdx-button cdx-button--weight-quiet" type="button">Resume</button>
+							<button data-action="stop" class="cdx-button cdx-button--action-destructive" type="button">Stop</button>
+						</div>
+					`;
+					card.querySelector(".name").textContent = task.info?.name || task.id;
+					card.querySelector(".task-id").textContent = task.id;
+					card.querySelectorAll("button[data-action]").forEach((button) => {
+						button.addEventListener("click", () => controlTask(task.id, button.dataset.action));
+					});
+					scriptsNode.appendChild(card);
+				}
+			}
+
+			async function controlTask(taskId, action) {
+				scriptsStatus.textContent = `${action} ${taskId}...`;
+				try {
+					const result = await api(`/task/${encodeURIComponent(taskId)}/${action}`, {
+						method: "POST",
+					});
+					scriptsStatus.textContent = result.message || "Done";
+					await loadTasks();
+				} catch (error) {
+					scriptsStatus.textContent = error.message;
+				}
+			}
+
+			function scriptLabel(script) {
+				if (!script) return "";
+				const task = state.tasks.find((item) => {
+					const source = item.info?.scriptSource || "";
+					const id = item.id || item.info?.id || "";
+					return script === source || script === id;
+				});
+				return task?.info?.name || task?.id || script;
+			}
+
+			function updateLogColumns() {
+				logTable.classList.toggle("show-script", state.showScriptName);
+				logTable.classList.toggle("show-rid", state.showRunId);
+				timezoneLabelNode.textContent = timezoneLabel();
+			}
+
+			function cell(className, text) {
+				const node = document.createElement("div");
+				node.className = `log-cell ${className}`;
+				node.textContent = text || "";
+				return node;
+			}
+
+			function renderLogEntry(entry) {
+				const line = document.createElement("div");
+				const level = entry.level || "info";
+				line.className = `log-row ${level}`;
+				line.appendChild(cell("log-timestamp", formatTimestamp(entry.timestamp)));
+
+				const levelCell = cell("", "");
+				const pill = document.createElement("span");
+				pill.className = `level-pill ${level}`;
+				pill.textContent = level;
+				levelCell.appendChild(pill);
+				line.appendChild(levelCell);
+
+				line.appendChild(cell("script-cell", scriptLabel(entry.script)));
+				line.appendChild(cell("rid-cell", entry.rid || ""));
+				line.appendChild(cell("log-message", entry.message || ""));
+				return line;
+			}
+
+			function renderEventsChart() {
+				const now = Date.now();
+				const start = now - 60 * 60 * 1000;
+				const bins = Array.from({ length: 24 }, () => ({ success: 0, error: 0 }));
+				let success = 0;
+				let errors = 0;
+				for (const entry of state.logEntries) {
+					const time = entry.timestamp ? new Date(entry.timestamp).getTime() : now;
+					if (Number.isNaN(time) || time < start || time > now) continue;
+					const index = Math.min(23, Math.max(0, Math.floor(((time - start) / (now - start)) * 24)));
+					if (entry.level === "error") {
+						bins[index].error += 1;
+						errors += 1;
+					} else {
+						bins[index].success += 1;
+						success += 1;
+					}
+				}
+
+				const max = Math.max(1, ...bins.map((bin) => bin.success + bin.error));
+				successCount.textContent = String(success);
+				errorCount.textContent = String(errors);
+				chartYTop.textContent = String(max);
+				chartYMid.textContent = String(Math.ceil(max / 2));
+				eventsChart.innerHTML = "";
+				for (const bin of bins) {
+					const bar = document.createElement("div");
+					const total = bin.success + bin.error;
+					bar.className = `chart-bin ${bin.error > 0 ? "error" : ""}`;
+					bar.style.height = total === 0 ? "0" : `${Math.max(2, (total / max) * 100)}%`;
+					bar.title = `${bin.success} success, ${bin.error} errors`;
+					eventsChart.appendChild(bar);
+				}
+			}
+
+			function renderLogs() {
+				const nearBottom = logShell.scrollHeight - logShell.scrollTop - logShell.clientHeight <= 50;
+				updateLogColumns();
+				logShell.innerHTML = "";
+				if (state.logEntries.length === 0) {
+					const empty = document.createElement("div");
+					empty.className = "empty-logs";
+					empty.textContent = "No matching events";
+					logShell.appendChild(empty);
+				} else {
+					for (const entry of state.logEntries) {
+						logShell.appendChild(renderLogEntry(entry));
+					}
+				}
+				renderEventsChart();
+				if (nearBottom) logShell.scrollTop = logShell.scrollHeight;
+			}
+
+			function appendLog(entry) {
+				const nearBottom = logShell.scrollHeight - logShell.scrollTop - logShell.clientHeight <= 50;
+				state.logEntries.push(entry);
+				while (state.logEntries.length > 2000) {
+					state.logEntries.shift();
+				}
+				const empty = logShell.querySelector(".empty-logs");
+				if (empty) empty.remove();
+				logShell.appendChild(renderLogEntry(entry));
+				while (logShell.childElementCount > 2000) {
+					logShell.firstElementChild?.remove();
+				}
+				renderEventsChart();
+				if (nearBottom) logShell.scrollTop = logShell.scrollHeight;
+			}
+
+			function reconnectLogs() {
+				if (state.source) state.source.close();
+				state.logEntries = [];
+				renderLogs();
+				const params = new URLSearchParams();
+				if (state.token) params.set("token", state.token);
+				if (filterScript.value.trim()) params.set("script", filterScript.value.trim());
+				if (filterRid.value.trim()) params.set("rid", filterRid.value.trim());
+				if (filterLevel.value) params.set("level", filterLevel.value);
+				state.source = new EventSource(`/logs/stream?${params.toString()}`);
+				logsStatus.textContent = "Connecting";
+				state.source.onopen = () => {
+					logsStatus.textContent = "Live";
+				};
+				state.source.onerror = () => {
+					logsStatus.textContent = "Disconnected";
+				};
+				state.source.onmessage = (event) => {
+					try {
+						appendLog(JSON.parse(event.data));
+					} catch {
+						appendLog({ level: "info", message: event.data, timestamp: new Date().toISOString() });
+					}
+				};
+			}
+
+			loginForm.addEventListener("submit", async (event) => {
+				event.preventDefault();
+				const form = new FormData(loginForm);
+				try {
+					const result = await api("/auth/login", {
+						method: "POST",
+						headers: { "Content-Type": "application/json" },
+						body: JSON.stringify({
+							username: form.get("username"),
+							password: form.get("password"),
+						}),
+					});
+					state.token = result.token;
+					state.role = result.role;
+					state.username = result.username;
+					localStorage.setItem("remote.token", state.token);
+					localStorage.setItem("remote.role", state.role);
+					localStorage.setItem("remote.username", state.username);
+					loginForm.reset();
+					updateAuthUI();
+				} catch (error) {
+					scriptsStatus.textContent = error.message;
+				}
+			});
+
+			logoutButton.addEventListener("click", () => {
+				state.token = "";
+				state.role = "";
+				state.username = "";
+				localStorage.removeItem("remote.token");
+				localStorage.removeItem("remote.role");
+				localStorage.removeItem("remote.username");
+				updateAuthUI();
+			});
+
+			$("tab-scripts").addEventListener("click", () => setTab("scripts"));
+			$("tab-logs").addEventListener("click", () => setTab("logs"));
+			$("refresh").addEventListener("click", loadTasks);
+			$("reconnect").addEventListener("click", reconnectLogs);
+			$("clear").addEventListener("click", () => {
+				state.logEntries = [];
+				renderLogs();
+			});
+			filterScript.addEventListener("change", reconnectLogs);
+			filterRid.addEventListener("change", reconnectLogs);
+			filterLevel.value = state.minLogLevel;
+			filterLevel.addEventListener("change", () => {
+				state.minLogLevel = filterLevel.value;
+				localStorage.setItem("remote.minLogLevel", state.minLogLevel);
+				reconnectLogs();
+			});
+			filterScript.addEventListener("keydown", (event) => {
+				if (event.key === "Enter") reconnectLogs();
+			});
+			filterRid.addEventListener("keydown", (event) => {
+				if (event.key === "Enter") reconnectLogs();
+			});
+			showScriptName.checked = state.showScriptName;
+			showRunId.checked = state.showRunId;
+			showScriptName.addEventListener("change", () => {
+				state.showScriptName = showScriptName.checked;
+				localStorage.setItem("remote.showScriptName", String(state.showScriptName));
+				renderLogs();
+			});
+			showRunId.addEventListener("change", () => {
+				state.showRunId = showRunId.checked;
+				localStorage.setItem("remote.showRunId", String(state.showRunId));
+				renderLogs();
+			});
+
+			updateAuthUI();
+			setInterval(loadTasks, 10000);
+		</script>
+	</body>
+</html>

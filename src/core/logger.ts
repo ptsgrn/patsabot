@@ -1,7 +1,9 @@
+import { EventEmitter } from "node:events";
 import { config } from "@core/config";
 import chalk from "chalk";
 import { createLogger, format, type Logger, transports } from "winston";
 import DailyRotateFile from "winston-daily-rotate-file";
+import TransportStream from "winston-transport";
 
 const loggerFormat = format.combine(
 	format.timestamp(),
@@ -11,6 +13,48 @@ const loggerFormat = format.combine(
 	format.splat(),
 	format.json(),
 );
+
+export interface LogEntry {
+	level: string;
+	message: string;
+	script?: string;
+	rid?: string;
+	timestamp: string;
+	[key: string]: unknown;
+}
+
+export class InMemoryTransport extends TransportStream {
+	public readonly emitter = new EventEmitter();
+	private buffer: LogEntry[] = [];
+	private readonly MAX = 1000;
+
+	log(info: LogEntry, callback: () => void) {
+		const { level, message, script, rid, timestamp, ...rest } = info;
+		const entry: LogEntry = {
+			...rest,
+			level,
+			message,
+			script,
+			rid,
+			timestamp: timestamp ?? new Date().toISOString(),
+		};
+		if (this.buffer.length >= this.MAX) this.buffer.shift();
+		this.buffer.push(entry);
+		this.emitter.emit("entry", entry);
+		callback();
+	}
+
+	getBuffer(filter?: { script?: string; rid?: string }): LogEntry[] {
+		if (!filter) return [...this.buffer];
+		return this.buffer.filter(
+			(entry) =>
+				(!filter.script || entry.script === filter.script) &&
+				(!filter.rid || entry.rid === filter.rid),
+		);
+	}
+}
+
+export const inMemoryTransport = new InMemoryTransport();
 
 /**
  * Logger configuration using `winston` library with multiple transports.
@@ -34,6 +78,7 @@ export const logger: Logger = createLogger({
 	level: config.logger.level,
 	format: loggerFormat,
 	transports: [
+		inMemoryTransport,
 		new DailyRotateFile({
 			filename: `${config.logger.logPath}/output-%DATE%.jsonl`,
 			datePattern: "YYYYMMDD",

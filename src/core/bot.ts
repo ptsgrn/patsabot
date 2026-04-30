@@ -148,8 +148,13 @@ export class Bot extends ServiceBase {
 		return this._botOptions;
 	}
 
-	async startLifeCycle() {
-		this.info.rid = createId();
+	async startLifeCycle(rid = createId()) {
+		this.info.rid = rid;
+		this.log.defaultMeta = {
+			...(this.log.defaultMeta ?? {}),
+			script: this.info.scriptSource ?? this.info.id,
+			rid,
+		};
 
 		try {
 			await this.beforeRun();

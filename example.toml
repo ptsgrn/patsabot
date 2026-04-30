@@ -51,3 +51,25 @@ key_salt = ""
 logPath = "./logs"
 # on production should be less verbose eg. "info"
 level = "debug"
+
+[discord.logger]
+# Optional webhook for log forwarding
+webhook = ""
+
+[web]
+# false = status/log endpoints require auth too (default: true = public read)
+publicViewable = true
+# JWT secret - generate: openssl rand -hex 32
+# If unset, random secret generated on startup (tokens invalid after restart)
+jwtSecret = ""
+
+# Users for the web UI (passwords plain text - chmod 600 this file)
+[[web.users]]
+username = "admin"
+password = "changeme"
+role = "admin" # "admin" = full control, "viewer" = read only
+
+[[web.users]]
+username = "viewer"
+password = "viewpass"
+role = "viewer"

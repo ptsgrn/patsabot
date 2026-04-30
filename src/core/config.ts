@@ -1,4 +1,4 @@
-import { join } from "node:path";
+import { isAbsolute, join } from "node:path";
 import { parseArgs } from "node:util";
 import { z } from "zod";
 import { humanReadableToBytes } from "./helper";
@@ -26,11 +26,27 @@ const configFileName =
 	(typeof values.user === "string" ? `config-${values.user}.toml` : null) ??
 	"config.toml";
 
-const configFile = join(import.meta.dir, "../../", configFileName);
+const configFile = isAbsolute(configFileName)
+	? configFileName
+	: join(import.meta.dir, "../../", configFileName);
 
 if (!(await Bun.file(configFile).exists())) {
 	throw new Error(`Config file not found: ${configFile}`);
 }
+
+const WebUserSchema = z.object({
+	username: z.string(),
+	password: z.string(),
+	role: z.enum(["admin", "viewer"]).default("viewer"),
+});
+
+const WebConfigSchema = z
+	.object({
+		publicViewable: z.boolean().default(true),
+		users: z.array(WebUserSchema).default([]),
+		jwtSecret: z.string().optional(),
+	})
+	.optional();
 
 export const config = z
 	.object({
@@ -80,6 +96,7 @@ export const config = z
 				webhook: z.string().optional(),
 			}),
 		}),
+		web: WebConfigSchema,
 		options: z
 			.object({
 				iactoNotiPrompt: z.boolean().default(false),
@@ -89,3 +106,5 @@ export const config = z
 	.parse(await import(configFile));
 
 process.env.TZ = config.bot.timezone;
+
+export type WebUser = z.infer<typeof WebUserSchema>;

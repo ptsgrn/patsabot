@@ -75,10 +75,15 @@ export class ScriptRunner extends ServiceBase {
 			.map((f) => f.replace(/\.ts$/, "").replace(/\\/g, "/"));
 	}
 
-	private initInstance(instance: Bot, scriptName: string, logLevel?: string) {
+	private initInstance(
+		instance: Bot,
+		scriptName: string,
+		logLevel?: string,
+		rid = createId(),
+	) {
 		instance.info.scriptSource = scriptName;
-		instance.info.rid = createId();
-		instance.log.defaultMeta = { script: scriptName, rid: instance.info.rid };
+		instance.info.rid = rid;
+		instance.log = instance.log.child({ script: scriptName, rid });
 		if (logLevel) instance.log.level = logLevel;
 	}
 
@@ -149,12 +154,12 @@ export class ScriptRunner extends ServiceBase {
 	/**
 	 * Run a script by name with default options (used by the web API).
 	 */
-	async runScript(scriptName: string) {
+	async runScript(scriptName: string, rid = createId()) {
 		const ScriptClass = await this.loadScript(scriptName);
 		const instance = new ScriptClass();
-		this.initInstance(instance, scriptName);
+		this.initInstance(instance, scriptName, undefined, rid);
 		instance.cli.setOptionValue("dryRun", false);
-		await instance.startLifeCycle();
+		await instance.startLifeCycle(rid);
 	}
 
 	async startScheduled() {
@@ -172,6 +177,7 @@ export class ScriptRunner extends ServiceBase {
 				continue;
 			}
 			this.log.info(`Scheduled ${script.info.id} (${script.info.frequency})`);
+			this.initInstance(script, name);
 			this.scheduled[script.info.id] = script;
 			script.schedule();
 		}
