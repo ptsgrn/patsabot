@@ -6,8 +6,12 @@ apiUrl = "https://th.wikipedia.org/w/api.php"
 timezone = "Asia/Bangkok"
 
 [toolforge]
-# configuration for toolforge accessing
-login = ""
+# Your Wikimedia developer account username (used to SSH into Toolforge)
+sshUser = ""
+# SSH host — change only if Toolforge ever migrates
+sshHost = "login.toolforge.org"
+# Path to your SSH private key — leave commented to use ~/.ssh/id_rsa (or ssh-agent)
+# sshIdentityFile = "~/.ssh/id_ed25519"
 tooluser = "tools.patsabot"
 # Important: create it with good long and high entropy password
 # eg. openssl rand -base64 32

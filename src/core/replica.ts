@@ -34,28 +34,28 @@ export class Replica extends ServiceBase {
 		waitForConnections: true,
 	};
 
-	/**
-	 * Represents the MySQL connection instance.
-	 * It can be either a `mysql.Connection` object or `null` if the connection is not established.
-	 */
 	public conn: mysql.Connection | null = null;
+	private tunnelProcess: Bun.Subprocess | null = null;
 
-	/**
-	 * Initializes the replica connection.
-	 * If the script is not running on Toolforge, it will log a warning message.
-	 */
 	public async init() {
 		this.log.debug("Initializing replica connection");
 		if (!this.isRunOnToolforge()) {
-			this.log.warn(
-				"Not running on Toolforge, don't forget to set up SSH tunnel using `. replica-tunnel` in separate terminal.",
-			);
-			const database = this.config.replica.dbname;
+			const replicaHost = getReplicaHost(this.config.replica.dbname);
+			const localPort = Number(this.config.replica.port || 3306);
 			this._replicaOptions = {
 				...this._replicaOptions,
 				host: "127.0.0.1",
-				database,
+				database: this.config.replica.dbname,
 			};
+			try {
+				this.conn = await mysql.createConnection(this._replicaOptions);
+			} catch (err) {
+				if (err instanceof Error && "code" in err && err.code === "ECONNREFUSED") {
+					await this.autoTunnel(replicaHost, localPort);
+				} else {
+					throw err;
+				}
+			}
 		} else {
 			this._replicaOptions = {
 				...this._replicaOptions,
@@ -65,21 +65,34 @@ export class Replica extends ServiceBase {
 			this.log.debug(
 				`Connecting to ${this._replicaOptions.database} on ${this._replicaOptions.host}`,
 			);
-		}
-		try {
 			this.conn = await mysql.createConnection(this._replicaOptions);
-		} catch (err) {
-			if (
-				err instanceof Error &&
-				"code" in err &&
-				err.code === "ECONNREFUSED"
-			) {
-				this.log.error(
-					"SSH connection refused. Did you forgot to set up the SSH tunnel?",
-				);
-				process.exit(1);
+		}
+	}
+
+	private buildSshArgs(replicaHost: string, localPort: number): string[] {
+		const { sshUser, sshHost, sshIdentityFile } = this.config.toolforge;
+		const args = ["ssh", "-N", "-o", "ExitOnForwardFailure=yes"];
+		if (sshIdentityFile) args.push("-i", sshIdentityFile);
+		args.push(`${sshUser}@${sshHost}`, "-L", `${localPort}:${replicaHost}:3306`);
+		return args;
+	}
+
+	private async autoTunnel(replicaHost: string, localPort: number) {
+		this.log.info(`No tunnel found, starting SSH tunnel to ${replicaHost}:3306 → localhost:${localPort}`);
+		this.tunnelProcess = Bun.spawn(this.buildSshArgs(replicaHost, localPort));
+		for (let i = 0; i < 20; i++) {
+			await Bun.sleep(500);
+			try {
+				this.conn = await mysql.createConnection(this._replicaOptions);
+				this.log.info("SSH tunnel established");
+				return;
+			} catch {
+				// tunnel not ready yet
 			}
 		}
+		this.tunnelProcess.kill();
+		this.tunnelProcess = null;
+		throw new Error("SSH tunnel did not become ready after 10s");
 	}
 
 	/**
@@ -93,15 +106,22 @@ export class Replica extends ServiceBase {
 		cluster: string = "web",
 		port: number = 3306,
 	) {
-		if (!config.toolforge.login) {
-			throw new Error("Please fill in the Toolforge login in this.config.toml");
+		if (!config.toolforge.sshUser) {
+			throw new Error("toolforge.sshUser not set in config.toml");
 		}
 
+		const { sshUser, sshHost, sshIdentityFile } = config.toolforge;
 		const host = getReplicaHost(dbname, cluster);
+		const target = `${sshUser}@${sshHost}`;
+		const identityArgs = sshIdentityFile ? `-i ${sshIdentityFile} ` : "";
 
 		console.log(`Connecting to ${host} on port ${port}...`);
-		console.log(`> ssh -N ${config.toolforge.login} -L ${port}:${host}:3306`);
-		await $`ssh -N ${{ raw: config.toolforge.login }} -L ${port}:${host}:3306`;
+		console.log(`> ssh -N ${identityArgs}${target} -L ${port}:${host}:3306`);
+		if (sshIdentityFile) {
+			await $`ssh -N -i ${sshIdentityFile} ${target} -L ${port}:${host}:3306`;
+		} else {
+			await $`ssh -N ${target} -L ${port}:${host}:3306`;
+		}
 	}
 
 	/**
@@ -127,6 +147,8 @@ export class Replica extends ServiceBase {
 
 	public end() {
 		this.log.debug("Closing replica connection");
+		this.tunnelProcess?.kill();
+		this.tunnelProcess = null;
 		return this.conn?.end();
 	}
 

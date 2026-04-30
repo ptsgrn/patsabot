@@ -47,7 +47,9 @@ export const config = z
 			timezone: z.string(),
 		}),
 		toolforge: z.object({
-			login: z.string(),
+			sshUser: z.string(),
+			sshHost: z.string().default("login.toolforge.org"),
+			sshIdentityFile: z.string().optional(),
 			tooluser: z.string(),
 			webKey: z.string(),
 		}),
