@@ -8,7 +8,9 @@ const { values } = parseArgs({
 	options: {
 		config: {
 			type: "string",
-			default: "config.toml",
+		},
+		user: {
+			type: "string",
 		},
 		iactoNotiPrompt: {
 			type: "boolean",
@@ -18,13 +20,15 @@ const { values } = parseArgs({
 	strict: false,
 });
 
-const configFile = join(
-	import.meta.dir,
-	"../../",
-	typeof values.config === "string" ? values.config : "config.toml",
-);
+// --config takes precedence; --user maps to config-<name>.toml; fallback to config.toml
+const configFileName =
+	(typeof values.config === "string" ? values.config : null) ??
+	(typeof values.user === "string" ? `config-${values.user}.toml` : null) ??
+	"config.toml";
 
-if (!Bun.file(configFile).exists()) {
+const configFile = join(import.meta.dir, "../../", configFileName);
+
+if (!(await Bun.file(configFile).exists())) {
 	throw new Error(`Config file not found: ${configFile}`);
 }
 
