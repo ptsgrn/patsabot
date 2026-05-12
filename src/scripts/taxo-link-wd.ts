@@ -89,7 +89,7 @@ export default class TaxoLinkWD extends Bot {
         }
       }
 
-      break;
+      this.log.info(`Finished processing ${title}`);
     }
   }
 }
