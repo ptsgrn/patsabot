@@ -94,7 +94,7 @@ curl https://tools-static.wmflabs.org/patsabot/logs/output-20250108.jsonl.gz | g
 
 ```bash
 ssh toolforge -t "become patsabot -- git -C www/js/ pull"
-ssh toolforge -t "become patsabot -- toolforge webservice node18 restart"
+ssh toolforge -t "become patsabot -- toolforge webservice node20 restart"
 ```
 
 
