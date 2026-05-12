@@ -26,10 +26,11 @@ type AdminStatsRow = RowDataPacket & {
 };
 
 export default class AdminStatsBot extends Bot {
-  info = {
+  info: Bot["info"] = {
     id: "adminstats",
-    name: "Admin Stats",
+    name: "adminstats",
     description: "Fetch and display admin statistics",
+    frequency: "0 0 * * 0", // Every Sunday at midnight
   };
 
   queryList = [
@@ -159,7 +160,16 @@ export default class AdminStatsBot extends Bot {
       "{{subst:#time:r}}",
     );
 
-    await this.bot.edit("วิกิพีเดีย:ผู้ดูแลระบบ/สถิติ", () => pageContent, {});
+    await this.bot.edit(
+      "วิกิพีเดีย:ผู้ดูแลระบบ/สถิติ",
+      () => {
+        return {
+          text: pageContent,
+          summary: `อัปเดตสถิติผู้ดูแลระบบ`,
+        };
+      },
+      {},
+    );
   }
 
   formatAdminStatsLine(
