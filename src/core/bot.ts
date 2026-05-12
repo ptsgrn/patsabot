@@ -13,8 +13,11 @@ import { Mwn, type MwnOptions } from "mwn";
 import Parser from "wikiparser-node";
 import { dependencies, version } from "../../package.json";
 import { Input, Output, ServiceBase } from "./base";
+import WBEdit from "wikibase-edit";
+import { WikidataService } from "./wikidata";
 
 export class Bot extends ServiceBase {
+  private userAgent = `${this.config.bot.username}/${version} (${this.config.bot.contact}) mwn/${dependencies.mwn}`;
   private _botOptions: MwnOptions = {
     apiUrl: this.config.bot.apiUrl || "https://th.wikipedia.org/w/api.php",
     OAuthCredentials: {
@@ -24,7 +27,7 @@ export class Bot extends ServiceBase {
       accessSecret: this.config.oauth.accessSecret,
     },
     // Set your user agent (required for WMF wikis, see https://meta.wikimedia.org/wiki/User-Agent_policy):
-    userAgent: `${this.config.bot.username}/${version} (${this.config.bot.contact}) mwn/${dependencies.mwn}`,
+    userAgent: this.userAgent,
     // defaultParams: {
     // 	assert: "user",
     // },
@@ -98,6 +101,21 @@ export class Bot extends ServiceBase {
    * WikiText Parser
    */
   public wikitextParser = Parser;
+
+  /**
+   * Wikidata Service
+   */
+  public wikidata = new WikidataService({
+    credentials: {
+      oauth: {
+        consumer_key: this.config.oauth.consumerToken,
+        consumer_secret: this.config.oauth.consumerSecret,
+        token: this.config.oauth.accessToken,
+        token_secret: this.config.oauth.accessSecret,
+      },
+    },
+    userAgent: this.userAgent,
+  });
 
   constructor() {
     super();
