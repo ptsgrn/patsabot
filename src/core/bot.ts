@@ -16,6 +16,8 @@ import { Input, Output, ServiceBase } from "./base";
 import WBEdit from "wikibase-edit";
 import { WikidataService } from "./wikidata";
 
+type CommandOptions<C> = C extends { opts(): infer Options } ? Options : never;
+
 export class Bot extends ServiceBase {
   private userAgent = `${this.config.bot.username}/${version} (${this.config.bot.contact}) mwn/${dependencies.mwn}`;
   private _botOptions: MwnOptions = {
@@ -124,6 +126,10 @@ export class Bot extends ServiceBase {
       name: "Bot",
       description: "A bot",
     };
+  }
+
+  get options(): CommandOptions<this["cli"]> {
+    return this.cli.opts() as CommandOptions<this["cli"]>;
   }
 
   get dryRun(): boolean {
