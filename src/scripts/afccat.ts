@@ -20,13 +20,13 @@ export default class Afccat extends Bot {
 			dateObject = new this.bot.Date();
 		}
 		categories.push(
-			`หมวดหมู่:ฉบับร่างเรียงตามวันที่ส่ง/${dateObject.format("DD MMMM YYYY", "Asia/Bangkok")}`,
+			`หมวดหมู่:ฉบับร่างเรียงตามวันที่ส่ง/${dateObject.format("DD MMMM YYYY", 7)}`,
 		);
 		categories.push(
-			`หมวดหมู่:ฉบับร่างเรียงตามวันที่ส่ง/${dateObject.format("MMMM YYYY", "Asia/Bangkok")}`,
+			`หมวดหมู่:ฉบับร่างเรียงตามวันที่ส่ง/${dateObject.format("MMMM YYYY", 7)}`,
 		);
 		categories.push(
-			`หมวดหมู่:ฉบับร่างเรียงตามวันที่ส่ง/${dateObject.format("YYYY", "Asia/Bangkok")}`,
+			`หมวดหมู่:ฉบับร่างเรียงตามวันที่ส่ง/${dateObject.format("YYYY", 7)}`,
 		);
 
 		// no null and unique
