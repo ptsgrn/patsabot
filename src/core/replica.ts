@@ -1,7 +1,7 @@
 import { ServiceBase } from "@core/base";
 import { config } from "@core/config";
 import { $ } from "bun";
-import mysql from "mysql2/promise";
+import mysql, { type ExecuteValues } from "mysql2/promise";
 
 /**
  * Generates the replica host URL for a given database name and cluster.
@@ -138,7 +138,7 @@ export class Replica extends ServiceBase {
 	 * @param values Values to bind to the query
 	 * @returns The result of the query
 	 */
-	public async query<T extends mysql.QueryResult>(sql: string, values: unknown[] = []) {
+	public async query<T extends mysql.QueryResult>(sql: string, values: ExecuteValues = []) {
 		if (!this.conn) {
 			await this.init();
 		}
