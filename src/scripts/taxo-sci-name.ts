@@ -8,15 +8,15 @@ export default class TaxonomyAddScientificName extends Bot {
     name: "Taxonomy: Add Scientific Name",
     description: "Adds a scientific name to a taxonomy entry",
     scriptSource: "scripts/taxo-sci-name.ts",
-    frequency: "0 1 * * *", // Run every day at 1:00 AM
+    // frequency: "0 1 * * *", // Run every day at 1:00 AM
   };
 
   cli = new Command()
-    .option("-a, --auto", "Automatically yes (with some delay)")
+    .option("-a, --auto", "Automatically yes (with some delay)", true)
     .option(
       "-d, --delay <ms>",
       "Delay before auto-confirming changes",
-      (v) => +v || 5000,
+      (v) => +v || 1000,
     );
 
   summary = "บอต: เพิ่มชื่อวิทยาศาสตร์ ([[ผู้ใช้:PatsaBot/task/7|task #7]])";

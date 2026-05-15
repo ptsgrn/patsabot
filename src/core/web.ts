@@ -304,32 +304,6 @@ export const app = new Elysia()
 			},
 		});
 	})
-	.get("/deploy", async function* ({ headers }) {
-		if (headers.authorization !== `Bearer ${config.toolforge.webKey}`) {
-			return httpStatus(401, "Unauthorized");
-		}
-		const commands = [
-			{ command: $`git fetch`, rawCommand: "git fetch" },
-			{
-				command: $`git reset --hard origin/main`,
-				rawCommand: "git reset --hard origin/main",
-			},
-			{ command: $`git pull`, rawCommand: "git pull" },
-			{ command: $`bun i`, rawCommand: "bun i" },
-		];
-
-		yield `[${now()}] Starting deployment...\n`;
-		const start = Date.now();
-		for (const { command, rawCommand } of commands) {
-			yield `[${now()}] Running: ${rawCommand}\n`;
-			for await (const line of command.lines()) {
-				console.log(`[${now()}]`, line.trim());
-				yield `[${now()}] ${line.trim()}\n`;
-			}
-		}
-		const end = Date.now();
-		yield `[${now()}] Deployment completed in ${end - start}ms\n`;
-	})
 	.group("", (app) =>
 		app
 			.use(requireAuthIfPrivate)
