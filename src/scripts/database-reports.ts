@@ -11,7 +11,7 @@ export class DatabaseReportBot extends Bot {
     id: "database-report",
     name: "Database Report",
     description: "A database report",
-    frequency: "@weekly",
+    frequency: "0 2 * * *", // Run every day at 2:00 AM
     frequencyText: "สัปดาห์ละครั้ง",
   };
 
