@@ -15,6 +15,12 @@ export class DatabaseReportBot extends Bot {
     frequencyText: "สัปดาห์ละครั้ง",
   };
 
+  cli = new Command().option(
+    "--dry-run",
+    "Dry run mode. The bot will log the content it would save without actually saving it.",
+    false,
+  );
+
   reportPageBase: string = "วิกิพีเดีย:รายงานจากฐานข้อมูล/";
   reportFooter: string = "\n{{ส่วนท้ายรายงานฐานข้อมูล}}";
   summary: string = "อัปเดตรายงาน";
@@ -47,15 +53,13 @@ export class DatabaseReportBot extends Bot {
     }
     const [rows, _fields] = result;
     this.log.profile("Querying database");
-    // @ts-expect-error
     this.log.info(`Found ${rows.length} rows`);
     this.log.debug("Creating wiki table");
-    // @ts-expect-error
     const table = this.createWikiTable(this.headers, rows);
     await this.savePage(this.pageDescription, table, this.reportFooter);
   }
 
-  createWikiTable(headers: string[], rows: string[]) {
+  createWikiTable(headers: string[], rows: unknown[]) {
     let table = `${this.preTableHeader}\n! ${headers.join("\n! ")}\n`;
     for (let i = 0; i < rows.length; i++) {
       table += `|-\n| ${this.formatRow(rows[i], i, rows).join("\n| ")}\n`;
@@ -66,7 +70,7 @@ export class DatabaseReportBot extends Bot {
 
   async savePage(header: string, content: string, footer: string) {
     const page = this.pageTitle;
-    if (!this.dryRun) {
+    if (!this.options.dryRun) {
       this.log.info(`Saving to "${page}"`);
       await this.bot.save(page, header + content + footer, this.summary);
       this.log.info(`Saved to "${page}"`);
@@ -158,7 +162,6 @@ export default class RunScheduleDatabaseReport extends Bot {
         this.log.debug(`Last update: ${await report.lastUpdateTimestamp()}`);
         if (await this.input.confirm(`Run ${report.info.id}?`)) {
           report.info.rid = createId();
-          report.cli.setOptionValue("dryRun", this.dryRun);
           this.log.debug(`Running ${report.info.id} (${report.info.rid})`);
           await report.startLifeCycle();
         }

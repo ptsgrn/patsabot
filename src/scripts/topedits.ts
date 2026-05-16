@@ -9,12 +9,19 @@ interface UserEdit {
   is_anonymous: boolean;
 }
 
+interface TopEditRow {
+  user_name: string;
+  user_editcount: number;
+  user_groups: string | null;
+}
+
 export default class TopEdits extends Bot {
   info: Bot["info"] = {
     id: "topedits",
     name: "TopEdits",
     description:
       "อัปเดตตาราง[[วิกิพีเดีย:รายชื่อชาววิกิพีเดียที่แก้ไขมากที่สุด 500 อันดับ]] และ[[วิกิพีเดีย:รายชื่อชาววิกิพีเดียที่แก้ไขมากที่สุด 500 อันดับ (รวมบอต)]]",
+    frequency: "@weekly",
   };
 
   cli = new Command()
@@ -87,7 +94,7 @@ export default class TopEdits extends Bot {
   async getTopEdits() {
     this.log.info("Getting top edits with groups");
     this.log.profile("getTopEdits");
-    const results = await this.replica.query(`
+    const results = await this.replica.query<TopEditRow[]>(`
       /* topedits.ts SLOW_OK */
       SELECT
         user_name,
@@ -104,20 +111,15 @@ export default class TopEdits extends Bot {
     if (!results) {
       throw new Error("Query returned no results");
     }
-    // @ts-expect-error
-    return results[0].map(
-      (row: {
-        user_name: Buffer;
-        user_editcount: number;
-        user_groups: string | null;
-      }) => ({
-        user_name: row.user_name.toString(),
-        user_editcount: row.user_editcount,
-        user_group: row.user_groups
-          ? row.user_groups.toString().split(",")
-          : ([] as string[]),
-      }),
-    ) as { user_name: string; user_editcount: number; user_group: string[] }[];
+    return results[0].map((row) => ({
+      user_name: row.user_name,
+      user_editcount: row.user_editcount,
+      user_group: row.user_groups ? row.user_groups.split(",") : [],
+    })) as {
+      user_name: string;
+      user_editcount: number;
+      user_group: string[];
+    }[];
   }
 
   async getUserAnonymousList() {
@@ -220,7 +222,7 @@ export default class TopEdits extends Bot {
     );
     const withBotContent = this.createTable(userList, +this.options.listTop);
 
-    if (this.dryRun) {
+    if (this.options.dryRun) {
       this.log.warn("Dry run enabled, skipping edit");
       const noBotRead = (await this.bot.read(this.options.targetPageNoBot))
         .revisions?.[0].content;

@@ -35,6 +35,8 @@ export class Bot extends ServiceBase {
     // },
   };
 
+  readonly Command = Command;
+
   /**
    * Information about the bot
    */
@@ -132,10 +134,6 @@ export class Bot extends ServiceBase {
     return this.cli.opts() as CommandOptions<this["cli"]>;
   }
 
-  get dryRun(): boolean {
-    return (this.cli.opts() as { dryRun?: boolean }).dryRun ?? true;
-  }
-
   protected option(
     flags: string,
     description: string,
@@ -221,7 +219,7 @@ export class Bot extends ServiceBase {
    */
   async afterRun() {
     if (this.replica.conn) {
-      this.replica.end();
+      await this.replica.end();
     }
   }
 

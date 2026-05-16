@@ -1,4 +1,4 @@
-import { Bot, Command } from "@core/bot";
+import { Bot, Command } from "@core";
 
 export default class Afccat extends Bot {
   public info: Bot["info"] = {
@@ -8,11 +8,13 @@ export default class Afccat extends Bot {
     frequency: "0 2 * * *", // Run every day at 2:00 AM
   };
 
-  cli = new Command().option(
-    "--date <date>",
-    "Date to create categories for",
-    "today",
-  );
+  cli = new Command()
+    .option("--date <date>", "Date to create categories for", "today")
+    .option(
+      "--dry-run",
+      "Dry run mode. The bot will log the categories it would create without actually creating them.",
+      false,
+    );
 
   async run() {
     await this.bot.Date.populateLocaleData("th");
@@ -53,7 +55,7 @@ export default class Afccat extends Bot {
         (page) => {
           if (!page) return Promise.reject();
           return new Promise((resolve, reject) => {
-            if (this.dryRun) {
+            if (this.options.dryRun) {
               this.log.warn(`Dry run, not creating category: ${page}`);
               return resolve("dryrun");
             }

@@ -67,6 +67,7 @@
     "start": "/data/project/patsabot/.bun/bin/bun i && /data/project/patsabot/.bun/bin/bun ./src/core/web.ts",
     "prepare": "husky"
   },
+  "bin": "patsabot",
   "type": "module",
   "lint-staged": {
     "*.{js,ts,cjs,mjs,d.cts,d.mts,jsx,tsx,json,jsonc}": [

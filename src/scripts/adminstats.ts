@@ -1,5 +1,4 @@
 import { Bot } from "@core/bot";
-import type { RowDataPacket } from "mysql2";
 
 type AdminLogAction = {
   type: string;
@@ -15,12 +14,12 @@ type AdminStats = {
   counts: AdminLogAction[];
 };
 
-type AdminStatsRow = RowDataPacket & {
+type AdminStatsRow = {
   user_id: number;
-  user_name: Buffer | string;
-  user_groups: Buffer | string | null;
-  log_type: Buffer | string | null;
-  log_action: Buffer | string | null;
+  user_name: string;
+  user_groups: string | null;
+  log_type: string | null;
+  log_action: string | null;
   count: number | string;
   last_6_months_count: number | string;
 };
@@ -327,17 +326,15 @@ export default class AdminStatsBot extends Bot {
       const userid = row.user_id;
       const admin: AdminStats = adminStats.get(userid) ?? {
         userid,
-        name: this.bufferToString(row.user_name),
-        groups: row.user_groups
-          ? this.bufferToString(row.user_groups).split(",")
-          : [],
+        name: row.user_name,
+        groups: row.user_groups ? row.user_groups.split(",") : [],
         counts: [],
       };
 
       if (row.log_type && row.log_action) {
         admin.counts.push({
-          type: this.bufferToString(row.log_type),
-          action: this.bufferToString(row.log_action),
+          type: row.log_type,
+          action: row.log_action,
           count: Number(row.count),
           last6MonthsCount: Number(row.last_6_months_count),
         });
@@ -351,10 +348,6 @@ export default class AdminStatsBot extends Bot {
 
   formatMediaWikiTimestamp(date: Date) {
     return date.toISOString().replace(/\D/g, "").slice(0, 14);
-  }
-
-  bufferToString(value: Buffer | string) {
-    return typeof value === "string" ? value : value.toString();
   }
 
   insertBetween(

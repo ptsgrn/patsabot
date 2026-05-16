@@ -43,6 +43,6 @@ export default class DraftsWithCats extends DatabaseReportBot {
 	preTableTemplates: string[] = ["{{static row numbers}}"];
 
 	formatRow(row: { page_title: string }) {
-		return [`[[${row.page_title.toString().replace(/_/g, " ")}]]`];
+		return [`[[${row.page_title.replace(/_/g, " ")}]]`];
 	}
 }

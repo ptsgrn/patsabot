@@ -1,7 +1,7 @@
 import { DatabaseReportBot } from "@scripts/database-reports";
 
 interface Row {
-	page_title: Buffer;
+	page_title: string;
 	page_len: number;
 }
 
@@ -38,7 +38,7 @@ export default class LinkedEmailNs0 extends DatabaseReportBot {
 
 	formatRow(row: Row) {
 		return [
-			`[[${row.page_title.toString().replace(/_/g, " ")}]]`, // link to the page
+			`[[${row.page_title.replace(/_/g, " ")}]]`, // link to the page
 		];
 	}
 }
