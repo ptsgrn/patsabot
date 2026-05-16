@@ -14,7 +14,7 @@ export default class G10Nominator extends Bot {
     id: "g10-nominator",
     name: "G10 Nominator",
     description: "แจ้งลบ",
-    frequency: "0 0 * * *", // every 24 hours
+    // frequency: "0 0 * * *", // every 24 hours
   };
 
   cli = new this.Command().option(
