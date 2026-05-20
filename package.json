@@ -64,7 +64,7 @@
   ],
   "private": "true",
   "scripts": {
-    "start": "/data/project/patsabot/.bun/bin/bun i && /data/project/patsabot/.bun/bin/bun ./src/core/web.ts",
+    "start": "/data/project/patsabot/.bun/bin/bun ./src/core/web.ts",
     "prepare": "husky"
   },
   "bin": "patsabot",
