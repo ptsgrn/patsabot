@@ -1,9 +1,11 @@
-import { Bot } from "@core/bot";
+import { defineScript } from "@core/define";
 
-export default class UpdateBotTaskBot extends Bot {
-	public info: Bot["info"] = {
-		id: "update-tasks",
-		description: "อัปเดตงานบอต",
-		name: "update-tasks",
-	};
-}
+// TODO: implement — see README's task status table.
+export default defineScript({
+  meta: {
+    description: "อัปเดตงานบอต",
+  },
+  run(ctx) {
+    ctx.log.warn("update-tasks is not implemented yet");
+  },
+});

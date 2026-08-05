@@ -1,19 +1,16 @@
-import { Bot } from "@core/bot";
+import { defineScript } from "@core/define";
 
-export default class UpdateStatusBot extends Bot {
-	public info: Bot["info"] = {
-		id: "update-status",
-		description: "อัปเดตสถานะบอต",
-		name: "update-status",
-		frequency: "@daily",
-	};
-
-	async run() {
-		await this.bot.save(
-			`ผู้ใช้:${this.config.bot.username}/timestamp`,
-			"{{subst:#timel:r}}",
-			"อัปเดตสถานะ",
-		);
-		this.log.info("Status updated");
-	}
-}
+export default defineScript({
+  meta: {
+    description: "อัปเดตสถานะบอต",
+    frequency: "@daily",
+  },
+  async run(ctx) {
+    await ctx.bot.save(
+      `ผู้ใช้:${ctx.account.username}/timestamp`,
+      "{{subst:#timel:r}}",
+      "อัปเดตสถานะ",
+    );
+    ctx.log.info("Status updated");
+  },
+});

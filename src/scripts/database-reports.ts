@@ -1,176 +1,40 @@
-import { readdir } from "node:fs/promises";
-import { join } from "node:path";
-import { Bot, Command } from "@core/bot";
 import { createId } from "@paralleldrive/cuid2";
-import chalk from "chalk";
+import { executeScript } from "@core/context";
+import { defineScript } from "@core/define";
+import { discoverScripts } from "@core/registry";
+import { lastReportUpdate } from "./database-reports/_shared";
 
-export class DatabaseReportBot extends Bot {
-  info: Bot["info"] & {
-    frequencyText: string;
-  } = {
-    id: "database-report",
-    name: "Database Report",
-    description: "A database report",
-    frequency: "0 2 * * *", // Run every day at 2:00 AM
-    frequencyText: "สัปดาห์ละครั้ง",
-  };
+/**
+ * Interactively run every report under `database-reports/`, prompting
+ * before each save. Individual reports are already reachable directly
+ * (`patsabot run database-reports/long-stubs`) and are auto-scheduled by
+ * `patsabot start` since each declares its own `frequency` — this command is
+ * only for the "run everything, one at a time, with a confirm" workflow.
+ */
+export default defineScript({
+  meta: {
+    description: "Interactively run all database reports",
+  },
 
-  cli = new Command().option(
-    "--dry-run",
-    "Dry run mode. The bot will log the content it would save without actually saving it.",
-    false,
-  );
+  async run(ctx) {
+    const reports = (await discoverScripts((name, err) =>
+      ctx.log.warn(`Skipping report "${name}": ${err.message}`),
+    )).filter((entry) => entry.name.startsWith("database-reports/"));
 
-  reportPageBase: string = "วิกิพีเดีย:รายงานจากฐานข้อมูล/";
-  reportFooter: string = "\n{{ส่วนท้ายรายงานฐานข้อมูล}}";
-  summary: string = "อัปเดตรายงาน";
+    for (const entry of reports) {
+      ctx.log.info(`Report ${entry.meta.id} (${entry.meta.name})`);
+      ctx.log.debug(`Last update: ${await lastReportUpdate(ctx, entry.meta.name)}`);
 
-  query: string = "";
-  headers: string[] = ["ที่"];
-  preTableTemplates: string[] = [];
-
-  get preTableHeader() {
-    return `\n\n${this.preTableTemplates.join("\n")}\n{| class="wikitable sortable static-row-numbers static-row-header-text"\n|- style="white-space: nowrap;"`;
-  }
-
-  get scriptDescription() {
-    return `Create a database report about ${this.info.name}\n${this.info.description}`;
-  }
-
-  get pageTitle() {
-    return this.reportPageBase + this.info.name;
-  }
-
-  get pageDescription() {
-    return `${this.info.description} รายงานนี้อัปเดต${this.info.frequencyText} อัปเดตล่าสุดเมื่อ <onlyinclude>{{subst:#timel:H:i, j F xkY}}</onlyinclude>`;
-  }
-
-  async run() {
-    this.log.profile("Querying database");
-    const result = await this.replica.query(this.query);
-    if (!result) {
-      throw new Error("Query returned undefined");
-    }
-    const [rows, _fields] = result;
-    this.log.profile("Querying database");
-    this.log.info(`Found ${rows.length} rows`);
-    this.log.debug("Creating wiki table");
-    const table = this.createWikiTable(this.headers, rows);
-    await this.savePage(this.pageDescription, table, this.reportFooter);
-  }
-
-  createWikiTable(headers: string[], rows: unknown[]) {
-    let table = `${this.preTableHeader}\n! ${headers.join("\n! ")}\n`;
-    for (let i = 0; i < rows.length; i++) {
-      table += `|-\n| ${this.formatRow(rows[i], i, rows).join("\n| ")}\n`;
-    }
-    table += "|}";
-    return table;
-  }
-
-  async savePage(header: string, content: string, footer: string) {
-    const page = this.pageTitle;
-    if (!this.options.dryRun) {
-      this.log.info(`Saving to "${page}"`);
-      await this.bot.save(page, header + content + footer, this.summary);
-      this.log.info(`Saved to "${page}"`);
-    } else {
-      this.log.warn("Dry run — not saving. Pass --no-dry-run to save.");
-      console.log(
-        `The following content will be saved to "${chalk.yellowBright(page)}":\n`,
-      );
-      console.log(header + content + footer);
-      console.log(
-        chalk.yellowBright(
-          `\nTo save the report, run the script with the --save option.`,
-        ),
-      );
-    }
-  }
-
-  async afterRun() {
-    await this.replica.end();
-  }
-
-  formatRow(
-    _row: unknown,
-    _index: number,
-    _rows?: unknown[],
-  ): (string | number)[] {
-    return [];
-  }
-
-  async schedule() {
-    await super.schedule({
-      pattern: this.info.frequency,
-      options: {
-        name: this.info.id,
-      },
-    });
-  }
-
-  async lastUpdateTimestamp() {
-    const page = await this.bot.read(this.pageTitle);
-
-    if (!page) {
-      return null;
-    }
-
-    if (!page.revisions) {
-      return null;
-    }
-
-    const revision = page.revisions[0].timestamp;
-
-    if (!revision) {
-      return null;
-    }
-
-    return new this.bot.Date(revision);
-  }
-}
-
-export default class RunScheduleDatabaseReport extends Bot {
-  info: Bot["info"] = {
-    id: "run-schedule-database-report",
-    name: "Run Schedule Database Report",
-    description: "Run all scheduled database reports",
-  };
-  allReports: Record<string, DatabaseReportBot> = {};
-
-  cli = new Command().option(
-    "-r, --run",
-    "Run all scheduled database reports, instead of scheduling them.",
-  );
-
-  async run() {
-    this.log.info("Running all scheduled database reports");
-    const files = await readdir(
-      join(import.meta.dir, "../scripts/database-reports"),
-    );
-    for (const file of files) {
-      if (!file.endsWith(".ts")) {
-        continue;
-      }
-      const module = await import(`@scripts/database-reports/${file}`);
-      const report = new module.default() as DatabaseReportBot;
-      this.log.info(`Scheduled ${report.info.id} (${report.info.frequency})`);
-      this.allReports[report.info.id] = report;
-
-      if (this.cli.opts().run) {
-        this.log.info(`Running ${report.info.id} (${report.info.name})`);
-        this.log.debug(`Last update: ${await report.lastUpdateTimestamp()}`);
-        if (await this.input.confirm(`Run ${report.info.id}?`)) {
-          report.info.rid = createId();
-          this.log.debug(`Running ${report.info.id} (${report.info.rid})`);
-          await report.startLifeCycle();
-        }
-      } else {
-        for (const [key, value] of Object.entries(this.cli.opts())) {
-          report.cli.setOptionValue(key, value);
-        }
-        await report.schedule();
+      if (await ctx.input.confirm(`Run ${entry.meta.id}?`)) {
+        await executeScript(entry.script, {
+          source: entry.name,
+          site: ctx.site.key,
+          user: ctx.account.username,
+          dryRun: ctx.dryRun,
+          logLevel: ctx.log.level,
+          rid: createId(),
+        });
       }
     }
-  }
-}
+  },
+});

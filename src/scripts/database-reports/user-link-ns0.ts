@@ -1,20 +1,22 @@
-import { DatabaseReportBot } from "@scripts/database-reports";
+import { defineDatabaseReport } from "./_shared";
+
+interface Row {
+  page_title: string;
+}
 
 /**
  * Report for article that have link to user namespace.
  *
  * @see https://github.com/mzmcbride/database-reports/blob/f1c43652ca15263617c477218a318005ffe8839f/dbreps2/src/general/userlinksinarticles.rs
  */
-export default class DraftsWithCats extends DatabaseReportBot {
-	info: DatabaseReportBot["info"] = {
-		id: "linked-user-ns0",
-		name: "บทความที่มีลิงก์ผู้ใช้",
-		description: "บทความที่มีลิงก์ไปยังหน้าผู้ใช้หรือหน้าคุยกับผู้ใช้",
-		frequency: "@weekly",
-		frequencyText: "สัปดาห์ละครั้ง",
-	};
+export default defineDatabaseReport<Row>({
+  id: "linked-user-ns0",
+  name: "บทความที่มีลิงก์ผู้ใช้",
+  description: "บทความที่มีลิงก์ไปยังหน้าผู้ใช้หรือหน้าคุยกับผู้ใช้",
+  frequencyText: "สัปดาห์ละครั้ง",
+  frequency: "@weekly",
 
-	query = `
+  query: `
     /* draft-with-cats.ts SLOW_OK */
     SELECT
       DISTINCT page_title
@@ -38,11 +40,11 @@ export default class DraftsWithCats extends DatabaseReportBot {
           'Wikipedia_person_user_link',
           'Cleanup_bare_URLs'
         )
-      );`;
-	headers = ["บทความ"];
-	preTableTemplates: string[] = ["{{static row numbers}}"];
+      );`,
+  headers: ["บทความ"],
+  preTableTemplates: ["{{static row numbers}}"],
 
-	formatRow(row: { page_title: string }) {
-		return [`[[${row.page_title.replace(/_/g, " ")}]]`];
-	}
-}
+  formatRow(row) {
+    return [`[[${row.page_title.replace(/_/g, " ")}]]`];
+  },
+});

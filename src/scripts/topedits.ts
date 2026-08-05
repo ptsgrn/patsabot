@@ -1,5 +1,4 @@
-import { Command } from "@core";
-import { Bot } from "@core/bot";
+import { defineScript, type ScriptContext } from "@core/define";
 
 interface UserEdit {
   user_name: string;
@@ -15,265 +14,205 @@ interface TopEditRow {
   user_groups: string | null;
 }
 
-export default class TopEdits extends Bot {
-  info: Bot["info"] = {
+type Opts = {
+  dryRun?: boolean;
+  maxQuerySize: string;
+  listTop: string;
+  targetPageNoBot: string;
+  targetPageWithBot: string;
+  anonymousList: string;
+  anonymousListUserRegex: string;
+  groupTextSysop: string;
+  groupTextBot: string;
+  summary: string;
+};
+
+type Ctx = ScriptContext<Opts>;
+
+async function getTopEdits(ctx: Ctx) {
+  ctx.log.info("Getting top edits with groups");
+  ctx.log.profile("getTopEdits");
+  const results = await ctx.replica.query<TopEditRow[]>(`
+    /* topedits.ts SLOW_OK */
+    SELECT
+      user_name,
+      user_editcount,
+      GROUP_CONCAT(ug_group) AS user_groups
+    FROM user
+    LEFT JOIN user_groups ON user_id = ug_user
+    WHERE user_editcount > 0
+    GROUP BY user_id, user_name, user_editcount
+    ORDER BY user_editcount DESC
+    LIMIT ${ctx.opts.maxQuerySize};
+  `);
+  ctx.log.profile("getTopEdits");
+  if (!results) {
+    throw new Error("Query returned no results");
+  }
+  return results[0].map((row) => ({
+    user_name: row.user_name,
+    user_editcount: row.user_editcount,
+    user_group: row.user_groups ? row.user_groups.split(",") : [],
+  }));
+}
+
+async function getUserAnonymousList(ctx: Ctx) {
+  ctx.log.info("Getting anonymous user list");
+  ctx.log.profile("getUserAnonymousList");
+  const page = await ctx.bot.read(ctx.opts.anonymousList);
+  ctx.log.profile("getUserAnonymousList");
+  if (!page.revisions) {
+    throw new Error("Failed to get page content");
+  }
+  const users = page.revisions?.[0].content?.matchAll(
+    new RegExp(ctx.opts.anonymousListUserRegex, "g"),
+  );
+  return Array.from(users || []).map((m) => m[1]);
+}
+
+async function getActiveUsers(ctx: Ctx) {
+  let activeusers: string[] = [];
+  ctx.log.info("Getting active users");
+  ctx.log.profile("getActiveUsers");
+  for await (const json of ctx.bot.continuedQueryGen({
+    action: "query",
+    list: "allusers",
+    auactiveusers: 1,
+    aulimit: "max",
+  })) {
+    const users = json.query?.allusers.map((user: { name: string }) => user.name) as string[];
+    activeusers = activeusers.concat(users);
+  }
+  ctx.log.profile("getActiveUsers");
+  return activeusers;
+}
+
+function userGroupText(ctx: Ctx, groups: string[]) {
+  const userGroup = groups
+    .map((group) => {
+      if (group === "sysop") return ctx.opts.groupTextSysop;
+      if (group === "bot") return ctx.opts.groupTextBot;
+      return null;
+    })
+    .filter((v) => v);
+  if (userGroup.length === 0) return "";
+  return ` (${userGroup.join(", ")})`;
+}
+
+function createTable(ctx: Ctx, userList: UserEdit[], limit: number = 500) {
+  let content = '<section begin="list500" />';
+  let count = 1;
+  for (const { user_name, is_active, is_anonymous, user_editcount, user_group } of userList) {
+    if (is_anonymous) {
+      content +=
+        `\n|-\n| ${count} ` +
+        `|| [นิรนาม] ` +
+        `|| {{sort|${user_editcount.toString()}|${user_editcount.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",")}}}`;
+    } else {
+      content +=
+        `\n|-\n| ${count} ` +
+        `|| [[ผู้ใช้:${user_name}|${!is_active ? `<span style="color: gray;">${user_name}</span>` : user_name}]]${userGroupText(ctx, user_group)} ` +
+        `|| {{sort|${user_editcount.toString()}|[[พิเศษ:เรื่องที่เขียน/${user_name}|${user_editcount.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",")}]]}}`;
+    }
+    if (count >= limit) break;
+    count += 1;
+  }
+  return `${content}\n<section end="list500" />`;
+}
+
+function processListPageContent(text: string, table: string) {
+  const pretext = text.split('<section begin="list500" />')[0];
+  const posttext = text.split('<section end="list500" />')[1];
+  text = pretext + table + posttext;
+  text =
+    text.split('<section begin="lastupdate" />')[0] +
+    '<section begin="lastupdate" />{{subst:#timel:r}}<section end="lastupdate" />' +
+    text.split('<section end="lastupdate" />')[1];
+  return text;
+}
+
+async function saveToWiki(ctx: Ctx, userList: UserEdit[]) {
+  const noBotContent = createTable(
+    ctx,
+    userList
+      .filter((user) => !user.user_group.includes("bot"))
+      .filter((v) => v.user_name !== "New user message"),
+    +ctx.opts.listTop,
+  );
+  const withBotContent = createTable(ctx, userList, +ctx.opts.listTop);
+
+  if (ctx.dryRun) {
+    ctx.log.warn("Dry run enabled, skipping edit");
+    const noBotRead = (await ctx.bot.read(ctx.opts.targetPageNoBot)).revisions?.[0].content;
+    if (!noBotRead) throw new Error("Failed to get page content");
+    console.table({ noBotContent: processListPageContent(noBotRead, noBotContent) });
+    const withBotRead = (await ctx.bot.read(ctx.opts.targetPageWithBot)).revisions?.[0].content;
+    if (!withBotRead) throw new Error("Failed to get page content");
+    console.table({ withBotContent: processListPageContent(withBotRead, withBotContent) });
+    return;
+  }
+  return Promise.all([
+    ctx.bot.edit(ctx.opts.targetPageNoBot, (rev) => ({
+      text: processListPageContent(rev.content, noBotContent),
+      summary: ctx.opts.summary,
+    })),
+    ctx.bot.edit(ctx.opts.targetPageWithBot, (rev) => ({
+      text: processListPageContent(rev.content, withBotContent),
+      summary: ctx.opts.summary,
+    })),
+  ]);
+}
+
+export default defineScript({
+  meta: {
     id: "topedits",
     name: "TopEdits",
     description:
       "อัปเดตตาราง[[วิกิพีเดีย:รายชื่อชาววิกิพีเดียที่แก้ไขมากที่สุด 500 อันดับ]] และ[[วิกิพีเดีย:รายชื่อชาววิกิพีเดียที่แก้ไขมากที่สุด 500 อันดับ (รวมบอต)]]",
     frequency: "@weekly",
-  };
+  },
 
-  cli = new Command()
-    .option("--dry-run", "Run without saving to wiki")
-    .option(
-      "--max-query-size <number>",
-      "Maximum number of users to query from database",
-      "2000",
-    )
-    .option(
-      "--list-top <number>",
-      "Number of top users to list on the page",
-      "500",
-    )
-    .option(
-      "--target-page-no-bot <pagename>",
-      "Target page for top edits without bots",
-      "วิกิพีเดีย:รายชื่อชาววิกิพีเดียที่แก้ไขมากที่สุด 500 อันดับ/รายการ",
-    )
-    .option(
-      "--target-page-with-bot <pagename>",
-      "Target page for top edits with bots",
-      "วิกิพีเดีย:รายชื่อชาววิกิพีเดียที่แก้ไขมากที่สุด 500 อันดับ (รวมบอต)/รายการ",
-    )
-    .option(
-      "--anonymous-list <pagename>",
-      "Page containing the list of anonymous users",
-      "วิกิพีเดีย:รายชื่อชาววิกิพีเดียตามจำนวนการแก้ไข/นิรนาม",
-    )
-    .option(
-      "--anonymous-list-user-regex <regex>",
-      "Regex to extract anonymous user names from the anonymous list page",
-      "ผู้ใช้:(.+)\\]\\]",
-    )
-    .option(
-      "--group-text-sysop <text>",
-      "Text to display for sysop user group",
-      "Admin",
-    )
-    .option(
-      "--group-text-bot <text>",
-      "Text to display for bot user group",
-      "Bot",
-    )
-    .option(
-      "--summary <text>",
-      "Edit summary to use when saving",
-      "ปรับปรุงรายการ",
-    );
+  options: (c) =>
+    c
+      .option("--max-query-size <number>", "Maximum number of users to query from database", "2000")
+      .option("--list-top <number>", "Number of top users to list on the page", "500")
+      .option(
+        "--target-page-no-bot <pagename>",
+        "Target page for top edits without bots",
+        "วิกิพีเดีย:รายชื่อชาววิกิพีเดียที่แก้ไขมากที่สุด 500 อันดับ/รายการ",
+      )
+      .option(
+        "--target-page-with-bot <pagename>",
+        "Target page for top edits with bots",
+        "วิกิพีเดีย:รายชื่อชาววิกิพีเดียที่แก้ไขมากที่สุด 500 อันดับ (รวมบอต)/รายการ",
+      )
+      .option(
+        "--anonymous-list <pagename>",
+        "Page containing the list of anonymous users",
+        "วิกิพีเดีย:รายชื่อชาววิกิพีเดียตามจำนวนการแก้ไข/นิรนาม",
+      )
+      .option(
+        "--anonymous-list-user-regex <regex>",
+        "Regex to extract anonymous user names from the anonymous list page",
+        "ผู้ใช้:(.+)\\]\\]",
+      )
+      .option("--group-text-sysop <text>", "Text to display for sysop user group", "Admin")
+      .option("--group-text-bot <text>", "Text to display for bot user group", "Bot")
+      .option("--summary <text>", "Edit summary to use when saving", "ปรับปรุงรายการ"),
 
-  // topEditOptions = {
-  //   // Maximum number of user to get edit count
-  //   maxQuerySize: 2000,
-  //   listTop: 500,
-  //   targetPage: {
-  //     noBot:
-  //       "วิกิพีเดีย:รายชื่อชาววิกิพีเดียที่แก้ไขมากที่สุด 500 อันดับ/รายการ",
-  //     withBot:
-  //       "วิกิพีเดีย:รายชื่อชาววิกิพีเดียที่แก้ไขมากที่สุด 500 อันดับ (รวมบอต)/รายการ",
-  //   },
-  //   anonymousList: "วิกิพีเดีย:รายชื่อชาววิกิพีเดียตามจำนวนการแก้ไข/นิรนาม",
-  //   anonymousListUserRegex: /ผู้ใช้:(.+)\]\]/g,
-  //   groupText: {
-  //     sysop: "Admin",
-  //     bot: "Bot",
-  //   } as Record<string, string>,
-  //   summary: "ปรับปรุงรายการ",
-  // };
-
-  async getTopEdits() {
-    this.log.info("Getting top edits with groups");
-    this.log.profile("getTopEdits");
-    const results = await this.replica.query<TopEditRow[]>(`
-      /* topedits.ts SLOW_OK */
-      SELECT
-        user_name,
-        user_editcount,
-        GROUP_CONCAT(ug_group) AS user_groups
-      FROM user
-      LEFT JOIN user_groups ON user_id = ug_user
-      WHERE user_editcount > 0
-      GROUP BY user_id, user_name, user_editcount
-      ORDER BY user_editcount DESC
-      LIMIT ${this.options.maxQuerySize};
-    `);
-    this.log.profile("getTopEdits");
-    if (!results) {
-      throw new Error("Query returned no results");
-    }
-    return results[0].map((row) => ({
-      user_name: row.user_name,
-      user_editcount: row.user_editcount,
-      user_group: row.user_groups ? row.user_groups.split(",") : [],
-    })) as {
-      user_name: string;
-      user_editcount: number;
-      user_group: string[];
-    }[];
-  }
-
-  async getUserAnonymousList() {
-    this.log.info("Getting anonymous user list");
-    this.log.profile("getUserAnonymousList");
-    const page = await this.bot.read(this.options.anonymousList);
-    this.log.profile("getUserAnonymousList");
-    if (!page.revisions) {
-      throw new Error("Failed to get page content");
-    }
-    const users = page.revisions?.[0].content?.matchAll(
-      new RegExp(this.options.anonymousListUserRegex, "g"),
-    );
-    return Array.from(users || []).map((m) => m[1]);
-  }
-
-  async getActiveUsers() {
-    let activeusers: string[] = [];
-    this.log.info("Getting active users");
-    this.log.profile("getActiveUsers");
-    for await (const json of this.bot.continuedQueryGen({
-      action: "query",
-      list: "allusers",
-      auactiveusers: 1,
-      aulimit: "max",
-    })) {
-      const users = json.query?.allusers.map(
-        (user: { name: string }) => user.name,
-      ) as string[];
-      activeusers = activeusers.concat(users);
-    }
-    this.log.profile("getActiveUsers");
-    return activeusers;
-  }
-
-  userGroupText(groups: string[]) {
-    const userGroup = groups
-      .map((group) => {
-        if (group === "sysop") {
-          return this.options.groupTextSysop;
-        } else if (group === "bot") {
-          return this.options.groupTextBot;
-        } else {
-          return null;
-        }
-      })
-      .filter((v) => v);
-    if (userGroup.length === 0) {
-      return "";
-    }
-    return ` (${userGroup.join(", ")})`;
-  }
-
-  createTable(userList: UserEdit[], limit: number = 500) {
-    let content = '<section begin="list500" />';
-    let count = 1;
-    for (const {
-      user_name,
-      is_active,
-      is_anonymous,
-      user_editcount,
-      user_group,
-    } of userList) {
-      if (is_anonymous) {
-        content +=
-          `\n|-\n| ${count} ` +
-          `|| [นิรนาม] ` +
-          `|| {{sort|${user_editcount.toString()}|${user_editcount.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",")}}}`;
-      } else {
-        content +=
-          `\n|-\n| ${count} ` +
-          `|| [[ผู้ใช้:${user_name}|${!is_active ? `<span style="color: gray;">${user_name}</span>` : user_name}]]${this.userGroupText(user_group)} ` +
-          `|| {{sort|${user_editcount.toString()}|[[พิเศษ:เรื่องที่เขียน/${user_name}|${user_editcount.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",")}]]}}`;
-      }
-      if (count >= limit) {
-        break;
-      }
-      count += 1;
-    }
-    return `${content}\n<section end="list500" />`;
-  }
-
-  processListPageContent(text: string, table: string) {
-    const pretext = text.split('<section begin="list500" />')[0];
-    const posttext = text.split('<section end="list500" />')[1];
-    text = pretext + table + posttext;
-    text =
-      text.split('<section begin="lastupdate" />')[0] +
-      '<section begin="lastupdate" />{{subst:#timel:r}}<section end="lastupdate" />' +
-      text.split('<section end="lastupdate" />')[1];
-    return text;
-  }
-
-  async saveToWiki(userList: UserEdit[]) {
-    const noBotContent = this.createTable(
-      userList
-        .filter((user) => !user.user_group.includes("bot"))
-        .filter((v) => v.user_name !== "New user message"),
-      +this.options.listTop,
-    );
-    const withBotContent = this.createTable(userList, +this.options.listTop);
-
-    if (this.options.dryRun) {
-      this.log.warn("Dry run enabled, skipping edit");
-      const noBotRead = (await this.bot.read(this.options.targetPageNoBot))
-        .revisions?.[0].content;
-      if (!noBotRead) {
-        throw new Error("Failed to get page content");
-      }
-      console.table({
-        noBotContent: this.processListPageContent(noBotRead, noBotContent),
-      });
-      const withBotRead = (await this.bot.read(this.options.targetPageWithBot))
-        .revisions?.[0].content;
-      if (!withBotRead) {
-        throw new Error("Failed to get page content");
-      }
-      console.table({
-        withBotContent: this.processListPageContent(
-          withBotRead,
-          withBotContent,
-        ),
-      });
-      return;
-    }
-    return Promise.all([
-      this.bot.edit(this.options.targetPageNoBot, (rev) => {
-        return {
-          text: this.processListPageContent(rev.content, noBotContent),
-          summary: this.options.summary,
-        };
-      }),
-      this.bot.edit(this.options.targetPageWithBot, (rev) => {
-        return {
-          text: this.processListPageContent(rev.content, withBotContent),
-          summary: this.options.summary,
-        };
-      }),
-    ]);
-  }
-
-  async run(): Promise<void> {
+  async run(ctx) {
     const [topEdits, anonymousUsers, activeUsers] = await Promise.all([
-      this.getTopEdits(),
-      this.getUserAnonymousList(),
-      this.getActiveUsers(),
+      getTopEdits(ctx),
+      getUserAnonymousList(ctx),
+      getActiveUsers(ctx),
     ]);
 
     const userList: UserEdit[] = [];
     let noBotCount = 0;
-    this.log.info("Processing top edits");
-    this.log.profile("processTopEdits");
+    ctx.log.info("Processing top edits");
+    ctx.log.profile("processTopEdits");
     for (const { user_name, user_editcount, user_group } of topEdits) {
-      if (noBotCount >= +this.options.listTop) break;
+      if (noBotCount >= +ctx.opts.listTop) break;
       userList.push({
         user_name,
         user_editcount,
@@ -283,8 +222,8 @@ export default class TopEdits extends Bot {
       });
       if (!user_group.includes("bot")) noBotCount++;
     }
-    this.log.profile("processTopEdits");
-    this.log.info("Saving to wiki");
-    await this.saveToWiki(userList);
-  }
-}
+    ctx.log.profile("processTopEdits");
+    ctx.log.info("Saving to wiki");
+    await saveToWiki(ctx, userList);
+  },
+});

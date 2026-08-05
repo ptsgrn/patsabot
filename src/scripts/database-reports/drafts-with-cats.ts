@@ -1,4 +1,4 @@
-import { DatabaseReportBot } from "@scripts/database-reports";
+import { defineDatabaseReport } from "./_shared";
 
 interface Row {
   draftname: string;
@@ -10,16 +10,14 @@ interface Row {
  *
  * @see https://en.wikipedia.org/w/index.php?title=Wikipedia:Database_reports/Drafts_with_categories
  */
-export default class DraftsWithCats extends DatabaseReportBot {
-  info: DatabaseReportBot["info"] = {
-    id: "draft-with-cats",
-    name: "ฉบับร่างที่ใช้หมวดหมู่",
-    description: "ฉบับร่างที่มีหมวดหมู่จริง จำกัด 1000 รายการ",
-    frequency: "@weekly",
-    frequencyText: "สัปดาห์ละครั้ง",
-  };
+export default defineDatabaseReport<Row>({
+  id: "draft-with-cats",
+  name: "ฉบับร่างที่ใช้หมวดหมู่",
+  description: "ฉบับร่างที่มีหมวดหมู่จริง จำกัด 1000 รายการ",
+  frequencyText: "สัปดาห์ละครั้ง",
+  frequency: "@weekly",
 
-  query = `
+  query: `
     /* draft-with-cats.ts SLOW_OK */
     SELECT DISTINCT draft.page_title AS draftname, lt_title AS categoryname
 	FROM categorylinks
@@ -37,14 +35,14 @@ export default class DraftsWithCats extends DatabaseReportBot {
 										FROM templatelinks
 										JOIN linktarget ON lt_id = tl_target_id AND lt_namespace = 10 AND lt_title = 'หมวดหมู่บำรุงรักษา'
 										WHERE tl_from = catpage.page_id)
-	LIMIT 1000;`;
-  headers = ["ฉบับร่าง", "หมวดหมู่"];
-  preTableTemplates: string[] = ["{{static row numbers}}"];
+	LIMIT 1000;`,
+  headers: ["ฉบับร่าง", "หมวดหมู่"],
+  preTableTemplates: ["{{static row numbers}}"],
 
-  formatRow(row: Row) {
+  formatRow(row) {
     return [
       `[[ฉบับร่าง:${row.draftname.replace(/_/g, " ")}]]`,
       `[[:หมวดหมู่:${row.categoryname.replace(/_/g, " ")}|]]`,
     ];
-  }
-}
+  },
+});

@@ -1,8 +1,7 @@
-import { DatabaseReportBot } from "@scripts/database-reports";
+import { defineDatabaseReport } from "./_shared";
 
 interface Row {
-	page_title: string;
-	page_len: number;
+  page_title: string;
 }
 
 /**
@@ -12,16 +11,14 @@ interface Row {
  *
  * @see https://github.com/mzmcbride/database-reports/blob/f1c43652ca15263617c477218a318005ffe8839f/dbreps2/src/general/linkedemailsinarticles.rs
  */
-export default class LinkedEmailNs0 extends DatabaseReportBot {
-	info: DatabaseReportBot["info"] = {
-		id: "linked-email-ns0",
-		name: "บทความที่มีลิงก์ที่อยู่อีเมล",
-		description: "บทความที่มีการใช้ลิงก์แต่ลิงก์ไปที่อยู่อีเมล (ด้วย <code>mailto:</code>)",
-		frequency: "@weekly",
-		frequencyText: "สัปดาห์ละครั้ง",
-	};
+export default defineDatabaseReport<Row>({
+  id: "linked-email-ns0",
+  name: "บทความที่มีลิงก์ที่อยู่อีเมล",
+  description: "บทความที่มีการใช้ลิงก์แต่ลิงก์ไปที่อยู่อีเมล (ด้วย <code>mailto:</code>)",
+  frequencyText: "สัปดาห์ละครั้ง",
+  frequency: "@weekly",
 
-	query = `
+  query: `
     /* linked-email-ns0.ts SLOW_OK */
     SELECT
       DISTINCT page_title
@@ -32,13 +29,13 @@ export default class LinkedEmailNs0 extends DatabaseReportBot {
       el_to_domain_index LIKE 'mailto:%'
       AND page_namespace = 0
     LIMIT
-      1000;`;
-	headers = ["บทความ"];
-	preTableTemplates: string[] = ["{{static row numbers}}"];
+      1000;`,
+  headers: ["บทความ"],
+  preTableTemplates: ["{{static row numbers}}"],
 
-	formatRow(row: Row) {
-		return [
-			`[[${row.page_title.replace(/_/g, " ")}]]`, // link to the page
-		];
-	}
-}
+  formatRow(row) {
+    return [
+      `[[${row.page_title.replace(/_/g, " ")}]]`, // link to the page
+    ];
+  },
+});

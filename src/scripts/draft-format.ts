@@ -1,15 +1,19 @@
-import { Bot } from "@core";
+import { defineScript } from "@core/define";
 
-export default class DraftsFormatBot extends Bot {
-  info = {
+// TODO: implement run() — see README's task status table. cleanUp() below is
+// ready to be wired into a page-processing loop.
+export default defineScript({
+  meta: {
     id: "drafts-format-bot",
     name: "Drafts Format Bot",
     description: "จัดรูปแบบฉบับร่างให้เหมาะสม",
-  };
+  },
+  run(ctx) {
+    ctx.log.warn("draft-format is not implemented yet");
+  },
+});
 
-  async run() {}
-
-  cleanUp(text: string, pageTitle: string): string {
+export function cleanUp(text: string, pageTitle: string): string {
     let commentRegex;
     let commentsToRemove = [
       "Please don't change anything and press save",
@@ -27,7 +31,7 @@ export default class DraftsFormatBot extends Bot {
 
     // Remove empty section at the end (caused by "Resubmit" button on "declined" template)
     // Section may have categories after it - keep them there
-    text = this.removeEmptySectionAtEnd(text);
+    text = removeEmptySectionAtEnd(text);
     text = text.replace(
       /\n+==.+?==((?:\[\[:?(Category|หมวดหมู่):.+?\]\]|\s+)*)$/,
       "$1",
@@ -429,7 +433,7 @@ export default class DraftsFormatBot extends Bot {
     return text;
   }
 
-  removeEmptySectionAtEnd(wikicode: string) {
+function removeEmptySectionAtEnd(wikicode: string) {
     // Hard to write a regex that doesn't catastrophic backtrack while still saving multiple categories and multiple blank lines. So we'll do this the old-fashioned way...
 
     // Divide wikitext into lines
@@ -477,6 +481,5 @@ export default class DraftsFormatBot extends Bot {
     }
     wikicode = wikicode.replace(/\n(\n\n\[\[:?(?:Category|หมวดหมู่):)/i, "$1");
 
-    return wikicode;
-  }
+  return wikicode;
 }

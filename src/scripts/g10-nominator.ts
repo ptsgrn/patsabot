@@ -1,4 +1,5 @@
-import { Bot } from "@core";
+import { defineScript } from "@core/define";
+import type { EditTransform } from "mwn";
 
 interface G10CandidateRow {
   page_namespace: number;
@@ -9,22 +10,16 @@ interface G10CandidateRow {
   creator_name: string;
 }
 
-export default class G10Nominator extends Bot {
-  info = {
+export default defineScript({
+  meta: {
     id: "g10-nominator",
     name: "G10 Nominator",
     description: "แจ้งลบ",
     // frequency: "0 0 * * *", // every 24 hours
-  };
+  },
 
-  cli = new this.Command().option(
-    "--dry-run",
-    "Dry run mode. The bot will log the pages it would nominate without actually nominating them.",
-    false,
-  );
-
-  async run() {
-    const [rows] = await this.replica.query<G10CandidateRow[]>(`
+  async run(ctx) {
+    const [rows] = await ctx.replica.query<G10CandidateRow[]>(`
       /* inactive-drafts.ts SLOW_OK */
 		WITH candidate_pages AS (
 			SELECT page.page_id, page.page_namespace, page.page_title
@@ -136,11 +131,11 @@ export default class G10Nominator extends Bot {
 		ORDER BY last_nonbot_edits.last_nonbot_edit ASC, candidate_pages.page_title ASC
 		LIMIT 1000;`);
 
-    this.log.info(`Found ${rows.length} candidate pages for G10 nomination.`);
+    ctx.log.info(`Found ${rows.length} candidate pages for G10 nomination.`);
 
     // Username, Set(Page title to notify about)
-    let usersToNotify = new Map<string, Set<string>>();
-    let pagesToNominate = new Map<
+    const usersToNotify = new Map<string, Set<string>>();
+    const pagesToNominate = new Map<
       string,
       {
         pageCreator: string;
@@ -149,8 +144,7 @@ export default class G10Nominator extends Bot {
     >();
 
     for (const row of rows) {
-      const fullPageName =
-        `${row.localized_namespace}:${row.page_title}`.replace(/_/g, " ");
+      const fullPageName = `${row.localized_namespace}:${row.page_title}`.replace(/_/g, " ");
 
       if (!usersToNotify.has(row.creator_name)) {
         usersToNotify.set(row.creator_name, new Set<string>());
@@ -164,18 +158,20 @@ export default class G10Nominator extends Bot {
     }
 
     for (const [pageTitle, deletionTemplate] of pagesToNominate.entries()) {
-      if (this.options.dryRun) {
-        this.log.info(
+      if (ctx.dryRun) {
+        ctx.log.info(
           `[Dry Run] Would nominate page "${pageTitle}" for deletion with template: ${deletionTemplate}`,
         );
       } else {
-        this.log.info(
+        ctx.log.info(
           `Nominating page "${pageTitle}" for deletion with template: ${deletionTemplate}`,
         );
 
-        await this.bot.edit(pageTitle, ({ content }) => {
+        // Returning a falsy value aborts the edit (mwn's runtime behavior;
+        // its type declares only string/ApiEditPageParams, hence the cast).
+        await ctx.bot.edit(pageTitle, (({ content }) => {
           if (content.includes("{{ลบ-ท10")) {
-            this.log.info(
+            ctx.log.info(
               `Page "${pageTitle}" already has a G10 deletion template. Skipping nomination.`,
             );
 
@@ -189,7 +185,7 @@ export default class G10Nominator extends Bot {
             minor: true,
             bot: true,
           };
-        });
+        }) as EditTransform);
 
         // usersToNotify
         //   .get(deletionTemplate.pageCreator)
@@ -201,16 +197,16 @@ export default class G10Nominator extends Bot {
       const userTalkPage = `คุยกับผู้ใช้:${username}`;
       const notificationText = Array.from(notifications).join("\n\n");
 
-      if (this.options.dryRun) {
-        this.log.info(
+      if (ctx.dryRun) {
+        ctx.log.info(
           `[Dry Run] Would notify user "${username}" on their talk page "${userTalkPage}" with the following message:\n${notificationText}`,
         );
       } else {
-        this.log.info(
+        ctx.log.info(
           `Notifying user "${username}" on their talk page "${userTalkPage}" with the following message:\n${notificationText}`,
         );
 
-        await this.bot.edit(userTalkPage, ({ content }) => ({
+        await ctx.bot.edit(userTalkPage, ({ content }) => ({
           text: `${content}\n\n${notificationText}`,
           summary: "บอต: แจ้งเตือนการแจ้งลบฉบับร่าง",
           minor: true,
@@ -218,5 +214,5 @@ export default class G10Nominator extends Bot {
         }));
       }
     }
-  }
-}
+  },
+});

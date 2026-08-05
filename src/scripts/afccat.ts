@@ -1,62 +1,47 @@
-import { Bot, Command } from "@core";
+import { defineScript } from "@core/define";
 
-export default class Afccat extends Bot {
-  public info: Bot["info"] = {
+export default defineScript({
+  meta: {
     id: "afccat",
     name: "AfC Category Creator",
     description: "Create categories for AfC submissions",
     frequency: "0 2 * * *", // Run every day at 2:00 AM
-  };
+  },
 
-  cli = new Command()
-    .option("--date <date>", "Date to create categories for", "today")
-    .option(
-      "--dry-run",
-      "Dry run mode. The bot will log the categories it would create without actually creating them.",
-      false,
-    );
+  options: (c) => c.option("--date <date>", "Date to create categories for", "today"),
 
-  async run() {
-    await this.bot.Date.populateLocaleData("th");
-    let categories = [];
+  async run(ctx) {
+    await ctx.bot.Date.populateLocaleData("th");
 
-    const date = this.cli.opts().date;
-    let dateObject = new this.bot.Date(date);
-    if (date === "today") {
-      dateObject = new this.bot.Date();
-    }
-    categories.push(
+    const dateObject =
+      ctx.opts.date === "today" ? new ctx.bot.Date() : new ctx.bot.Date(ctx.opts.date);
+
+    let categories = [
       `หมวดหมู่:ฉบับร่างเรียงตามวันที่ส่ง/${dateObject.format("DD MMMM YYYY", 7)}`,
-    );
-    categories.push(
       `หมวดหมู่:ฉบับร่างเรียงตามวันที่ส่ง/${dateObject.format("MMMM YYYY", 7)}`,
-    );
-    categories.push(
       `หมวดหมู่:ฉบับร่างเรียงตามวันที่ส่ง/${dateObject.format("YYYY", 7)}`,
-    );
+    ];
 
     // no null and unique
     categories = categories
       .filter((c) => c !== null)
       .filter((c, i, a) => a.indexOf(c) === i);
 
-    if (Number.isNaN(categories.length) || categories.length === 0) {
-      this.log.info("No categories to create.");
-      process.exit(0);
+    if (categories.length === 0) {
+      ctx.log.info("No categories to create.");
+      return;
     }
 
-    this.log.info(
-      `Creating categories for categories ${JSON.stringify(categories)}`,
-    );
+    ctx.log.info(`Creating categories for categories ${JSON.stringify(categories)}`);
 
-    this.bot
+    await ctx.bot
       .batchOperation(
         categories,
         (page) => {
           if (!page) return Promise.reject();
           return new Promise((resolve, reject) => {
-            if (this.options.dryRun) {
-              this.log.warn(`Dry run, not creating category: ${page}`);
+            if (ctx.dryRun) {
+              ctx.log.warn(`Dry run, not creating category: ${page}`);
               return resolve("dryrun");
             }
             if (
@@ -65,7 +50,7 @@ export default class Afccat extends Bot {
             )
               return reject();
 
-            this.bot
+            ctx.bot
               .save(
                 page,
                 "{{AfC submission category header}}",
@@ -77,7 +62,7 @@ export default class Afccat extends Bot {
               )
               .then(resolve)
               .catch((error) => {
-                this.log.error(`${error.message} ${page}`);
+                ctx.log.error(`${error.message} ${page}`);
                 reject(error);
               });
           });
@@ -86,10 +71,10 @@ export default class Afccat extends Bot {
         1,
       )
       .then(() => {
-        this.log.info("done");
+        ctx.log.info("done");
       })
       .catch((err) => {
-        this.log.error(`${err.message}`);
+        ctx.log.error(`${err.message}`);
       });
-  }
-}
+  },
+});
