@@ -57,7 +57,7 @@
     "start": "bun ./src/core/web.ts",
     "cli": "bun ./bin/patsabot.ts",
     "typecheck": "tsc --noEmit",
-    "prepare": "husky"
+    "prepare": "husky || true"
   },
   "bin": {
     "patsabot": "./bin/patsabot.ts"
