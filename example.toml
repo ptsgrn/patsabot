@@ -1,9 +1,35 @@
 [bot]
-username = "PatsaBot"
-password = ""
+# Site used when --site is not given (family:code, e.g. wikipedia:th)
+defaultSite = "wikipedia:th"
+# Account used when --user is not given — must match a username below
+defaultUser = "PatsaBot"
 contact = "[[:w:th:User:PatsaBot]]"
-apiUrl = "https://th.wikipedia.org/w/api.php"
 timezone = "Asia/Bangkok"
+
+# Wiki families this bot knows how to reach. {code} is replaced with the
+# site's code (th, en, www, ...). dbname is optional — only needed for
+# families the replica database queries actually target.
+[sites.wikipedia]
+url = "https://{code}.wikipedia.org/w/api.php"
+dbname = "{code}wiki_p"
+
+[sites.wikidata]
+url = "https://www.wikidata.org/w/api.php"
+dbname = "wikidatawiki_p"
+
+# Credentials. `site` selects which account applies: an exact site
+# ("wikipedia:th"), a whole family ("wikipedia:*"), or every site ("*").
+# The most specific match for the active --site wins. Add one [[accounts]]
+# block per bot account you operate.
+[[accounts]]
+site = "wikipedia:th"
+username = "PatsaBot"
+# https://www.mediawiki.org/wiki/OAuth/Owner-only_consumers
+[accounts.oauth]
+consumerToken = ""
+consumerSecret = ""
+accessToken = ""
+accessSecret = ""
 
 [toolforge]
 # Your Wikimedia developer account username (used to SSH into Toolforge)
@@ -17,33 +43,18 @@ tooluser = "tools.patsabot"
 # eg. openssl rand -base64 32
 webKey = ""
 
-[oauth]
-# https://www.mediawiki.org/wiki/OAuth/Owner-only_consumers
-consumerToken = ""
-consumerSecret = ""
-accessToken = ""
-accessSecret = ""
-
 [replica]
 # Wikimedia replica database
 # https://wikitech.wikimedia.org/wiki/Help:Toolforge/Database
 username = ""
 password = ""
+# Fallback when the active site's family has no dbname template
 dbname = "thwiki_p"
 cluster = "analytics"
 port = 3306
 
-[irc]
-# unused
-nickName = ""
-username = ""
-password = ""
-realName = ""
-server = "irc.libera.chat"
-port = 6667
-
 [scripts.archive]
-# arhive custom basepage keysalt
+# archive custom basepage keysalt
 key_salt = ""
 
 [logger]

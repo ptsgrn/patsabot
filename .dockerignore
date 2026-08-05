@@ -1,0 +1,14 @@
+.git
+.github
+.husky
+.vscode
+.claude
+node_modules
+logs
+*.log
+config.toml
+config-*.toml
+.env
+out.txt
+CHANGELOG.md
+README.md
