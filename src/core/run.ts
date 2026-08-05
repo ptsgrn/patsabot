@@ -1,211 +1,215 @@
-import { readdir } from "node:fs/promises";
-import { join, resolve } from "node:path";
 import {
   Command,
   InvalidArgumentError,
   Option,
 } from "@commander-js/extra-typings";
-import { Bot } from "@core/bot";
-import { Replica } from "@core/replica";
-import { createId } from "@paralleldrive/cuid2";
 import { version } from "../../package.json";
-import { ServiceBase } from "./base";
+import { getConfig, loadConfig } from "./config";
+import { executeScript, type RunParams } from "./context";
+import type { AnyCommand } from "./define";
+import { discoverScripts, loadScript, type ScriptEntry } from "./registry";
+import { Replica } from "./replica";
+import { Scheduler } from "./scheduler";
+import { resolveAccount, resolveSite } from "./site";
 
-type BotClass = new () => Bot;
+const LOG_LEVELS = ["debug", "info", "warn", "error"] as const;
 
-export class ScriptRunner extends ServiceBase {
-  private cli = new Command();
-  public scheduled: Record<string, Bot> = {};
+const GLOBAL_GROUP = "Global Options";
+const SCRIPT_GROUP = "Script Options";
 
-  private get scriptsDir() {
-    return join(import.meta.dir, "../scripts");
-  }
+/**
+ * Flags accepted by every command.
+ *
+ * They are declared on the root *and* on each leaf command so that both
+ * `patsabot --user X run afccat` and `patsabot run afccat --user X` work;
+ * `resolveGlobals()` decides which one won.
+ */
+function globalOptions(): Option[] {
+  return [
+    new Option("-c, --config <path>", "Config file to load")
+      .default("config.toml")
+      .helpGroup(GLOBAL_GROUP),
+    new Option(
+      "-s, --site <family:code>",
+      "Wiki to work on, e.g. wikipedia:th (default: bot.defaultSite)",
+    ).helpGroup(GLOBAL_GROUP),
+    new Option(
+      "-u, --user <username>",
+      "Account to log in as (default: bot.defaultUser)",
+    ).helpGroup(GLOBAL_GROUP),
+    new Option(
+      "--api-url <url>",
+      "API endpoint, overriding the one derived from --site",
+    ).helpGroup(GLOBAL_GROUP),
+    new Option("--dry-run", "Do not write to the wiki")
+      .default(true)
+      .helpGroup(GLOBAL_GROUP),
+    new Option("--no-dry-run", "Write changes to the wiki").helpGroup(
+      GLOBAL_GROUP,
+    ),
+    new Option("-l, --log-level <level>", "Console log level")
+      .choices(LOG_LEVELS)
+      .helpGroup(GLOBAL_GROUP),
+  ];
+}
 
-  /**
-   * Load a script module by name (relative to src/scripts, no extension).
-   * Names with slashes are allowed for subdirectory scripts (e.g. "database-reports/drafts-with-cats").
-   */
-  async loadScript(scriptName: string): Promise<BotClass> {
-    if (!scriptName.match(/^[a-z0-9\-/.]+$/)) {
-      throw new Error(`Invalid script name: ${scriptName}`);
-    }
+function addGlobalOptions<T extends AnyCommand>(command: T): T {
+  for (const option of globalOptions()) command.addOption(option);
+  return command;
+}
 
-    const scriptPath = join(this.scriptsDir, `${scriptName}.ts`);
-    if (!(await Bun.file(scriptPath).exists())) {
-      throw new Error(`Script not found: ${scriptName}`);
-    }
+interface Globals {
+  config: string;
+  site?: string;
+  user?: string;
+  apiUrl?: string;
+  dryRun: boolean;
+  logLevel?: string;
+}
 
-    const module = await import(`@scripts/${scriptName}.ts`);
+/**
+ * Merge the global flags seen on the root with those seen on the subcommand.
+ * A value typed on the subcommand wins; otherwise the root's wins; otherwise
+ * the declared default applies.
+ */
+function resolveGlobals(leaf: AnyCommand): Globals {
+  const chain: AnyCommand[] = [];
+  for (let cmd: AnyCommand | null = leaf; cmd; cmd = cmd.parent as AnyCommand | null)
+    chain.push(cmd);
 
-    if (!module.default) {
-      throw new Error(`Script ${scriptName} has no default export`);
-    }
-    if (!(module.default.prototype instanceof Bot)) {
-      throw new Error(`Script ${scriptName} default export must extend Bot`);
-    }
+  const pick = <T>(name: string): T | undefined => {
+    const fromCli = chain.find((c) => c.getOptionValueSource(name) === "cli");
+    if (fromCli) return fromCli.getOptionValue(name) as T;
+    const withValue = chain.find(
+      (c) => c.getOptionValue(name) !== undefined,
+    );
+    return withValue?.getOptionValue(name) as T | undefined;
+  };
 
-    return module.default as BotClass;
-  }
+  return {
+    config: pick<string>("config") ?? "config.toml",
+    site: pick<string>("site"),
+    user: pick<string>("user"),
+    apiUrl: pick<string>("apiUrl"),
+    dryRun: pick<boolean>("dryRun") ?? true,
+    logLevel: pick<string>("logLevel"),
+  };
+}
 
-  /**
-   * Discover top-level script names (no subdirectories).
-   * Subdirectory scripts are managed by their parent script (e.g. database-reports.ts).
-   */
-  private async getTopLevelScriptNames(): Promise<string[]> {
-    const entries = await readdir(this.scriptsDir, { withFileTypes: true });
-    return entries
-      .filter((e) => e.isFile() && e.name.endsWith(".ts"))
-      .map((e) => e.name.replace(/\.ts$/, ""));
-  }
+/** Turn resolved globals into the parameters `executeScript` expects. */
+function toRunParams(entry: ScriptEntry, globals: Globals): RunParams {
+  return {
+    source: entry.name,
+    site: globals.site,
+    user: globals.user,
+    apiUrl: globals.apiUrl,
+    dryRun: globals.dryRun,
+    logLevel: globals.logLevel,
+  };
+}
 
-  /**
-   * Discover all script names including subdirectories (used for scheduling).
-   */
-  private async getAllScriptNames(): Promise<string[]> {
-    const files = (await readdir(this.scriptsDir, {
-      recursive: true,
-    })) as string[];
-    return files
-      .filter(
-        (f) => f.endsWith(".ts") && !f.endsWith(".d.ts") && !f.includes("TODO"),
-      )
-      .map((f) => f.replace(/\.ts$/, "").replace(/\\/g, "/"));
-  }
+/**
+ * Build the `run` command, registering one subcommand per discovered script.
+ *
+ * Script metadata and flags are read straight off the exported definition —
+ * nothing is instantiated and no wiki client is built until a script actually
+ * runs.
+ */
+function buildRunCommand(entries: ScriptEntry[]): AnyCommand {
+  const runCmd = new Command("run")
+    .description("Run a script once")
+    .addHelpText(
+      "after",
+      '\nRun "patsabot run <script> --help" for script-specific options.',
+    );
 
-  private initInstance(
-    instance: Bot,
-    scriptName: string,
-    logLevel?: string,
-    rid = createId(),
-  ) {
-    instance.info.scriptSource = scriptName;
-    instance.info.rid = rid;
-    instance.log = instance.log.child({ script: scriptName, rid });
-    if (logLevel) instance.log.level = logLevel;
-  }
+  for (const entry of entries) {
+    const scriptCmd = new Command(entry.name).description(
+      entry.meta.description,
+    );
 
-  /**
-   * Build the `run` command with each top-level script registered as a subcommand.
-   * This gives each script its own --help output and typed option parsing.
-   */
-  private async buildRunCommand(): Promise<Command> {
-    const runCmd = new Command("run")
-      .description("Run a script")
-      .addHelpText(
-        "after",
-        '\nRun "patsabot run <script> --help" for script-specific options.',
-      );
+    entry.script.options?.(scriptCmd);
+    for (const option of scriptCmd.options) option.helpGroup(SCRIPT_GROUP);
+    addGlobalOptions(scriptCmd);
 
-    const scriptNames = await this.getTopLevelScriptNames();
-
-    for (const name of scriptNames) {
-      let ScriptClass: BotClass;
-      let probe: Bot;
-      try {
-        ScriptClass = await this.loadScript(name);
-        probe = new ScriptClass();
-      } catch (err) {
-        this.log.warn(`Skipping script "${name}": ${(err as Error).message}`);
-        continue;
-      }
-
-      const scriptCmd = new Command(name).description(
-        probe.info.description ?? "",
-      );
-
-      // Copy script-defined options into the subcommand so Commander handles
-      // parsing, validation, and --help automatically.
-      for (const opt of probe.cli.options) {
-        scriptCmd.addOption(opt.helpGroup("Script Options"));
-      }
-
-      scriptCmd.addOption(
-        new Option(
-          "--no-dry-run",
-          "Save changes to wiki (default: dry run)",
-        ).helpGroup("Script Options"),
-      );
-      scriptCmd.addOption(
-        new Option("-l, --log-level <level>", "Log level")
-          .choices(["debug", "info", "warn", "error"] as const)
-          .default(this.config.logger.level)
-          .helpGroup("Global Options"),
-      );
-
-      scriptCmd.action(async () => {
-        const instance = new ScriptClass();
-        for (const [key, value] of Object.entries(scriptCmd.opts())) {
-          instance.cli.setOptionValue(key, value);
-        }
-        const { logLevel } = scriptCmd.opts() as { logLevel: string };
-        this.initInstance(instance, name, logLevel);
-        await instance.startLifeCycle();
+    scriptCmd.action(async () => {
+      const globals = resolveGlobals(scriptCmd);
+      await executeScript(entry.script, {
+        ...toRunParams(entry, globals),
+        opts: scriptCmd.opts(),
       });
+    });
 
-      runCmd.addCommand(scriptCmd);
+    runCmd.addCommand(scriptCmd);
+  }
+
+  return runCmd;
+}
+
+function parseFutureDate(value: string): Date {
+  if (Number.isNaN(Date.parse(value))) {
+    throw new InvalidArgumentError(
+      "Invalid date — must be parseable by Date.parse",
+    );
+  }
+  const date = new Date(value);
+  if (date < new Date()) {
+    throw new InvalidArgumentError("Date must be in the future");
+  }
+  return date;
+}
+
+/** Assemble the whole CLI. Discovers scripts, so it is async. */
+export async function buildCli(): Promise<Command> {
+  const program = addGlobalOptions(new Command("patsabot"))
+    .version(version)
+    .description("Wikipedia bot framework for Thai Wikipedia")
+    .configureHelp({
+      // Global options are added directly to every command (see
+      // addGlobalOptions), grouped under "Global Options" via helpGroup —
+      // commander's own ancestor-option listing would just duplicate them.
+      showGlobalOptions: false,
+      sortOptions: true,
+      sortSubcommands: true,
+    });
+
+  // Every command needs the config, and every command accepts --config, so
+  // load it once here rather than at module scope anywhere else.
+  program.hook("preAction", async (_root, action) => {
+    await loadConfig(resolveGlobals(action).config);
+  });
+
+  const entries = await discoverScripts((name, err) => {
+    console.warn(`Skipping script "${name}": ${err.message}`);
+  });
+
+  program.addCommand(buildRunCommand(entries));
+
+  addGlobalOptions(
+    program
+      .command("list")
+      .description("List available scripts")
+      .option("--json", "Output as JSON"),
+  ).action(async (options) => {
+    if (options.json) {
+      console.log(
+        JSON.stringify(
+          entries.map((e) => ({ script: e.name, ...e.meta })),
+          null,
+          2,
+        ),
+      );
+      return;
     }
-
-    return runCmd;
-  }
-
-  /**
-   * Run a script by name with default options (used by the web API).
-   */
-  async runScript(scriptName: string, rid = createId()) {
-    const ScriptClass = await this.loadScript(scriptName);
-    const instance = new ScriptClass();
-    this.initInstance(instance, scriptName, undefined, rid);
-    await instance.startLifeCycle(rid);
-  }
-
-  async startScheduled() {
-    const scriptNames = await this.getAllScriptNames();
-    for (const name of scriptNames) {
-      let ScriptClass: BotClass;
-      try {
-        ScriptClass = await this.loadScript(name);
-      } catch {
-        continue;
-      }
-      const script = new ScriptClass();
-      if (!script.info.frequency) {
-        this.log.debug(`Script ${script.info.id} has no frequency, skipping`);
-        continue;
-      }
-      this.log.info(`Scheduled ${script.info.id} (${script.info.frequency})`);
-      this.initInstance(script, name);
-      this.scheduled[script.info.id] = script;
-      script.schedule();
+    for (const { name, meta } of entries) {
+      const schedule = meta.frequency ? `  [${meta.frequency}]` : "";
+      console.log(`${name}${name === meta.id ? "" : ` (id: ${meta.id})`}${schedule}`);
+      console.log(`    ${meta.description}`);
     }
-  }
+  });
 
-  async run() {
-    this.cli = new Command("patsabot")
-      .version(version)
-      // Global options — must be placed before the subcommand name in the CLI.
-      // config.ts reads these independently via parseArgs so they take effect
-      // before any script is loaded.
-      .addOption(
-        new Option(
-          "-u, --user <username>",
-          "Account to use — loads config-<username>.toml",
-        ).helpGroup("Global Options"),
-      )
-      .addOption(
-        new Option("--config <path>", "Config file path")
-          .default("config.toml")
-          .helpGroup("Global Options"),
-      )
-      .enablePositionalOptions()
-      .configureHelp({
-        showGlobalOptions: true,
-        sortOptions: true,
-        sortSubcommands: true,
-      });
-
-    this.cli.addCommand(await this.buildRunCommand());
-
-    this.cli
+  addGlobalOptions(
+    program
       .command("schedule")
       .description("Schedule a script with a one-off cron pattern or date")
       .argument("<script>", "Script name")
@@ -214,43 +218,52 @@ export class ScriptRunner extends ServiceBase {
         new Option(
           "--date <date>",
           "ISO 8601 date to run the script (must be in the future)",
-        ).argParser((value) => {
-          if (Number.isNaN(Date.parse(value))) {
-            throw new InvalidArgumentError(
-              "Invalid date — must be parseable by Date.parse",
-            );
-          }
-          if (new Date(value) < new Date()) {
-            throw new InvalidArgumentError("Date must be in the future");
-          }
-          return new Date(value);
-        }),
+        ).argParser(parseFutureDate),
       )
       .option(
         "--interval <seconds>",
         "Minimum interval between executions (seconds)",
         (v) => Number.parseInt(v, 10),
       )
-      .showHelpAfterError()
-      .action(async (scriptName, options) => {
-        const ScriptClass = await this.loadScript(scriptName);
-        const script = new ScriptClass();
-        if (!options.cron && !options.date) {
-          throw new Error("Provide --cron <expression> or --date <ISO8601>");
-        }
-        const pattern =
-          (options.date as Date | undefined) ?? (options.cron as string);
-        this.scheduled[script.info.id] = script;
-        script.info.scriptSource = scriptName;
-        await script.schedule({
-          pattern,
-          options: { interval: options.interval },
-        });
-      });
+      .showHelpAfterError(),
+  ).action(async (scriptName, options, command) => {
+    if (!options.cron && !options.date) {
+      throw new Error("Provide --cron <expression> or --date <ISO8601>");
+    }
+    const entry = await loadScript(scriptName);
+    const globals = resolveGlobals(command);
+    const scheduler = new Scheduler(toRunParams(entry, globals));
+    scheduler.schedule(
+      entry,
+      options.date ?? (options.cron as string),
+      { interval: options.interval },
+      toRunParams(entry, globals),
+    );
+    scheduler.log.info(
+      `Scheduled ${entry.meta.id} (${options.date?.toISOString() ?? options.cron})`,
+    );
+  });
 
-    this.cli
+  addGlobalOptions(
+    program
+      .command("start")
+      .description("Schedule every script that declares a frequency"),
+  ).action(async (_options, command) => {
+    const globals = resolveGlobals(command);
+    const scheduler = new Scheduler({
+      site: globals.site,
+      user: globals.user,
+      apiUrl: globals.apiUrl,
+      dryRun: globals.dryRun,
+      logLevel: globals.logLevel,
+    });
+    await scheduler.scheduleAll();
+  });
+
+  addGlobalOptions(
+    program
       .command("replica-tunnel")
-      .description("Open SSH tunnel to a Wikimedia Replica database")
+      .description("Open an SSH tunnel to a Wikimedia Replica database")
       .argument("<wiki>", "Wiki database name (e.g. thwiki_p, enwiki)")
       .option(
         "--port <port>",
@@ -262,23 +275,42 @@ export class ScriptRunner extends ServiceBase {
         new Option("--cluster <cluster>", "Database cluster")
           .choices(["web", "analytics"] as const)
           .default("web"),
-      )
-      .action(async (wiki, options) => {
-        Replica.createReplicaTunnel(wiki, options.cluster, options.port);
-      });
+      ),
+  ).action(async (wiki, options) => {
+    await Replica.createReplicaTunnel(wiki, options.cluster, options.port);
+  });
 
-    this.cli
-      .command("start")
-      .description("Load all pre-scheduled scripts and start the bot")
-      .action(this.startScheduled.bind(this));
+  addGlobalOptions(
+    program
+      .command("config")
+      .description("Show the resolved site and account for the current flags"),
+  ).action(async (_options, command) => {
+    const globals = resolveGlobals(command);
+    const config = getConfig();
+    const site = resolveSite(config, globals.site, globals.apiUrl);
+    const account = resolveAccount(config, site, globals.user);
+    console.log(
+      JSON.stringify(
+        {
+          configFile: globals.config,
+          site,
+          account: account.username,
+          dryRun: globals.dryRun,
+        },
+        null,
+        2,
+      ),
+    );
+  });
 
-    this.cli.parse(Bun.argv);
-  }
+  return program;
 }
 
-if (
-  Bun.main === resolve(join(import.meta.path, "../../")) ||
-  import.meta.main
-) {
-  new ScriptRunner().run();
+export async function runCli(argv: string[] = Bun.argv): Promise<void> {
+  const program = await buildCli();
+  await program.parseAsync(argv);
+}
+
+if (import.meta.main) {
+  await runCli();
 }

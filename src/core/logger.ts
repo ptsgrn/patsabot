@@ -1,9 +1,9 @@
 import { EventEmitter } from "node:events";
-import { config } from "@core/config";
 import chalk from "chalk";
 import { createLogger, format, type Logger, transports } from "winston";
 import DailyRotateFile from "winston-daily-rotate-file";
 import TransportStream from "winston-transport";
+import { getConfig } from "./config";
 
 const loggerFormat = format.combine(
   format.timestamp(),
@@ -56,64 +56,65 @@ export class InMemoryTransport extends TransportStream {
 
 export const inMemoryTransport = new InMemoryTransport();
 
+let instance: Logger | null = null;
+
 /**
- * Logger configuration using `winston` library with multiple transports.
+ * The shared winston logger, built on first use.
  *
- * Transports:
- * - `DailyRotateFile`: Rotates log files daily with a maximum size of 20MB and keeps logs for 7 days.
- * - `File`: Logs error messages to a file with a specified maximum size.
- * - `Console`: Logs messages to the console with colorized output.
+ * Construction is deferred because the transports need `logger.logPath` from
+ * the config, which is only available after the CLI has parsed `--config`.
  *
- * Exception Handlers:
- * - `File`: Logs uncaught exceptions to a file with a specified maximum size.
- *
- * Rejection Handlers:
- * - `File`: Logs unhandled promise rejections to a file with a specified maximum size.
- *
- * @constant
- * @type {Logger}
- * @default
+ * Transports: in-memory ring buffer, daily-rotated JSONL, an error-only file,
+ * and a colorized console. Uncaught exceptions and rejections get their own
+ * files; the process is never killed by a logging error.
  */
-export const logger: Logger = createLogger({
-  level: config.logger.level,
-  format: loggerFormat,
-  transports: [
-    inMemoryTransport,
-    new DailyRotateFile({
-      filename: `${config.logger.logPath}/output-%DATE%.jsonl`,
-      datePattern: "YYYYMMDD",
-      zippedArchive: true,
-      maxSize: "20m",
-      maxFiles: "7d",
-    }),
-    new transports.File({
-      filename: `${config.logger.logPath}/error.jsonl`,
-      level: "error",
-      maxsize: config.logger.maxFileSize,
-    }),
-    new transports.Console({
-      format: format.combine(
-        format.colorize(),
-        format.errors(),
-        format.printf(({ level, message, timestamp, durationMs }) => {
-          return `${chalk.dim(`${timestamp}`)} ${level} ${message}${durationMs ? ` ${chalk.dim(`(${durationMs}ms)`)}` : ""}`;
-        }),
-      ),
-    }),
-  ],
-  exceptionHandlers: [
-    new transports.File({
-      filename: `${config.logger.logPath}/exceptions.jsonl`,
-      maxsize: config.logger.maxFileSize,
-      format: loggerFormat,
-    }),
-  ],
-  rejectionHandlers: [
-    new transports.File({
-      filename: `${config.logger.logPath}/rejections.jsonl`,
-      maxsize: config.logger.maxFileSize,
-      format: loggerFormat,
-    }),
-  ],
-  exitOnError: false,
-});
+export function getLogger(): Logger {
+  if (instance) return instance;
+
+  const config = getConfig();
+  instance = createLogger({
+    level: config.logger.level,
+    format: loggerFormat,
+    transports: [
+      inMemoryTransport,
+      new DailyRotateFile({
+        filename: `${config.logger.logPath}/output-%DATE%.jsonl`,
+        datePattern: "YYYYMMDD",
+        zippedArchive: true,
+        maxSize: "20m",
+        maxFiles: "7d",
+      }),
+      new transports.File({
+        filename: `${config.logger.logPath}/error.jsonl`,
+        level: "error",
+        maxsize: config.logger.maxFileSize,
+      }),
+      new transports.Console({
+        format: format.combine(
+          format.colorize(),
+          format.errors(),
+          format.printf(({ level, message, timestamp, durationMs }) => {
+            return `${chalk.dim(`${timestamp}`)} ${level} ${message}${durationMs ? ` ${chalk.dim(`(${durationMs}ms)`)}` : ""}`;
+          }),
+        ),
+      }),
+    ],
+    exceptionHandlers: [
+      new transports.File({
+        filename: `${config.logger.logPath}/exceptions.jsonl`,
+        maxsize: config.logger.maxFileSize,
+        format: loggerFormat,
+      }),
+    ],
+    rejectionHandlers: [
+      new transports.File({
+        filename: `${config.logger.logPath}/rejections.jsonl`,
+        maxsize: config.logger.maxFileSize,
+        format: loggerFormat,
+      }),
+    ],
+    exitOnError: false,
+  });
+
+  return instance;
+}

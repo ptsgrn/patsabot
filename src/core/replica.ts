@@ -1,5 +1,3 @@
-import { ServiceBase } from "@core/base";
-import { config } from "@core/config";
 import { $ } from "bun";
 import mysql, {
   type ExecuteValues,
@@ -7,6 +5,8 @@ import mysql, {
   type QueryResult,
   type RowDataPacket,
 } from "mysql2/promise";
+import { ServiceBase } from "./base";
+import { getConfig } from "./config";
 
 type DecodeBuffers<T> = T extends Buffer
   ? string
@@ -18,6 +18,14 @@ type DecodeBuffers<T> = T extends Buffer
         ? { [K in keyof T]: DecodeBuffers<T[K]> }
         : T;
 
+export type ReplicaCluster = "web" | "analytics";
+
+export interface ReplicaTarget {
+  /** Wiki database to connect to, e.g. `thwiki_p`. */
+  dbname?: string;
+  cluster?: ReplicaCluster;
+}
+
 /**
  * Generates the replica host URL for a given database name and cluster.
  *
@@ -26,7 +34,7 @@ type DecodeBuffers<T> = T extends Buffer
  * @returns The replica host URL as a string.
  * @throws Will throw an error if the cluster name is not "web" or "analytics".
  */
-function getReplicaHost(dbname: string, cluster: string = "web") {
+export function getReplicaHost(dbname: string, cluster: string = "web") {
   if (!["web", "analytics"].includes(cluster)) {
     throw new Error("Invalid cluster name");
   }
@@ -42,44 +50,73 @@ function getReplicaHost(dbname: string, cluster: string = "web") {
 }
 
 export class Replica extends ServiceBase {
-  private _replicaOptions: mysql.ConnectionOptions = {
-    user: this.config.replica.username,
-    password: this.config.replica.password,
-    port: Number(this.config.replica.port || 3306),
-  };
+  private options: mysql.ConnectionOptions | null = null;
+  private target: ReplicaTarget;
 
   public conn: mysql.Connection | null = null;
   private tunnelProcess: Bun.Subprocess | null = null;
 
+  /**
+   * @param target Overrides the database and cluster from `[replica]`. The
+   * runner passes the active site's database here.
+   */
+  constructor(target: ReplicaTarget = {}) {
+    super();
+    this.target = target;
+  }
+
+  /** Database this instance talks to: explicit target first, then config. */
+  get dbname(): string {
+    const dbname = this.target.dbname ?? this.config.replica.dbname;
+    if (!dbname) {
+      throw new Error(
+        "No replica database configured — set replica.dbname, or a dbname on the site family",
+      );
+    }
+    return dbname;
+  }
+
+  get cluster(): ReplicaCluster {
+    return this.target.cluster ?? this.config.replica.cluster;
+  }
+
+  private baseOptions(): mysql.ConnectionOptions {
+    return {
+      user: this.config.replica.username,
+      password: this.config.replica.password,
+      port: Number(this.config.replica.port || 3306),
+    };
+  }
+
   public async init() {
     this.log.debug("Initializing replica connection");
-    if (!this.isRunOnToolforge()) {
-      const replicaHost = getReplicaHost(this.config.replica.dbname);
-      const localPort = Number(this.config.replica.port || 3306);
-      this._replicaOptions = {
-        ...this._replicaOptions,
-        host: "127.0.0.1",
-        database: this.config.replica.dbname,
+    const replicaHost = getReplicaHost(this.dbname, this.cluster);
+
+    if (this.isRunOnToolforge()) {
+      this.options = {
+        ...this.baseOptions(),
+        host: replicaHost,
+        database: this.dbname,
       };
-      try {
-        this.conn = await mysql.createConnection(this._replicaOptions);
-      } catch (err) {
-        if (this.isConnectionRefused(err)) {
-          await this.autoTunnel(replicaHost, localPort);
-        } else {
-          throw err;
-        }
+      this.log.debug(`Connecting to ${this.dbname} on ${replicaHost}`);
+      this.conn = await mysql.createConnection(this.options);
+      return;
+    }
+
+    const localPort = Number(this.config.replica.port || 3306);
+    this.options = {
+      ...this.baseOptions(),
+      host: "127.0.0.1",
+      database: this.dbname,
+    };
+    try {
+      this.conn = await mysql.createConnection(this.options);
+    } catch (err) {
+      if (this.isConnectionRefused(err)) {
+        await this.autoTunnel(replicaHost, localPort);
+      } else {
+        throw err;
       }
-    } else {
-      this._replicaOptions = {
-        ...this._replicaOptions,
-        host: getReplicaHost(this.config.replica.dbname),
-        database: this.config.replica.dbname,
-      };
-      this.log.debug(
-        `Connecting to ${this._replicaOptions.database} on ${this._replicaOptions.host}`,
-      );
-      this.conn = await mysql.createConnection(this._replicaOptions);
     }
   }
 
@@ -142,23 +179,19 @@ export class Replica extends ServiceBase {
     const { sshUser, sshHost, sshIdentityFile } = this.config.toolforge;
     const args = ["ssh", "-N", "-o", "ExitOnForwardFailure=yes"];
     if (sshIdentityFile) args.push("-i", sshIdentityFile);
-    args.push(
-      `${sshUser}@${sshHost}`,
-      "-L",
-      `${localPort}:${replicaHost}:3306`,
-    );
+    args.push(`${sshUser}@${sshHost}`, "-L", `${localPort}:${replicaHost}:3306`);
     return args;
   }
 
   private async autoTunnel(replicaHost: string, localPort: number) {
     this.log.info(
-      `No tunnel found, starting SSH tunnel to ${replicaHost}:3306 → localhost:${localPort}`,
+      `No tunnel found, starting SSH tunnel to ${replicaHost}:3306 -> localhost:${localPort}`,
     );
     this.tunnelProcess = Bun.spawn(this.buildSshArgs(replicaHost, localPort));
     for (let i = 0; i < 20; i++) {
       await Bun.sleep(500);
       try {
-        this.conn = await mysql.createConnection(this._replicaOptions);
+        this.conn = await mysql.createConnection(this.options!);
         this.log.info("SSH tunnel established");
         return;
       } catch {
@@ -181,8 +214,9 @@ export class Replica extends ServiceBase {
     cluster: string = "web",
     port: number = 3306,
   ) {
+    const config = getConfig();
     if (!config.toolforge.sshUser) {
-      throw new Error("toolforge.sshUser not set in config.toml");
+      throw new Error("toolforge.sshUser not set in config");
     }
 
     const { sshUser, sshHost, sshIdentityFile } = config.toolforge;
@@ -244,21 +278,17 @@ export class Replica extends ServiceBase {
   }
 
   /**
-   * Sets the replica options and reinitializes the connection.
-   * @param options The replica options to set
+   * Point this instance at a different wiki database and reconnect.
+   *
    * @example
    * ```typescript
-   * replica.setReplicaOptions({
-   *   host: 'enwiki.web.db.svc.wikimedia.cloud',
-   * });
+   * await replica.use({ dbname: "enwiki_p", cluster: "analytics" });
    * ```
    */
-  set replicaOptions(options: mysql.ConnectionOptions) {
-    this.log.debug("Setting replica options");
-    this._replicaOptions = {
-      ...this._replicaOptions,
-      ...options,
-    };
-    this.init();
+  public async use(target: ReplicaTarget) {
+    this.log.debug(`Switching replica target to ${target.dbname ?? "default"}`);
+    await this.resetConnection();
+    this.target = { ...this.target, ...target };
+    await this.init();
   }
 }
