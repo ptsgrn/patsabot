@@ -144,7 +144,8 @@ export default defineScript({
     >();
 
     for (const row of rows) {
-      const fullPageName = `${row.localized_namespace}:${row.page_title}`.replace(/_/g, " ");
+      const fullPageName =
+        `${row.localized_namespace}:${row.page_title}`.replace(/_/g, " ");
 
       if (!usersToNotify.has(row.creator_name)) {
         usersToNotify.set(row.creator_name, new Set<string>());
@@ -157,7 +158,10 @@ export default defineScript({
       });
     }
 
-    for (const [pageTitle, deletionTemplate] of pagesToNominate.entries()) {
+    for (const [
+      pageTitle,
+      { deletionTemplate, pageCreator },
+    ] of pagesToNominate.entries()) {
       if (ctx.dryRun) {
         ctx.log.info(
           `[Dry Run] Would nominate page "${pageTitle}" for deletion with template: ${deletionTemplate}`,
@@ -187,31 +191,35 @@ export default defineScript({
           };
         }) as EditTransform);
 
-        // usersToNotify
-        //   .get(deletionTemplate.pageCreator)
-        //   ?.add(`{{subst:Db-draft-notice|1=${pageTitle}}} ~~~~`);
+        // Add page title to the set of notifications for the page creator
+        usersToNotify.get(pageCreator)?.add(pageTitle);
       }
     }
 
     for (const [username, notifications] of usersToNotify.entries()) {
+      const pageList = Array.from(notifications).join("\n* ");
       const userTalkPage = `คุยกับผู้ใช้:${username}`;
-      const notificationText = Array.from(notifications).join("\n\n");
-
       if (ctx.dryRun) {
         ctx.log.info(
-          `[Dry Run] Would notify user "${username}" on their talk page "${userTalkPage}" with the following message:\n${notificationText}`,
+          `[Dry Run] Would notify user "${username}" on their talk page "${userTalkPage}" for the following pages:\n${pageList}`,
         );
       } else {
         ctx.log.info(
-          `Notifying user "${username}" on their talk page "${userTalkPage}" with the following message:\n${notificationText}`,
+          `Notifying user "${username}" on their talk page "${userTalkPage}" for the following pages:\n${pageList}`,
         );
 
-        await ctx.bot.edit(userTalkPage, ({ content }) => ({
-          text: `${content}\n\n${notificationText}`,
-          summary: "บอต: แจ้งเตือนการแจ้งลบฉบับร่าง",
-          minor: true,
-          bot: true,
-        }));
+        await ctx.bot.edit(userTalkPage, ({ content }) => {
+          const notificationText = Array.from(notifications)
+            .filter((pageTitle) => !content.includes(pageTitle))
+            .map((pageTitle) => `{{subst:Db-draft-notice|1=${pageTitle}}} ~~~~`)
+            .join("\n\n");
+          return {
+            text: `${content}\n\n${notificationText}`,
+            summary: "บอต: แจ้งเตือนการแจ้งลบฉบับร่าง",
+            minor: true,
+            bot: true,
+          };
+        });
       }
     }
   },
