@@ -39,15 +39,21 @@ export default defineScript({
                       JOIN linktarget ON lt_id = tl_target_id AND lt_namespace = 10 AND lt_title = 'หมวดหมู่บำรุงรักษา'
                       WHERE tl_from = catpage.page_id);`);
 
-    // 100 Most recently edited drafts in last 2 days
+    // 100 Most recently edited drafts in last 2 days where PatsaBot did not edit the page yet.
     const [recentDrafts, __] = await ctx.replica.query<{ name: string }[]>(`
     /* draft-cats.ts SLOW_OK */
-    SELECT DISTINCT draft.page_title AS name
+    SELECT draft.page_title AS name
     FROM page AS draft
     JOIN revision ON rev_page = draft.page_id
     WHERE draft.page_namespace = 118
-      AND rev_timestamp > DATE_SUB(NOW(), INTERVAL 2 DAY)
-    ORDER BY rev_timestamp DESC
+      AND rev_timestamp >= DATE_FORMAT(DATE_SUB(NOW(), INTERVAL 2 DAY), '%Y%m%d%H%i%s')
+      AND NOT EXISTS (SELECT 1
+                      FROM revision AS botrev
+                      JOIN actor AS botactor ON botactor.actor_id = botrev.rev_actor
+                      WHERE botactor.actor_name = 'PatsaBot'
+                        AND botrev.rev_page = draft.page_id)
+    GROUP BY draft.page_id
+    ORDER BY MAX(rev_timestamp) DESC
     LIMIT 100;`);
 
     const drafts = [
