@@ -39,8 +39,23 @@ export default defineScript({
                       JOIN linktarget ON lt_id = tl_target_id AND lt_namespace = 10 AND lt_title = 'หมวดหมู่บำรุงรักษา'
                       WHERE tl_from = catpage.page_id);`);
 
-    for (const draft of draftWithCats) {
-      const draftTitle = `ฉบับร่าง:${draft.name}`;
+    // 100 Most recently edited drafts in last 2 days
+    const [recentDrafts, __] = await ctx.replica.query<{ name: string }[]>(`
+    /* draft-cats.ts SLOW_OK */
+    SELECT DISTINCT draft.page_title AS name
+    FROM page AS draft
+    JOIN revision ON rev_page = draft.page_id
+    WHERE draft.page_namespace = 118
+      AND rev_timestamp > DATE_SUB(NOW(), INTERVAL 2 DAY)
+    ORDER BY rev_timestamp DESC
+    LIMIT 100;`);
+
+    const drafts = [
+      ...draftWithCats.map((draft) => `ฉบับร่าง:${draft.name}`),
+      ...recentDrafts.map((draft) => `ฉบับร่าง:${draft.name}`),
+    ].filter((value, index, self) => self.indexOf(value) === index); // unique
+
+    for (const draftTitle of drafts) {
       if (
         draftTitle === "ฉบับร่าง:กระบะทราย" ||
         draftTitle === "ฉบับร่าง:ทดลองเขียน"
