@@ -35,7 +35,9 @@ export interface ScriptMeta {
 }
 
 /** `ScriptMeta` after the runner has filled in the defaults. */
-export interface ResolvedScriptMeta extends Required<Omit<ScriptMeta, "frequency" | "site">> {
+export interface ResolvedScriptMeta extends Required<
+  Omit<ScriptMeta, "frequency" | "site">
+> {
   frequency?: string;
   site?: string;
   /** Path under `src/scripts`, without the extension. */
@@ -57,6 +59,11 @@ export interface ScriptContext<TOptions = Record<string, never>> {
    * global `--no-dry-run` flag turns it off.
    */
   readonly dryRun: boolean;
+  /**
+   * Whether a human is at a terminal to review edits interactively. Off for
+   * scheduled/background runs; `ctx.input.reviewEdit()` respects it.
+   */
+  readonly interactive: boolean;
   readonly site: ResolvedSite;
   readonly account: ResolvedAccount;
   readonly config: Config;
@@ -107,6 +114,9 @@ export type Script<C extends AnyCommand = AnyCommand> = ScriptDefinition<C> & {
 export function defineScript<C extends AnyCommand = Command>(
   definition: ScriptDefinition<C>,
 ): Script<C> {
+  if (import.meta.main) {
+    definition.run?.({} as ScriptContext<OptionsOf<C>>);
+  }
   return { ...definition, [SCRIPT_MARKER]: true } as Script<C>;
 }
 

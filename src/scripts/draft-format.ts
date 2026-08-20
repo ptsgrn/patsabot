@@ -1,4 +1,7 @@
-import { defineScript } from "@core/define";
+import { defineScript, type ScriptContext } from "@core/define";
+
+const draftTemplateRegex =
+  /\{\{ *(?:ฉบับร่าง(?:บทความ)?|บทความฉบับร่าง|draft ?(?:article)?) *(\| *[^\}]*)?\}\}/gi;
 
 export default defineScript({
   meta: {
@@ -6,27 +9,80 @@ export default defineScript({
     name: "Drafts Format Bot",
     description: "จัดรูปแบบฉบับร่างให้เหมาะสม",
   },
-  run(ctx) {
-    ctx.log.warn("draft-format is not implemented yet");
+  async run(ctx) {
+    const [draftWithCats, _] = await ctx.replica.query<{ name: string }[]>(`
+    /* draft-cats.ts SLOW_OK */
+  SELECT DISTINCT draft.page_title AS name
+	FROM categorylinks
+	JOIN page AS draft ON draft.page_id = cl_from
+	JOIN linktarget ON lt_id = cl_target_id
+	LEFT JOIN page AS catpage ON catpage.page_namespace = 14 AND catpage.page_title = lt_title
+	LEFT JOIN page_props ON pp_page = catpage.page_id AND pp_propname = 'hiddencat'
+	WHERE draft.page_namespace = 118
+		AND pp_page IS NULL
+		AND lt_title NOT LIKE '%\_drafts'
+		AND lt_title NOT LIKE 'AfC_%'
+		AND lt_title NOT LIKE 'ฉบับร่าง%'
+		AND NOT (draft.page_title = 'กระบะทราย' AND lt_title IN ('Namespace_example_pages', 'Wikipedia_drafts'))
+		AND NOT EXISTS (SELECT 1
+										FROM templatelinks
+										JOIN linktarget ON lt_id = tl_target_id AND lt_namespace = 10 AND lt_title = 'หมวดหมู่บำรุงรักษา'
+										WHERE tl_from = catpage.page_id);`);
+
+    for (const draft of draftWithCats) {
+      const draftTitle = `ฉบับร่าง:${draft.name}`;
+      const draftPage = await ctx.bot.read(draftTitle);
+      const content = draftPage.revisions?.[0].content;
+      if (!content) {
+        ctx.log.warn(`No content for "${draftTitle}"`);
+        continue;
+      }
+
+      const newText = cleanUp(content, draftTitle, ctx);
+
+      const decision = await ctx.input.reviewEdit(draftTitle, content, newText);
+      if (decision === "skip") {
+        ctx.log.warn(`Skipped "${draftTitle}"`);
+        continue;
+      }
+
+      if (ctx.dryRun) {
+        ctx.log.info(`[Dry Run] Would save changes to "${draftTitle}"`);
+        continue;
+      }
+
+      await ctx.bot.edit(draftTitle, async () => ({
+        text: newText,
+        summary: "บอต: เก็บกวาดฉบับร่าง",
+        minor: true,
+      }));
+
+      ctx.log.info(`Saved changes to "${draftTitle}"`);
+    }
   },
 });
 
-export function cleanUp(text: string, pageTitle: string): string {
-  let commentRegex;
-  let commentsToRemove = [
-    "Please don't change anything and press save",
-    "Carry on from here, and delete this comment.",
-    "Please leave this line alone!",
-    "Important, do not remove this line before (template|article) has been created.",
-    'Just press the "Save page" button below without changing anything! Doing so will submit your article submission for review. ' +
-      "Once you have saved this page you will find a new yellow 'Review waiting' box at the bottom of your submission page. " +
-      "If you have submitted your page previously,(?: either)? the old pink 'Submission declined' template or the old grey " +
-      "'Draft' template will still appear at the top of your submission page, but you should ignore (them|it). Again, please " +
-      'don\'t change anything in this text box. Just press the "Save page" button below.',
-  ];
+export function cleanUp(
+  text: string,
+  pageTitle: string,
+  ctx: ScriptContext,
+): string {
+  const beforeRequired = text;
+  text = applyRequiredFixes(text);
+  const hasRequiredFix = text !== beforeRequired;
 
-  text = text.replace(/\[\[(Category|หมวดหมู่):/gi, "[[:หมวดหมู่:");
+  // Cosmetic fixes only worth the watchlist noise if a required fix already
+  // means this edit is happening anyway.
+  if (hasRequiredFix) {
+    text = applyOptionalFixes(text, pageTitle, ctx);
+  }
 
+  text = text.replace(/\n+$/gm, "\n");
+
+  return text;
+}
+
+function applyRequiredFixes(text: string): string {
   // Remove empty section at the end (caused by "Resubmit" button on "declined" template)
   // Section may have categories after it - keep them there
   text = removeEmptySectionAtEnd(text);
@@ -34,16 +90,6 @@ export function cleanUp(text: string, pageTitle: string): string {
     /\n+==.+?==((?:\[\[:?(Category|หมวดหมู่):.+?\]\]|\s+)*)$/,
     "$1",
   );
-
-  // Assemble a master regexp and remove all now-unneeded comments (commentsToRemove)
-  commentRegex = new RegExp(
-    "<!-{2,}\\s*(" + commentsToRemove.join("|") + ")\\s*-{2,}>",
-    "gi",
-  );
-  text = text.replace(commentRegex, "");
-
-  // Remove initial request artifact
-  text = text.replace(/== Request review at \[\[WP:AFC\]\] ==/gi, "");
 
   // Remove sandbox templates
   text = text.replace(
@@ -57,7 +103,7 @@ export function cleanUp(text: string, pageTitle: string): string {
 
   // Remove html comments (<!--) that surround categories
   text = text.replace(
-    /<!--\s*((\[\[:{0,1}((?:Category|หมวดหมู่):.*?)\]\]\s*)+)-->/gi,
+    /<!--*\s*((\[\[:{0,1}((?:Category|หมวดหมู่):.*?)\]\]\s*)+)-*-->/gi,
     "$1",
   );
 
@@ -85,6 +131,42 @@ export function cleanUp(text: string, pageTitle: string): string {
     "\n* $1://$3",
   );
 
+  let commentRegex;
+  let commentsToRemove = [
+    "Please don't change anything and press save",
+    "Carry on from here, and delete this comment.",
+    "Please leave this line alone!",
+    "Important, do not remove this line before (template|article) has been created.",
+    'Just press the "Save page" button below without changing anything! Doing so will submit your article submission for review. ' +
+      "Once you have saved this page you will find a new yellow 'Review waiting' box at the bottom of your submission page. " +
+      "If you have submitted your page previously,(?: either)? the old pink 'Submission declined' template or the old grey " +
+      "'Draft' template will still appear at the top of your submission page, but you should ignore (them|it). Again, please " +
+      'don\'t change anything in this text box. Just press the "Save page" button below.',
+    "หมวดหมู่ไว้ตรงนี้",
+    "ใช้รูปแบบ: \\* \\[http://www.example.com\\/ example.com\\]",
+    "ดูที่ \\[\\[วิกิพีเดีย:การอ้างอิงแหล่งที่มา\\]\\] เกี่ยวกับการเพิ่มอ้างอิงโดยการใช้แท็ก<ref><\\/ref> ซึ่งจะแสดงผลตรงนี้ให้อัตโนมัติ",
+    "เขียนเนื้อหาของบทความใต้บรรทัดนี้ โดยทั่วไปประโยคแรกของบทความควรจะเริ่มด้วยชื่อของหัวเรื่องที่มีอะพอสทรอฟีสามตัวล้อมรอบเพื่อทำให้เป็นตัวหนา \\(ตัวอย่าง: '''ชื่อบทความ''' คือ...\\)",
+  ];
+
+  // Assemble a master regexp and remove all now-unneeded comments (commentsToRemove)
+  commentRegex = new RegExp(
+    "<!-{2,}\\s*(" + commentsToRemove.join("|") + ")\\s*-{2,}>",
+    "gi",
+  );
+  text = appendRefSection(text);
+  text = text.replace(commentRegex, "");
+  text = wrapCats(text);
+
+  text = formatAfcTemplate(text);
+
+  return text;
+}
+
+function applyOptionalFixes(
+  text: string,
+  pageTitle: string,
+  ctx: ScriptContext,
+): string {
   // Convert http://-style links to other wikipages to wikicode syntax
   // FIXME: Break this out into its own core function? Will it be used elsewhere?
   let linkRegex =
@@ -109,6 +191,84 @@ export function cleanUp(text: string, pageTitle: string): string {
     linkMatch = linkRegex.exec(text);
   }
 
+  text = partyColorFix(text);
+  text = miscFix(text, pageTitle);
+  text = standardizeDraftTemplate(text);
+  text = detectDraftSubject(text, ctx);
+
+  text = text.replace(
+    /(?:<references *\/>|\{\{\s*reflist\s*(\|?[^\}]*)\}\})/gi,
+    "{{รายการอ้างอิง$1}}",
+  );
+
+  return text;
+}
+
+function addDraftTemplate(text: string): string {
+  if (!draftTemplateRegex.test(text)) {
+    text = `{{บทความฉบับร่าง}}\n${text}`;
+  }
+
+  return text;
+}
+
+function standardizeDraftTemplate(text: string): string {
+  text = addDraftTemplate(text);
+  return text.replace(draftTemplateRegex, "{{บทความฉบับร่าง$1}}");
+}
+
+function removeEmptySectionAtEnd(wikicode: string) {
+  // Hard to write a regex that doesn't catastrophic backtrack while still saving multiple categories and multiple blank lines. So we'll do this the old-fashioned way...
+
+  // Divide wikitext into lines
+  let lines = wikicode.split("\n");
+
+  // Buffers
+  const linesToKeep = [];
+  let i;
+
+  // Crawl the list of lines backward (bottom up)
+  let count = lines.length;
+  for (i = count - 1; i >= 0; i--) {
+    const line = lines[i];
+    const isWhitespace = line.match(/^\s*$/);
+    const isCategory = line.match(/^\s*\[\[:?(?:Category|หมวดหมู่):/i);
+    const isHeading = line.match(/^==[^=]+==$/i);
+
+    if (isWhitespace || isCategory) {
+      linesToKeep.push(line);
+      continue;
+    } else if (isHeading) {
+      break;
+    }
+
+    // If it's something besides the three things above, such as text, then there's no blank headings to delete. Return unaltered wikitext. We're done.
+    return wikicode;
+  }
+
+  // Delete the lines we checked from the array of lines. We'll be replacing these with new lines in a moment.
+  lines = lines.slice(0, i);
+
+  // Add the categories and blank lines back
+  // Need to iterate backward, same as the loop above
+  count = linesToKeep.length;
+  for (let j = count - 1; j >= 0; j--) {
+    const lineToKeep = linesToKeep[j];
+    lines.push(lineToKeep);
+  }
+
+  wikicode = lines.join("\n");
+
+  // The old algorithm had some quirks related to adding and removing \n. Mimic the old algorithm for now, so that unit tests pass and users don't have to get used to new behavior.
+  if (wikicode.match(/\n\n$/)) {
+    wikicode = wikicode.slice(0, -1);
+  }
+  wikicode = wikicode.replace(/\n(\n\n\[\[:?(?:Category|หมวดหมู่):)/i, "$1");
+
+  return wikicode;
+}
+
+function miscFix(text: string, pageTitle: string): string {
   /**
    * Fix the spelling.
    * Taken from iScript modules.
@@ -278,7 +438,7 @@ export function cleanUp(text: string, pageTitle: string): string {
     )
     .replace(
       /== *(ประวัติความเป็นมา|ประวัติส่วนตัว|ความเป็นมา|ชีวประวัติ) *==/gi,
-      "$1ประวัติ ==",
+      "== ประวัติ ==",
     )
     .replace(/\[\[category:/gi, "[[หมวดหมู่:")
     .replace(/\[\[template:/gi, "[[แม่แบบ:")
@@ -359,17 +519,17 @@ export function cleanUp(text: string, pageTitle: string): string {
   var matches = text.match(
     new RegExp("\\[\\[(?:" + rtlLangPrefix.join("|") + ")\\:.*?\\]\\]", "ig"),
   );
-  text = text
-    .replace(/(.(?!( f\()).[^\s\[\]\(\_\#\/\{\"\f])\(/g, "$1$2 (") // Ignore f(x) case from f (x)
-    .replace(/(.*?)\)([^\s\]\)\|\.\_\#\/\}\"\,\<\"])/g, "$1) $2")
-    .replace(/(.*?)\]\]\(/g, "$1]] ("); // Allow spacing for link scenario such as [[Link]](Hello World!)
+  // text = text
+  //   .replace(/(.(?!( f\()).[^\s\[\]\(\_\#\/\{\"\f])\(/g, "$1$2 (") // Ignore f(x) case from f (x)
+  //   .replace(/(.*?)\)([^\s\]\)\|\.\_\#\/\}\"\,\<\"\*])/g, "$1) $2")
+  //   .replace(/(.*?)\]\]\(/g, "$1]] ("); // Allow spacing for link scenario such as [[Link]](Hello World!)
 
   if (matches) {
     for (var i in matches) {
       // duplicate of above
       var rtlEdgeCase = matches[i]
         .replace(/(.(?!( f\()).[^\s\[\]\(\_\#\/\{\"\f])\(/g, "$1$2 (") // Ignore f(x) case from f (x)
-        .replace(/(.*?)\)([^\s\]\)\|\.\_\#\/\}\"\,\<\"])/g, "$1) $2")
+        .replace(/(.*?)\)([^\s\]\)\|\.\_\#\/\}\"\,\<\"\*])/g, "$1) $2")
         .replace(/(.*?)\]\]\(/g, "$1]] ("); // Allow spacing for link scenario such as [[Link]](Hello World!)
 
       // now fix the error
@@ -386,7 +546,7 @@ export function cleanUp(text: string, pageTitle: string): string {
     .replace(/\[\[หมวดหมู่: {1,}(.*?)\]\]/g, "[[หมวดหมู่:$1]]") // [[หมวดหมู่: xxx]] -> [[หมวดหมู่:xxx]] (เว้นกี่ช่องก็ได้)
     .replace(/{{แม่แบบ:(.*?)}}/g, "{{$1}}") // {{แม่แบบ:xxx}} -> {{xxx}}
     .replace(/(พ|ค)\.? ?ศ. ?(\d{1,4})/g, "$1.ศ. $2") // Fix Year Formatting
-    .replace(/^([\*#]+) {0,}/gm, "$1 ") // *xxx -> * xxx (ul) and #xxx -> # xxx (ol)
+    // .replace(/^([\*#]+) {0,}/gm, "$1 ") // *xxx -> * xxx (ul) and #xxx -> # xxx (ol)
     .replace(/<\/(.*?) {1,}>/g, "</$1>") // Fix tag spacing, </xxx > -> </xxx>
     .replace(
       /<ref(.*?)> ?({{.*? icon}}) ?(.*?) ?<\/ref>/g,
@@ -394,28 +554,15 @@ export function cleanUp(text: string, pageTitle: string): string {
     ); // Fix lang icons: Move from front to back // แก้ <ref...> {{...}} [...] </ref> -> <ref...>[...] {{...}}</ref> // Case Study: //th.wikipedia.org/w/index.php?title=เหตุการณ์แผ่นดินไหวในมณฑลเสฉวน_พ.ศ._2551&diff=1161797&oldid=1152067
 
   // Remove signatures on article pages if not uncyclopedia
-  text = text.replace(/-{0,2} ?\[\[ผู้ใช้:.*/g, "");
-
-  // Fix Template Parameters Layout: Move | from back to front (using Top to Bottom approach)
-  text = text.replace(
-    / *\|(?!-) *\r?\n *([^=\*<|{}]*?) ?=(?!=) *([^\|={}]*?)/gm,
-    "\n| $1 = $2",
-  ); // รวมแก้สองอย่างโดยการตรวจย้ายบนไปล่างแทน
-  // text = text.replace(/({{.*)(?!})\| *\r/g,"$1");                                   //แก้ {{... | -> {{...
-  // text = text.replace(/(\n) *([^|{}]*?) ?= *([^|{}]*?)\| *\r/g,"$1| $2 = $3");      //แก้ ... | -> | ...
+  // text = text.replace(/-{0,2} ?\[\[ผู้ใช้:.*/g, "");
+  //แก้ ... | -> | ...
 
   // TODO: Need comments for code below for maintenance reasons: Hard to debug
-  text = text.replace(
-    /\n *\|(?!-) *([^={}\*].*?) ?= *([^<={}]*?) \| ?( *}} *\r?\n| *\r?\n *}} *\r?\n)/g,
-    "\n| $1 = $2\n}}\n",
-  ); // รุ่นใหม่ แค่จับขึ้นบรรทัดใหม่
+  // text = text.replace(
+  //   /\n *\|(?!-) *([^={}\*].*?) ?= *([^<={}]*?) \| ?( *}} *\r?\n| *\r?\n *}} *\r?\n)/g,
+  //   "\n| $1 = $2\n}}\n",
+  // ); // รุ่นใหม่ แค่จับขึ้นบรรทัดใหม่
   // text = text.replace(/(\n) *([^\|{}].*?) ?= *([^|{}]*?)(}}\r\n|\r\n *}})/g,"$1| $2 = $3\n}}");//แก้ ... -> | ...
-
-  // Fix Template Parameters Layout: Add extra space in betweens
-  text = text.replace(
-    /\r?\n *\|(?!-) *([^=\|\?'"{}]*?) ?= *([^=]*?) */g,
-    "\n| $1 = $2",
-  );
 
   // Fix Template: Remove extra | if exist at the end
   text = text.replace(
@@ -431,53 +578,342 @@ export function cleanUp(text: string, pageTitle: string): string {
   return text;
 }
 
-function removeEmptySectionAtEnd(wikicode: string) {
-  // Hard to write a regex that doesn't catastrophic backtrack while still saving multiple categories and multiple blank lines. So we'll do this the old-fashioned way...
+// Find top-level {{...}} templates whose name matches namePattern, with their
+// text position, so callers can both parse and remove them from the source.
+function findTemplates(
+  text: string,
+  namePattern: RegExp,
+): { start: number; end: number; raw: string }[] {
+  const results: { start: number; end: number; raw: string }[] = [];
+  let i = 0;
 
-  // Divide wikitext into lines
-  let lines = wikicode.split("\n");
-
-  // Buffers
-  const linesToKeep = [];
-  let i;
-
-  // Crawl the list of lines backward (bottom up)
-  let count = lines.length;
-  for (i = count - 1; i >= 0; i--) {
-    const line = lines[i];
-    const isWhitespace = line.match(/^\s*$/);
-    const isCategory = line.match(/^\s*\[\[:?(?:Category|หมวดหมู่):/i);
-    const isHeading = line.match(/^==[^=]+==$/i);
-
-    if (isWhitespace || isCategory) {
-      linesToKeep.push(line);
+  while (i < text.length) {
+    if (text[i] !== "{" || text[i + 1] !== "{") {
+      i++;
       continue;
-    } else if (isHeading) {
-      break;
     }
 
-    // If it's something besides the three things above, such as text, then there's no blank headings to delete. Return unaltered wikitext. We're done.
-    return wikicode;
+    const nameMatch = text.slice(i + 2).match(/^\s*([^|{}]+)/);
+    if (!nameMatch || !namePattern.test(nameMatch[1].trim())) {
+      i++;
+      continue;
+    }
+
+    let depth = 1;
+    let j = i + 2;
+    while (depth > 0 && j < text.length) {
+      if (text[j] === "{" && text[j + 1] === "{") {
+        depth += 1;
+        j += 2;
+      } else if (text[j] === "}" && text[j + 1] === "}") {
+        depth -= 1;
+        j += 2;
+      } else {
+        j++;
+      }
+    }
+    if (depth !== 0) {
+      i++;
+      continue;
+    }
+
+    const raw = text.slice(i, j);
+    // Swallow a directly-trailing "don't remove this line" comment along
+    // with the template so it doesn't get left behind at the old location.
+    let end = j;
+    const trailingComment = text.slice(end).match(/^[ \t]*<!--.*?-->/);
+    if (trailingComment) end += trailingComment[0].length;
+
+    results.push({ start: i, end, raw });
+    i = end;
   }
 
-  // Delete the lines we checked from the array of lines. We'll be replacing these with new lines in a moment.
-  lines = lines.slice(0, i);
+  return results;
+}
 
-  // Add the categories and blank lines back
-  // Need to iterate backward, same as the loop above
-  count = linesToKeep.length;
-  for (let j = count - 1; j >= 0; j--) {
-    const lineToKeep = linesToKeep[j];
-    lines.push(lineToKeep);
+// Split a string on a top-level separator, treating {{...}} and [[...]] as
+// opaque so pipes/equals signs inside nested templates or links are ignored.
+function splitTopLevel(text: string, separator: string): string[] {
+  const parts: string[] = [];
+  let depth = 0;
+  let current = "";
+
+  for (let i = 0; i < text.length; i++) {
+    const two = text.slice(i, i + 2);
+    if (two === "{{" || two === "[[") {
+      depth++;
+      current += two;
+      i++;
+      continue;
+    }
+    if (two === "}}" || two === "]]") {
+      depth--;
+      current += two;
+      i++;
+      continue;
+    }
+    if (text[i] === separator && depth === 0) {
+      parts.push(current);
+      current = "";
+      continue;
+    }
+    current += text[i];
+  }
+  parts.push(current);
+  return parts;
+}
+
+// Parse a raw "{{Name|1|2|key=value}}" template into a params object, mixing
+// positional (1, 2, ...) and named keys the same way MediaWiki does.
+function parseTemplateParams(raw: string): Record<string, string> {
+  const parts = splitTopLevel(raw.slice(2, -2), "|");
+  parts.shift(); // template name
+
+  const params: Record<string, string> = {};
+  let positional = 1;
+  for (const part of parts) {
+    const eqIndex = splitTopLevel(part, "=");
+    if (eqIndex.length === 1) {
+      params[String(positional)] = part.trim();
+      positional++;
+    } else {
+      params[eqIndex[0].trim()] = eqIndex.slice(1).join("=").trim();
+    }
+  }
+  return params;
+}
+
+// Reorder {{AfC submission}}/{{AfC comment}} templates so they sit together
+// at the very top of the page, newest submission first, mirroring afch-rewrite's
+// Submission.prototype.makeWikicode:
+// https://github.com/ptsgrn/afch-rewrite/blob/a1e5077ee6c2ddfa081b0e4e13edc991c60cd72b/src/modules/submissions.js#L225
+function formatAfcTemplate(text: string): string {
+  const submissionTemplates = findTemplates(text, /^afc submission$/i);
+  const commentTemplates = findTemplates(text, /^afc comment$/i);
+
+  if (!submissionTemplates.length && !commentTemplates.length) {
+    return text;
   }
 
-  wikicode = lines.join("\n");
+  type ParsedSubmission = {
+    status: string;
+    ts: string;
+    params: Record<string, string>;
+  };
 
-  // The old algorithm had some quirks related to adding and removing \n. Mimic the old algorithm for now, so that unit tests pass and users don't have to get used to new behavior.
-  if (wikicode.match(/\n\n$/)) {
-    wikicode = wikicode.slice(0, -1);
+  const submissions: ParsedSubmission[] = submissionTemplates.map(({ raw }) => {
+    const params = parseTemplateParams(raw);
+    const status = (params["1"] ?? "").toLowerCase();
+    const ts = params.ts ?? "";
+    delete params["1"];
+    delete params.ts;
+    delete params.small; // small=yes is recomputed below
+    return { status, ts, params };
+  });
+
+  // Sort by timestamp, most recent first. Missing/non-numeric timestamps
+  // sort first, matching AFCH's "unicorns always come first" rule.
+  submissions.sort((a, b) => {
+    const aValid = a.ts !== "" && !Number.isNaN(Number(a.ts));
+    const bValid = b.ts !== "" && !Number.isNaN(Number(b.ts));
+    if (!aValid) return -1;
+    if (!bValid) return 1;
+    return Number(b.ts) - Number(a.ts);
+  });
+
+  // Walk newest to oldest, dropping templates that are redundant given the
+  // current state (e.g. a leftover pending tag once the page was declined).
+  let isPending = false;
+  let isDeclined = false;
+  let isUnderReview = false;
+  let isDraft = false;
+  const kept: ParsedSubmission[] = [];
+  for (const sub of submissions) {
+    let keep = true;
+    switch (sub.status) {
+      case "d":
+        if (!isPending && !isDraft && !isUnderReview) isDeclined = true;
+        break;
+      case "t":
+        if (isPending || isDeclined || isUnderReview) {
+          keep = false;
+        } else {
+          isDraft = true;
+        }
+        break;
+      case "r":
+        if (!isPending && !isDeclined) isUnderReview = true;
+        break;
+      default:
+        if (isPending || isDeclined || isUnderReview) {
+          keep = false;
+        } else {
+          isPending = true;
+          isDraft = false;
+          isUnderReview = false;
+        }
+        break;
+    }
+    if (keep) kept.push(sub);
   }
-  wikicode = wikicode.replace(/\n(\n\n\[\[:?(?:Category|หมวดหมู่):)/i, "$1");
 
-  return wikicode;
+  // Rebuild the submission templates, collapsing older decline templates
+  // once a newer decline is already shown in full.
+  let hasDeclineTemplate = false;
+  const output: string[] = [];
+  for (const sub of kept) {
+    const paramKeys = Object.keys(sub.params).sort((a, b) => {
+      const aIsNumber = !Number.isNaN(Number(a));
+      const bIsNumber = !Number.isNaN(Number(b));
+      if (aIsNumber && bIsNumber) return Number(a) - Number(b);
+      if (aIsNumber) return -1;
+      if (bIsNumber) return 1;
+      return 0;
+    });
+
+    let tout = `{{AfC submission|${sub.status}`;
+    paramKeys.forEach((key, index) => {
+      const value = sub.params[key];
+      const isSequentialPositional =
+        key === String(Number(key)) &&
+        Number.isInteger(Number(key)) &&
+        !value.includes("=") &&
+        (key === "2" || paramKeys[index - 1] === String(Number(key) - 1));
+      tout += isSequentialPositional ? `|${value}` : `|${key}=${value}`;
+    });
+
+    // Collapse old decline templates once a newer one is already displayed
+    if (hasDeclineTemplate && sub.status === "d") {
+      tout += "|small=yes";
+    }
+    if (sub.status === "d") hasDeclineTemplate = true;
+
+    tout += `|ts=${sub.ts}}} <!-- กรุณาอย่าลบบรรทัดนี้! -->`;
+    output.push(tout);
+  }
+
+  // Then comment templates, followed by a horizontal rule if there were any
+  const comments = commentTemplates.map(
+    ({ raw }) => parseTemplateParams(raw)["1"] ?? "",
+  );
+  comments.forEach((comment) => output.push(`\n{{AfC comment|1=${comment}}}`));
+  if (comments.length) output.push("\n----");
+  const templateBlock = output.join("\n");
+
+  // Strip the original templates from wherever they were, back-to-front so
+  // earlier offsets stay valid, then put the rebuilt block at the very top.
+  const removals = [...submissionTemplates, ...commentTemplates].sort(
+    (a, b) => b.start - a.start,
+  );
+  let rest = text;
+  for (const { start, end } of removals) {
+    rest = rest.slice(0, start) + rest.slice(end);
+  }
+  rest = rest
+    .replace(/(?:[\t ]*(?:\r?\n|\r)){3,}/g, "\n\n")
+    .replace(/^\s+/, "");
+
+  return `${templateBlock}\n${rest.replace("----", "")}`;
+}
+
+function wrapCats(text: string): string {
+  // remove any existing {{หมวดหมู่ฉบับร่าง}} template
+  text = text.replace(
+    /\{\{ *(?:หมวดหมู่(?:ของ)?ฉบับร่าง|draft categories) *\|? *([^\}]*) *\}\}/gi,
+    "$1",
+  );
+  const templateToCatch = ["อายุขัย", "เกิดปี", "มีชีวิต"];
+  let cats = [];
+  let templates = [];
+  for (const match of text.matchAll(
+    new RegExp(`\\{\\{(${templateToCatch.join("|")})\\|?([^}]*)\\}\\}`, "gi"),
+  )) {
+    const cat = match[0].trim();
+    if (cat) {
+      templates.push(cat);
+      text = text.replace(match[0], "");
+    }
+  }
+
+  for (const match of text.matchAll(
+    /\[\[\:?(?:หมวดหมู่|category):(.+?)\]\]/gi,
+  )) {
+    cats.push(match[1]);
+    text = text.replace(match[0], "");
+  }
+
+  cats = cats.filter((v) => !v.startsWith("ฉบับร่างเกี่ยวกับ"));
+
+  // Handle {{DEFAULTSORT:...}} magic word
+  const defaultsortMatch = text.match(/\{\{ *DEFAULTSORT *: *([^}]*) *\}\}/i);
+  if (defaultsortMatch) {
+    const defaultsortValue = defaultsortMatch[1].trim();
+    if (defaultsortValue) {
+      templates.push(`{{DEFAULTSORT:${defaultsortValue}}}`);
+    }
+    text = text.replace(defaultsortMatch[0], "");
+  }
+
+  text += `\n\n{{หมวดหมู่ฉบับร่าง|${templates.length ? "\n" + templates.join("\n") : ""}${cats.length ? `\n${cats.map((v) => `[[:หมวดหมู่:${v}]]`).join("\n")}` : ""}\n}}`;
+  return text;
+}
+
+function detectDraftSubject(text: string, ctx: ScriptContext): string {
+  if (/บทความฉบับร่าง\s*\|\s*subject\s*=/i.test(text)) {
+    return text;
+  }
+  const subjects = {
+    นักการเมือง: [/กล่องข้อมูล นักการเมือง/i, /กล่องข้อมูล ผู้ดำรงตำแหน่ง/i],
+    การเมือง: [/กล่องข้อมูล การเลือกตั้ง/i, /ฉบับร่างเกี่ยวกับการเมือง/],
+    สื่อ: [
+      /กล่องข้อมูล ภาพยนตร์ไทย/i,
+      /Infobox film/i,
+      /กล่องข้อมูล (?:รายการ|ละคร)โทรทัศน์/i,
+      /กล่องข้อมูล นักแสดง/i,
+    ],
+    การสงคราม: [/Infobox military installation/i, /Infobox military conflict/i],
+    ดนตรี: [/Infobox musical artist/i, /Infobox album/i, /Infobox song/i],
+    กีฬา: [
+      /Infobox sportsperson/i,
+      /Infobox sports league/i,
+      /Infobox sports team/i,
+      /Infobox Olympic event/i,
+      /Infobox football match/i,
+      /Infobox national football team/i,
+      /\{\{\s*ไตรกีฬาในโอลิมปิก\s*(\|[^}]*)?\}\}/i,
+    ],
+    ภูมิศาสตร์และสถานที่: [
+      /Infobox settlement/i,
+      /กล่องข้อมูล องค์กรปกครองส่วนท้องถิ่น/i,
+      /กล่องข้อมูล เทศบาล/i,
+      /Infobox body of water/i,
+    ],
+  };
+  let subject = "";
+  for (const [candidateSubject, regex] of Object.entries(subjects)) {
+    if (regex.some((r) => text.match(r))) {
+      subject = candidateSubject;
+    }
+  }
+
+  if (!subject) {
+    return text;
+  }
+
+  return text.replace(
+    /\{\{ *บทความฉบับร่าง *([^\}]+)?\}\}/,
+    "{{บทความฉบับร่าง|subject=" + subject + "$1}}",
+  );
+}
+
+function appendRefSection(text: string): string {
+  if (!text.match(/== *(อ้างอิง|เชิงอรรถ|บรรณานุกรม) *==/)) {
+    text += "\n\n== อ้างอิง ==\n{{รายการอ้างอิง}}\n";
+  }
+  return text;
+}
+
+function partyColorFix(text: string): string {
+  text = text.replace(/\{\{พรรค([^\/]+)\/meta\/color\}\}/gi, "{{สีพรรค|$1}}");
+  return text;
 }

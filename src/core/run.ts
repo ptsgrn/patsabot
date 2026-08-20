@@ -47,6 +47,14 @@ function globalOptions(): Option[] {
     new Option("--no-dry-run", "Write changes to the wiki").helpGroup(
       GLOBAL_GROUP,
     ),
+    new Option(
+      "--interactive",
+      "Force the interactive edit-review TUI on",
+    ).helpGroup(GLOBAL_GROUP),
+    new Option(
+      "--no-interactive",
+      "Disable the interactive edit-review TUI (for background/unattended runs). Defaults to on when stdout is a terminal.",
+    ).helpGroup(GLOBAL_GROUP),
     new Option("-l, --log-level <level>", "Console log level")
       .choices(LOG_LEVELS)
       .helpGroup(GLOBAL_GROUP),
@@ -64,6 +72,7 @@ interface Globals {
   user?: string;
   apiUrl?: string;
   dryRun: boolean;
+  interactive?: boolean;
   logLevel?: string;
 }
 
@@ -92,6 +101,7 @@ function resolveGlobals(leaf: AnyCommand): Globals {
     user: pick<string>("user"),
     apiUrl: pick<string>("apiUrl"),
     dryRun: pick<boolean>("dryRun") ?? true,
+    interactive: pick<boolean>("interactive"),
     logLevel: pick<string>("logLevel"),
   };
 }
@@ -104,6 +114,7 @@ function toRunParams(entry: ScriptEntry, globals: Globals): RunParams {
     user: globals.user,
     apiUrl: globals.apiUrl,
     dryRun: globals.dryRun,
+    interactive: globals.interactive,
     logLevel: globals.logLevel,
   };
 }

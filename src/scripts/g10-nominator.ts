@@ -1,4 +1,5 @@
 import { defineScript } from "@core/define";
+import { MwnMissingPageError } from "mwn";
 import type { EditTransform } from "mwn";
 
 interface G10CandidateRow {
@@ -166,24 +167,37 @@ export default defineScript({
         ctx.log.info(
           `[Dry Run] Would nominate page "${pageTitle}" for deletion with template: ${deletionTemplate}`,
         );
+
+        // Mirror the live branch so the dry-run notify preview isn't empty.
+        usersToNotify.get(pageCreator)?.add(pageTitle);
       } else {
         ctx.log.info(
           `Nominating page "${pageTitle}" for deletion with template: ${deletionTemplate}`,
         );
 
+        let nominated = true;
+
         // Returning a falsy value aborts the edit (mwn's runtime behavior;
         // its type declares only string/ApiEditPageParams, hence the cast).
-        await ctx.bot.edit(pageTitle, (({ content }) => {
+        await ctx.bot.edit(pageTitle, (async ({ content }) => {
           if (content.includes("{{ลบ-ท10")) {
             ctx.log.info(
               `Page "${pageTitle}" already has a G10 deletion template. Skipping nomination.`,
             );
 
+            nominated = false;
+            return null;
+          }
+
+          const after = `${deletionTemplate}\n\n${content}`;
+          const decision = await ctx.input.reviewEdit(pageTitle, content, after);
+          if (decision === "skip") {
+            ctx.log.info(`Skipped nomination for "${pageTitle}" via review.`);
             return null;
           }
 
           return {
-            text: `${deletionTemplate}\n\n${content}`,
+            text: after,
             summary:
               "บอต: เพิ่มแม่แบบแจ้งลบ (ท10) เนื่องจากไม่มีการแก้ไขโดยผู้ใช้ที่ไม่ใช่บอตเป็นเวลานาน",
             minor: true,
@@ -191,8 +205,8 @@ export default defineScript({
           };
         }) as EditTransform);
 
-        // Add page title to the set of notifications for the page creator
-        usersToNotify.get(pageCreator)?.add(pageTitle);
+        // Only notify the creator when the tag was actually added.
+        if (nominated) usersToNotify.get(pageCreator)?.add(pageTitle);
       }
     }
 
@@ -208,18 +222,58 @@ export default defineScript({
           `Notifying user "${username}" on their talk page "${userTalkPage}" for the following pages:\n${pageList}`,
         );
 
-        await ctx.bot.edit(userTalkPage, ({ content }) => {
+        try {
+          await ctx.bot.edit(userTalkPage, (async ({ content }) => {
+            const notificationText = Array.from(notifications)
+              .filter((pageTitle) => !content.includes(pageTitle))
+              .map((pageTitle) => `{{subst:Db-draft-notice|1=${pageTitle}}} ~~~~`)
+              .join("\n\n");
+
+            if (!notificationText) {
+              ctx.log.info(
+                `No new notifications needed for "${username}"; skipping.`,
+              );
+              return null;
+            }
+
+            const after = `${content}\n\n${notificationText}`;
+            const decision = await ctx.input.reviewEdit(userTalkPage, content, after);
+            if (decision === "skip") {
+              ctx.log.info(`Skipped notifying "${username}" via review.`);
+              return null;
+            }
+
+            return {
+              text: after,
+              summary: "บอต: แจ้งเตือนการแจ้งลบฉบับร่าง",
+              minor: true,
+              bot: true,
+            };
+          }) as EditTransform);
+        } catch (err) {
+          if (!(err instanceof MwnMissingPageError)) throw err;
+
+          // Talk page doesn't exist yet; create it instead of editing.
           const notificationText = Array.from(notifications)
-            .filter((pageTitle) => !content.includes(pageTitle))
             .map((pageTitle) => `{{subst:Db-draft-notice|1=${pageTitle}}} ~~~~`)
             .join("\n\n");
-          return {
-            text: `${content}\n\n${notificationText}`,
-            summary: "บอต: แจ้งเตือนการแจ้งลบฉบับร่าง",
-            minor: true,
-            bot: true,
-          };
-        });
+
+          const decision = await ctx.input.reviewEdit(
+            userTalkPage,
+            "",
+            notificationText,
+          );
+          if (decision === "skip") {
+            ctx.log.info(`Skipped notifying "${username}" via review.`);
+          } else {
+            await ctx.bot.create(
+              userTalkPage,
+              notificationText,
+              "บอต: แจ้งเตือนการแจ้งลบฉบับร่าง",
+              { minor: true },
+            );
+          }
+        }
       }
     }
   },

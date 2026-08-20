@@ -2,7 +2,7 @@ import { createId } from "@paralleldrive/cuid2";
 import { Mwn } from "mwn";
 import Parser from "wikiparser-node";
 import { dependencies, version } from "../../package.json";
-import { Input, Output } from "./base";
+import { Input, Output, StopRunError } from "./base";
 import { getConfig } from "./config";
 import type {
   AnyCommand,
@@ -29,6 +29,11 @@ export interface RunParams {
   apiUrl?: string;
   /** Writes are suppressed unless this is explicitly false. */
   dryRun?: boolean;
+  /**
+   * Whether `ctx.input.reviewEdit()` may open its TUI. Defaults to whether
+   * stdout is a TTY, so scheduled/background runs never block on a keypress.
+   */
+  interactive?: boolean;
   logLevel?: string;
   rid?: string;
 }
@@ -95,11 +100,14 @@ export async function createContext<C extends AnyCommand>(
   const wikidataApiUrl =
     config.sites.wikidata?.url ?? "https://www.wikidata.org/w/api.php";
 
+  const interactive = params.interactive ?? Boolean(process.stdout.isTTY);
+
   return {
     opts: (params.opts ?? {}) as OptionsOf<C>,
     meta,
     rid,
     dryRun: params.dryRun !== false,
+    interactive,
     site,
     account,
     config,
@@ -118,7 +126,7 @@ export async function createContext<C extends AnyCommand>(
         },
       },
     }),
-    input: new Input(account.username),
+    input: new Input(account.username, interactive),
     output: new Output(),
     wikitextParser: Parser,
   };
@@ -143,7 +151,9 @@ export async function executeScript<C extends AnyCommand>(
     await script.beforeRun?.(ctx);
     await script.run(ctx);
   } catch (err) {
-    if (err instanceof Error) {
+    if (err instanceof StopRunError) {
+      ctx.log.warn(err.message);
+    } else if (err instanceof Error) {
       ctx.log.error(err.message, { cause: err });
     } else {
       ctx.log.error(String(err));

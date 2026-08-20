@@ -42,6 +42,9 @@ export class Scheduler extends ServiceBase {
         ...this.defaults,
         source: entry.name,
         ...params,
+        // Cron-fired runs have no attached terminal — never block on a
+        // keypress, no matter what the caller passed in.
+        interactive: false,
       }),
     );
 
