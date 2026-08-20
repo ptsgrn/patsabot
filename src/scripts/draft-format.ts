@@ -10,24 +10,34 @@ export default defineScript({
     description: "จัดรูปแบบฉบับร่างให้เหมาะสม",
   },
   async run(ctx) {
+    const user = (await ctx.bot.userinfo()) as { name: string };
+    ctx.bot.setOptions({
+      editConfig: {
+        exclusionRegex: new RegExp(
+          `\\{\\{(nobots|bots\\|allow=none|bots\\|deny=all|bots\\|optout=all|bots\\|deny=.*?${user.name}.*?)\\}\\}`,
+          "ig",
+        ),
+      },
+    });
+
     const [draftWithCats, _] = await ctx.replica.query<{ name: string }[]>(`
     /* draft-cats.ts SLOW_OK */
-  SELECT DISTINCT draft.page_title AS name
-	FROM categorylinks
-	JOIN page AS draft ON draft.page_id = cl_from
-	JOIN linktarget ON lt_id = cl_target_id
-	LEFT JOIN page AS catpage ON catpage.page_namespace = 14 AND catpage.page_title = lt_title
-	LEFT JOIN page_props ON pp_page = catpage.page_id AND pp_propname = 'hiddencat'
-	WHERE draft.page_namespace = 118
-		AND pp_page IS NULL
-		AND lt_title NOT LIKE '%\_drafts'
-		AND lt_title NOT LIKE 'AfC_%'
-		AND lt_title NOT LIKE 'ฉบับร่าง%'
-		AND NOT (draft.page_title = 'กระบะทราย' AND lt_title IN ('Namespace_example_pages', 'Wikipedia_drafts'))
-		AND NOT EXISTS (SELECT 1
-										FROM templatelinks
-										JOIN linktarget ON lt_id = tl_target_id AND lt_namespace = 10 AND lt_title = 'หมวดหมู่บำรุงรักษา'
-										WHERE tl_from = catpage.page_id);`);
+    SELECT DISTINCT draft.page_title AS name
+    FROM categorylinks
+    JOIN page AS draft ON draft.page_id = cl_from
+    JOIN linktarget ON lt_id = cl_target_id
+    LEFT JOIN page AS catpage ON catpage.page_namespace = 14 AND catpage.page_title = lt_title
+    LEFT JOIN page_props ON pp_page = catpage.page_id AND pp_propname = 'hiddencat'
+    WHERE draft.page_namespace = 118
+      AND pp_page IS NULL
+      AND lt_title NOT LIKE '%\_drafts'
+      AND lt_title NOT LIKE 'AfC_%'
+      AND lt_title NOT LIKE 'ฉบับร่าง%'
+      AND NOT (draft.page_title = 'กระบะทราย' AND lt_title IN ('Namespace_example_pages', 'Wikipedia_drafts'))
+      AND NOT EXISTS (SELECT 1
+                      FROM templatelinks
+                      JOIN linktarget ON lt_id = tl_target_id AND lt_namespace = 10 AND lt_title = 'หมวดหมู่บำรุงรักษา'
+                      WHERE tl_from = catpage.page_id);`);
 
     for (const draft of draftWithCats) {
       const draftTitle = `ฉบับร่าง:${draft.name}`;
@@ -99,7 +109,7 @@ function applyRequiredFixes(text: string): string {
   // Section may have categories after it - keep them there
   text = removeEmptySectionAtEnd(text);
   text = text.replace(
-    /\n+==.+?==((?:\[\[:?(Category|หมวดหมู่):.+?\]\]|\s+)*)$/,
+    /\n+==.+?==((?:\[\[:?(Category|หมวดหมู่):.+?\]\]|\s+)*)$/i,
     "$1",
   );
 

@@ -243,7 +243,7 @@ async function getAdminStats(ctx: ScriptContext) {
 export default defineScript({
   meta: {
     description: "Fetch and display admin statistics",
-    frequency: "0 0 * * 0", // Every Sunday at midnight
+    frequency: "30 2 * * 1", // Every Monday at 02:30
   },
 
   async beforeRun(ctx) {

@@ -16,7 +16,7 @@ export default defineScript({
     id: "g10-nominator",
     name: "G10 Nominator",
     description: "แจ้งลบ",
-    // frequency: "0 0 * * *", // every 24 hours
+    frequency: "0 0 * * *", // every 24 hours
   },
 
   async run(ctx) {

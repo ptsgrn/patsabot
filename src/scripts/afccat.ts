@@ -5,7 +5,7 @@ export default defineScript({
     id: "afccat",
     name: "AfC Category Creator",
     description: "Create categories for AfC submissions",
-    frequency: "0 2 * * *", // Run every day at 2:00 AM
+    frequency: "0 0 * * *", // Run every day at 00:00
   },
 
   options: (c) => c.option("--date <date>", "Date to create categories for", "today"),
