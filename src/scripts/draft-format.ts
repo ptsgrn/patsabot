@@ -31,6 +31,13 @@ export default defineScript({
 
     for (const draft of draftWithCats) {
       const draftTitle = `ฉบับร่าง:${draft.name}`;
+      if (
+        draftTitle === "ฉบับร่าง:กระบะทราย" ||
+        draftTitle === "ฉบับร่าง:ทดลองเขียน"
+      ) {
+        ctx.log.info(`Skipping "${draftTitle}"`);
+        continue;
+      }
       const draftPage = await ctx.bot.read(draftTitle);
       const content = draftPage.revisions?.[0].content;
       if (!content) {
@@ -39,6 +46,11 @@ export default defineScript({
       }
 
       const newText = cleanUp(content, draftTitle, ctx);
+
+      if (newText === content) {
+        ctx.log.info(`No changes for "${draftTitle}"`);
+        continue;
+      }
 
       const decision = await ctx.input.reviewEdit(draftTitle, content, newText);
       if (decision === "skip") {

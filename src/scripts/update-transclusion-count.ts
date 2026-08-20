@@ -41,11 +41,18 @@ function bucketFor(title: string): (typeof SECTIONS)[number] {
     : "other";
 }
 
-function addRow(buckets: Map<string, string[]>, title: string, count: number) {
+function addRow(
+  buckets: Map<string, string[]>,
+  bucketTitle: string,
+  luaTitle: string,
+  count: number,
+) {
   // An extra sig fig for very large counts, matching the original notebook.
   const sigFigs = count < 100000 ? SIG_FIGS : SIG_FIGS + 1;
   const rounded = roundToSigFigs(count, sigFigs);
-  buckets.get(bucketFor(title))?.push(`  ["${luaKey(title)}"] = ${rounded},`);
+  buckets
+    .get(bucketFor(bucketTitle))
+    ?.push(`  ["${luaKey(luaTitle)}"] = ${rounded},`);
 }
 
 export default defineScript({
@@ -82,10 +89,15 @@ export default defineScript({
 
     const buckets = new Map<string, string[]>(SECTIONS.map((section) => [section, []]));
     for (const row of templateRows) {
-      addRow(buckets, row.lt_title, Number(row.transclusions));
+      addRow(buckets, row.lt_title, row.lt_title, Number(row.transclusions));
     }
     for (const row of moduleRows) {
-      addRow(buckets, `มอดูล:${row.lt_title}`, Number(row.transclusions));
+      addRow(
+        buckets,
+        row.lt_title,
+        `มอดูล:${row.lt_title}`,
+        Number(row.transclusions),
+      );
     }
 
     for (const section of SECTIONS) {
