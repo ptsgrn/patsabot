@@ -80,7 +80,7 @@ export function getLogger(): Logger {
       new DailyRotateFile({
         filename: `${config.logger.logPath}/output-%DATE%.jsonl`,
         datePattern: "YYYYMMDD",
-        zippedArchive: true,
+        // zippedArchive: true,
         maxSize: "20m",
         maxFiles: "7d",
       }),
