@@ -8,4 +8,3 @@ export * from "./registry";
 export * from "./replica";
 export * from "./scheduler";
 export * from "./site";
-export * from "./wikidata";

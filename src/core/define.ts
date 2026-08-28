@@ -6,7 +6,6 @@ import type { Input, Output } from "./base";
 import type { Config } from "./config";
 import type { Replica } from "./replica";
 import type { ResolvedAccount, ResolvedSite } from "./site";
-import type { WikidataService } from "./wikidata";
 
 // biome-ignore lint/suspicious/noExplicitAny: Commander's generics are variadic.
 export type AnyCommand = Command<any[], any>;
@@ -70,7 +69,6 @@ export interface ScriptContext<TOptions = Record<string, never>> {
   readonly log: Logger;
   readonly bot: Mwn;
   readonly replica: Replica;
-  readonly wikidata: WikidataService;
   readonly input: Input;
   readonly output: Output;
   readonly wikitextParser: typeof Parser;

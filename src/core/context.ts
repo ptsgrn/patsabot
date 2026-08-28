@@ -14,7 +14,6 @@ import type {
 import { getLogger } from "./logger";
 import { Replica } from "./replica";
 import { accountApiUrl, resolveAccount, resolveSite } from "./site";
-import { WikidataService } from "./wikidata";
 
 export interface RunParams {
   /** Path under `src/scripts`, used as the default id and log label. */
@@ -114,18 +113,6 @@ export async function createContext<C extends AnyCommand>(
     log,
     bot,
     replica: new Replica({ dbname: site.dbname }),
-    wikidata: new WikidataService({
-      instance: toInstanceUrl(wikidataApiUrl),
-      userAgent,
-      credentials: {
-        oauth: {
-          consumer_key: account.oauth.consumerToken,
-          consumer_secret: account.oauth.consumerSecret,
-          token: account.oauth.accessToken,
-          token_secret: account.oauth.accessSecret,
-        },
-      },
-    }),
     input: new Input(account.username, interactive),
     output: new Output(),
     wikitextParser: Parser,
