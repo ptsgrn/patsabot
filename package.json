@@ -24,7 +24,6 @@
     "mwn": "^3.0.2",
     "mysql2": "^3.22.3",
     "terminal-kit": "^3.1.4",
-    "wikibase-edit": "^8.1.2",
     "wikiparser-node": "^1.39.1",
     "winston": "^3.19.0",
     "winston-daily-rotate-file": "^5.0.0",
