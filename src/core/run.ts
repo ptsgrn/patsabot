@@ -267,6 +267,7 @@ export async function buildCli(): Promise<Command> {
       apiUrl: globals.apiUrl,
       dryRun: globals.dryRun,
       logLevel: globals.logLevel,
+      interactive: false,
     });
     await scheduler.scheduleAll();
   });
