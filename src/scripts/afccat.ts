@@ -8,13 +8,16 @@ export default defineScript({
     frequency: "0 0 * * *", // Run every day at 00:00
   },
 
-  options: (c) => c.option("--date <date>", "Date to create categories for", "today"),
+  options: (c) =>
+    c.option("--date <date>", "Date to create categories for", "today"),
 
   async run(ctx) {
     await ctx.bot.Date.populateLocaleData("th");
 
     const dateObject =
-      ctx.opts.date === "today" ? new ctx.bot.Date() : new ctx.bot.Date(ctx.opts.date);
+      ctx.opts.date === "today"
+        ? new ctx.bot.Date()
+        : new ctx.bot.Date(ctx.opts.date);
 
     let categories = [
       `หมวดหมู่:ฉบับร่างเรียงตามวันที่ส่ง/${dateObject.format("DD MMMM YYYY", 7)}`,
@@ -32,7 +35,9 @@ export default defineScript({
       return;
     }
 
-    ctx.log.info(`Creating categories for categories ${JSON.stringify(categories)}`);
+    ctx.log.info(
+      `Creating categories for categories ${JSON.stringify(categories)}`,
+    );
 
     await ctx.bot
       .batchOperation(
@@ -46,7 +51,8 @@ export default defineScript({
             }
             if (
               page.indexOf("หมวดหมู่:ฉบับร่างเรียงตามวันที่ส่ง/") === -1 ||
-              page === "หมวดหมู่:ฉบับร่างเรียงตามวันที่ส่ง/Invalid date"
+              page === "หมวดหมู่:ฉบับร่างเรียงตามวันที่ส่ง/Invalid date" ||
+              page === "หมวดหมู่:ฉบับร่างเรียงตามวันที่ส่ง/"
             )
               return reject();
 
