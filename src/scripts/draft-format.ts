@@ -1,7 +1,9 @@
 import { defineScript, type ScriptContext } from "@core/define";
+import type { ApiPageList } from "mwn";
 
 const draftTemplateRegex =
   /\{\{ *(?:ฉบับร่าง(?:บทความ)?|บทความฉบับร่าง|draft ?(?:article)?) *(\| *[^\}]*)?\}\}/gi;
+const deleteTemplateRegex = /\{\{\s*(?:ลบ|delete)\s*(?:\|[^}]*)?\}\}/gm;
 
 export default defineScript({
   meta: {
@@ -9,6 +11,12 @@ export default defineScript({
     name: "Drafts Format Bot",
     description: "จัดรูปแบบฉบับร่างให้เหมาะสม",
   },
+  options: (c) =>
+    c.option(
+      "--from <title>",
+      "Start from a specific draft title in all page list mode",
+      "",
+    ),
   async run(ctx) {
     const user = (await ctx.bot.userinfo()) as { name: string };
     ctx.bot.setOptions({
@@ -20,95 +28,120 @@ export default defineScript({
       },
     });
 
-    const [draftWithCats, _] = await ctx.replica.query<{ name: string }[]>(`
-    /* draft-cats.ts SLOW_OK */
-    SELECT DISTINCT draft.page_title AS name
-    FROM categorylinks
-    JOIN page AS draft ON draft.page_id = cl_from
-    JOIN linktarget ON lt_id = cl_target_id
-    LEFT JOIN page AS catpage ON catpage.page_namespace = 14 AND catpage.page_title = lt_title
-    LEFT JOIN page_props ON pp_page = catpage.page_id AND pp_propname = 'hiddencat'
-    WHERE draft.page_namespace = 118
-      AND pp_page IS NULL
-      AND lt_title NOT LIKE '%\_drafts'
-      AND lt_title NOT LIKE 'AfC_%'
-      AND lt_title NOT LIKE 'ฉบับร่าง%'
-      AND NOT (draft.page_title = 'กระบะทราย' AND lt_title IN ('Namespace_example_pages', 'Wikipedia_drafts'))
-      AND NOT EXISTS (SELECT 1
-                      FROM templatelinks
-                      JOIN linktarget ON lt_id = tl_target_id AND lt_namespace = 10 AND lt_title = 'หมวดหมู่บำรุงรักษา'
-                      WHERE tl_from = catpage.page_id);`);
+    // const [draftWithCats, _] = await ctx.replica.query<{ name: string }[]>(`
+    // /* draft-cats.ts SLOW_OK */
+    // SELECT DISTINCT draft.page_title AS name
+    // FROM categorylinks
+    // JOIN page AS draft ON draft.page_id = cl_from
+    // JOIN linktarget ON lt_id = cl_target_id
+    // LEFT JOIN page AS catpage ON catpage.page_namespace = 14 AND catpage.page_title = lt_title
+    // LEFT JOIN page_props ON pp_page = catpage.page_id AND pp_propname = 'hiddencat'
+    // WHERE draft.page_namespace = 118
+    //   AND pp_page IS NULL
+    //   AND lt_title NOT LIKE '%\_drafts'
+    //   AND lt_title NOT LIKE 'AfC_%'
+    //   AND lt_title NOT LIKE 'ฉบับร่าง%'
+    //   AND NOT (draft.page_title = 'กระบะทราย' AND lt_title IN ('Namespace_example_pages', 'Wikipedia_drafts'))
+    //   AND NOT EXISTS (SELECT 1
+    //                   FROM templatelinks
+    //                   JOIN linktarget ON lt_id = tl_target_id AND lt_namespace = 10 AND lt_title = 'หมวดหมู่บำรุงรักษา'
+    //                   WHERE tl_from = catpage.page_id);`);
 
-    // 100 Most recently edited drafts in last 2 days where PatsaBot did not edit the page yet.
-    const [recentDrafts, __] = await ctx.replica.query<{ name: string }[]>(`
-    /* draft-cats.ts SLOW_OK */
-    SELECT draft.page_title AS name
-    FROM page AS draft
-    JOIN revision ON rev_page = draft.page_id
-    WHERE draft.page_namespace = 118
-      AND rev_timestamp >= DATE_FORMAT(DATE_SUB(NOW(), INTERVAL 2 DAY), '%Y%m%d%H%i%s')
-      AND NOT EXISTS (SELECT 1
-                      FROM revision AS botrev
-                      JOIN actor AS botactor ON botactor.actor_id = botrev.rev_actor
-                      WHERE botactor.actor_name = 'PatsaBot'
-                        AND botrev.rev_page = draft.page_id)
-    GROUP BY draft.page_id
-    ORDER BY MAX(rev_timestamp) DESC
-    LIMIT 100;`);
+    // // 100 Most recently edited drafts in last 2 days where PatsaBot did not edit the page yet.
+    // const [recentDrafts, __] = await ctx.replica.query<{ name: string }[]>(`
+    // /* draft-cats.ts SLOW_OK */
+    // SELECT draft.page_title AS name
+    // FROM page AS draft
+    // JOIN revision ON rev_page = draft.page_id
+    // WHERE draft.page_namespace = 118
+    //   AND rev_timestamp >= DATE_FORMAT(DATE_SUB(NOW(), INTERVAL 2 DAY), '%Y%m%d%H%i%s')
+    //   AND NOT EXISTS (SELECT 1
+    //                   FROM revision AS botrev
+    //                   JOIN actor AS botactor ON botactor.actor_id = botrev.rev_actor
+    //                   WHERE botactor.actor_name = 'PatsaBot'
+    //                     AND botrev.rev_page = draft.page_id)
+    // GROUP BY draft.page_id
+    // ORDER BY MAX(rev_timestamp) DESC
+    // LIMIT 100;`);
 
-    const drafts = [
-      ...draftWithCats.map((draft) => `ฉบับร่าง:${draft.name}`),
-      ...recentDrafts.map((draft) => `ฉบับร่าง:${draft.name}`),
-    ].filter((value, index, self) => self.indexOf(value) === index); // unique
+    // const drafts = [
+    //   ...draftWithCats.map((draft) => `ฉบับร่าง:${draft.name}`),
+    //   ...recentDrafts.map((draft) => `ฉบับร่าง:${draft.name}`),
+    // ].filter((value, index, self) => self.indexOf(value) === index); // unique
+    for await (const result of ctx.bot.continuedQueryGen({
+      action: "query",
+      format: "json",
+      list: "allpages",
+      formatversion: "2",
+      apfrom: "!",
+      apnamespace: "118",
+      ...(ctx.opts.from ? { apfrom: ctx.opts.from } : {}),
+    })) {
+      const pages = (result.query?.allpages ?? []) as ApiPageList;
 
-    for (const draftTitle of drafts) {
-      if (
-        draftTitle === "ฉบับร่าง:กระบะทราย" ||
-        draftTitle === "ฉบับร่าง:ทดลองเขียน"
-      ) {
-        ctx.log.info(`Skipping "${draftTitle}"`);
-        continue;
+      for (const { title } of pages) {
+        await processPage(ctx, title);
       }
-      const draftPage = await ctx.bot.read(draftTitle);
-      const content = draftPage.revisions?.[0].content;
-      if (!content) {
-        ctx.log.warn(`No content for "${draftTitle}"`);
-        continue;
-      }
-
-      const newText = cleanUp(content, draftTitle, ctx);
-
-      if (newText === content) {
-        ctx.log.info(`No changes for "${draftTitle}"`);
-        continue;
-      }
-
-      const decision = await ctx.input.reviewEdit(draftTitle, content, newText);
-      if (decision === "skip") {
-        ctx.log.warn(`Skipped "${draftTitle}"`);
-        continue;
-      }
-
-      if (ctx.dryRun) {
-        ctx.log.info(`[Dry Run] Would save changes to "${draftTitle}"`);
-        continue;
-      }
-
-      await ctx.bot.edit(draftTitle, async () => ({
-        text: newText,
-        summary: "บอต: เก็บกวาดฉบับร่าง",
-        minor: true,
-      }));
-
-      ctx.log.info(`Saved changes to "${draftTitle}"`);
     }
   },
 });
 
+async function processPage(ctx: ScriptContext<unknown>, draftTitle: string) {
+  if (
+    draftTitle === "ฉบับร่าง:กระบะทราย" ||
+    draftTitle === "ฉบับร่าง:ทดลองเขียน" ||
+    draftTitle === "ฉบับร่าง:ตัวอย่าง" ||
+    draftTitle.startsWith("ฉบับร่าง:หน้าทดลอง/")
+  ) {
+    ctx.log.info(`Skipping "${draftTitle}"`);
+    return;
+  }
+
+  ctx.log.info(`Working on ${draftTitle}`);
+
+  const draftPage = await ctx.bot.read(draftTitle);
+  const content = draftPage.revisions?.[0].content;
+  if (!content) {
+    ctx.log.warn(`No content for "${draftTitle}"`);
+    return;
+  }
+
+  if (deleteTemplateRegex.test(content)) {
+    ctx.log.warn(`Draft have speedy deletion challenge, skip.`);
+    return;
+  }
+
+  const newText = cleanUp(content, draftTitle, ctx);
+
+  if (newText === content) {
+    ctx.log.info(`No changes for "${draftTitle}"`);
+    return;
+  }
+
+  const decision = await ctx.input.reviewEdit(draftTitle, content, newText);
+  if (decision === "skip") {
+    ctx.log.warn(`Skipped "${draftTitle}"`);
+    return;
+  }
+
+  if (ctx.dryRun) {
+    ctx.log.info(`[Dry Run] Would save changes to "${draftTitle}"`);
+    return;
+  }
+
+  await ctx.bot.edit(draftTitle, async () => ({
+    text: newText,
+    summary: "บอต: เก็บกวาดฉบับร่าง",
+    minor: true,
+  }));
+
+  ctx.log.info(`Saved changes to "${draftTitle}"`);
+}
+
 export function cleanUp(
   text: string,
   pageTitle: string,
-  ctx: ScriptContext,
+  ctx: ScriptContext<unknown>,
 ): string {
   const beforeRequired = text;
   text = applyRequiredFixes(text);
@@ -208,7 +241,7 @@ function applyRequiredFixes(text: string): string {
 function applyOptionalFixes(
   text: string,
   pageTitle: string,
-  ctx: ScriptContext,
+  ctx: ScriptContext<unknown>,
 ): string {
   // Convert http://-style links to other wikipages to wikicode syntax
   // FIXME: Break this out into its own core function? Will it be used elsewhere?
@@ -250,6 +283,11 @@ function applyOptionalFixes(
 function addDraftTemplate(text: string): string {
   if (!draftTemplateRegex.test(text)) {
     text = `{{บทความฉบับร่าง}}\n${text}`;
+
+    // AfC formatting may already have run before this optional fix. Re-run it
+    // so the newly added draft template stays below the AfC block and its
+    // horizontal rule, immediately before the article content.
+    text = formatAfcTemplate(text);
   }
 
   return text;
@@ -257,7 +295,54 @@ function addDraftTemplate(text: string): string {
 
 function standardizeDraftTemplate(text: string): string {
   text = addDraftTemplate(text);
-  return text.replace(draftTemplateRegex, "{{บทความฉบับร่าง$1}}");
+  text = text.replace(draftTemplateRegex, "{{บทความฉบับร่าง$1}}");
+
+  return moveShortDescriptionBeforeDraftTemplate(text);
+}
+
+function moveShortDescriptionBeforeDraftTemplate(text: string): string {
+  const draftTemplate = findTemplates(
+    text,
+    /^(?:ฉบับร่าง(?:บทความ)?|บทความฉบับร่าง|draft ?(?:article)?)$/i,
+  )[0];
+  if (!draftTemplate) return text;
+
+  const shortDescriptions = findTemplates(text, /^short description$/i).filter(
+    ({ start }) => start > draftTemplate.start,
+  );
+
+  if (!shortDescriptions.length) return text;
+
+  for (const { start, raw } of shortDescriptions.toReversed()) {
+    let removalStart = start;
+    let removalEnd = start + raw.length;
+    const lineStart = text.lastIndexOf("\n", start - 1) + 1;
+    const lineEnd = text.indexOf("\n", removalEnd);
+    const textBeforeTemplate = text.slice(lineStart, start);
+    const textAfterTemplate = text.slice(
+      removalEnd,
+      lineEnd === -1 ? text.length : lineEnd,
+    );
+
+    if (/^[\t ]*$/.test(textBeforeTemplate) && /^\r?$/.test(textAfterTemplate)) {
+      removalStart = lineStart;
+      removalEnd = lineEnd === -1 ? text.length : lineEnd + 1;
+    }
+
+    text = text.slice(0, removalStart) + text.slice(removalEnd);
+  }
+
+  const updatedDraftTemplate = findTemplates(
+    text,
+    /^(?:ฉบับร่าง(?:บทความ)?|บทความฉบับร่าง|draft ?(?:article)?)$/i,
+  )[0];
+  if (!updatedDraftTemplate) return text;
+
+  const shortDescriptionBlock = shortDescriptions
+    .map(({ raw }) => raw)
+    .join("\n");
+
+  return `${text.slice(0, updatedDraftTemplate.start)}${shortDescriptionBlock}\n${text.slice(updatedDraftTemplate.start)}`;
 }
 
 function removeEmptySectionAtEnd(wikicode: string) {
@@ -484,11 +569,7 @@ function miscFix(text: string, pageTitle: string): string {
       "== ประวัติ ==",
     )
     .replace(/\[\[category:/gi, "[[หมวดหมู่:")
-    .replace(/\[\[template:/gi, "[[แม่แบบ:")
-    .replace(
-      /\n{0,}{{โครง(?!-?ส่วน|การพี่น้อง)(.*?)}} ?((?:\n*?\[\[หมวดหมู่:.*?\]\])*)/g,
-      "$2\n\n{{โครง$1}}",
-    ); // Move stub below categories // was only detecting in NS:0
+    .replace(/\[\[template:/gi, "[[แม่แบบ:");
 
   /**
    * Fix some unnecessary exeed vowels in Thai in text
@@ -856,15 +937,38 @@ function formatAfcTemplate(text: string): string {
     .replace(/(?:[\t ]*(?:\r?\n|\r)){3,}/g, "\n\n")
     .replace(/^\s+/, "");
 
-  return `${templateBlock}\n${rest.replace("----", "")}`;
+  // The rebuilt comment block already supplies its own horizontal rule, so
+  // remove every old rule instead of only the first one.
+  rest = rest.replace(/^[\t ]*----[\t ]*(?:\r?\n|\r)?/gm, "");
+
+  return `${templateBlock}\n${rest}`;
 }
 
 function wrapCats(text: string): string {
-  // remove any existing {{หมวดหมู่ฉบับร่าง}} template
-  text = text.replace(
-    /\{\{ *(?:หมวดหมู่(?:ของ)?ฉบับร่าง|draft categories) *\|? *([^\}]*) *\}\}/gi,
-    "$1",
+  // Unwrap existing {{หมวดหมู่ฉบับร่าง}} templates. This must be
+  // nesting-aware because their contents may include templates such as
+  // {{อายุขัย|...}} whose closing braces must not close the wrapper.
+  const wrappers = findTemplates(
+    text,
+    /^(?:หมวดหมู่(?:ของ)?ฉบับร่าง|draft categories)$/i,
   );
+  for (const { start, raw } of wrappers.toReversed()) {
+    const contents = splitTopLevel(raw.slice(2, -2), "|").slice(1).join("|");
+    text = text.slice(0, start) + contents + text.slice(start + raw.length);
+  }
+
+  // Stub templates belong after categories. Keep standalone {{โครง...}}
+  // templates aside while rebuilding the category wrapper, then restore them
+  // below it. Exclude templates whose names merely start with the same word.
+  const stubTemplates: string[] = [];
+  text = text.replace(
+    /^[\t ]*(\{\{โครง(?!-?ส่วน|การพี่น้อง)[^{}\r\n]*\}\})[\t ]*$/gim,
+    (_match, template: string) => {
+      stubTemplates.push(template);
+      return "";
+    },
+  );
+
   const templateToCatch = ["อายุขัย", "เกิดปี", "มีชีวิต"];
   let cats = [];
   let templates = [];
@@ -898,10 +1002,13 @@ function wrapCats(text: string): string {
   }
 
   text += `\n\n{{หมวดหมู่ฉบับร่าง|${templates.length ? "\n" + templates.join("\n") : ""}${cats.length ? `\n${cats.map((v) => `[[:หมวดหมู่:${v}]]`).join("\n")}` : ""}\n}}`;
+  if (stubTemplates.length) {
+    text += `\n${stubTemplates.join("\n")}`;
+  }
   return text;
 }
 
-function detectDraftSubject(text: string, ctx: ScriptContext): string {
+function detectDraftSubject(text: string, ctx: ScriptContext<unknown>): string {
   if (/บทความฉบับร่าง\s*\|\s*subject\s*=/i.test(text)) {
     return text;
   }
