@@ -12,17 +12,39 @@ export default defineScript({
     c.option("--date <date>", "Date to create categories for", "today"),
 
   async run(ctx) {
-    await ctx.bot.Date.populateLocaleData("th");
+    const date = new Date(
+      ctx.opts.date === "today" ? new Date() : ctx.opts.date,
+    );
 
-    const dateObject =
+    const dateString =
       ctx.opts.date === "today"
-        ? new ctx.bot.Date()
-        : new ctx.bot.Date(ctx.opts.date);
+        ? date.toISOString().split("T")[0]
+        : ctx.opts.date;
+
+    const thaiMonths = [
+      "มกราคม",
+      "กุมภาพันธ์",
+      "มีนาคม",
+      "เมษายน",
+      "พฤษภาคม",
+      "มิถุนายน",
+      "กรกฎาคม",
+      "สิงหาคม",
+      "กันยายน",
+      "ตุลาคม",
+      "พฤศจิกายน",
+      "ธันวาคม",
+    ];
+
+    // zero pad day
+    const day = date.getDate().toString().padStart(2, "0");
+    const month = thaiMonths[date.getMonth()];
+    const year = date.getFullYear();
 
     let categories = [
-      `หมวดหมู่:ฉบับร่างเรียงตามวันที่ส่ง/${dateObject.format("DD MMMM YYYY", 7)}`,
-      `หมวดหมู่:ฉบับร่างเรียงตามวันที่ส่ง/${dateObject.format("MMMM YYYY", 7)}`,
-      `หมวดหมู่:ฉบับร่างเรียงตามวันที่ส่ง/${dateObject.format("YYYY", 7)}`,
+      `หมวดหมู่:ฉบับร่างเรียงตามวันที่ส่ง/${day} ${month} ${year}`,
+      `หมวดหมู่:ฉบับร่างเรียงตามวันที่ส่ง/${month} ${year}`,
+      `หมวดหมู่:ฉบับร่างเรียงตามวันที่ส่ง/${year}`,
     ];
 
     // no null and unique
