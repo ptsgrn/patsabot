@@ -170,7 +170,7 @@ export default defineScript({
     id: "taxo-sci-name",
     name: "Taxonomy: Add Scientific Name",
     description: "Adds a scientific name to a taxonomy entry",
-    frequency: "0 1 * * *", // Run every day at 1:00 AM
+    // frequency: "0 1 * * *", // Run every day at 1:00 AM
   },
 
   options: (c) =>

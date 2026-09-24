@@ -3,7 +3,7 @@ import type { ApiPageList } from "mwn";
 
 const draftTemplateRegex =
   /\{\{ *(?:ฉบับร่าง(?:บทความ)?|บทความฉบับร่าง|draft ?(?:article)?) *(\| *[^\}]*)?\}\}/gi;
-const deleteTemplateRegex = /\{\{\s*(?:ลบ|delete)\s*(?:\|[^}]*)?\}\}/gm;
+const deleteTemplateRegex = /\{\{\s*(?:ลบ-?|delete)\s*(?:\|[^}]*)?\}\}/gm;
 
 export default defineScript({
   meta: {
@@ -75,6 +75,7 @@ export default defineScript({
       formatversion: "2",
       apfrom: "!",
       apnamespace: "118",
+      apfilterredir: "nonredirects",
       ...(ctx.opts.from ? { apfrom: ctx.opts.from } : {}),
     })) {
       const pages = (result.query?.allpages ?? []) as ApiPageList;
@@ -222,6 +223,7 @@ function applyRequiredFixes(text: string): string {
     "ใช้รูปแบบ: \\* \\[http://www.example.com\\/ example.com\\]",
     "ดูที่ \\[\\[วิกิพีเดีย:การอ้างอิงแหล่งที่มา\\]\\] เกี่ยวกับการเพิ่มอ้างอิงโดยการใช้แท็ก<ref><\\/ref> ซึ่งจะแสดงผลตรงนี้ให้อัตโนมัติ",
     "เขียนเนื้อหาของบทความใต้บรรทัดนี้ โดยทั่วไปประโยคแรกของบทความควรจะเริ่มด้วยชื่อของหัวเรื่องที่มีอะพอสทรอฟีสามตัวล้อมรอบเพื่อทำให้เป็นตัวหนา \\(ตัวอย่าง: '''ชื่อบทความ''' คือ...\\)",
+    "เมื่อนำไปรวมเป็นบทความหลัก ให้พิจารณาเพิ่มหมวดหมู่ที่เหมาะสมหลังผ่านการตรวจทานของชุมชน",
   ];
 
   // Assemble a master regexp and remove all now-unneeded comments (commentsToRemove)
@@ -324,7 +326,10 @@ function moveShortDescriptionBeforeDraftTemplate(text: string): string {
       lineEnd === -1 ? text.length : lineEnd,
     );
 
-    if (/^[\t ]*$/.test(textBeforeTemplate) && /^\r?$/.test(textAfterTemplate)) {
+    if (
+      /^[\t ]*$/.test(textBeforeTemplate) &&
+      /^\r?$/.test(textAfterTemplate)
+    ) {
       removalStart = lineStart;
       removalEnd = lineEnd === -1 ? text.length : lineEnd + 1;
     }
@@ -1034,8 +1039,7 @@ function detectDraftSubject(text: string, ctx: ScriptContext<unknown>): string {
     ],
     ภูมิศาสตร์และสถานที่: [
       /Infobox settlement/i,
-      /กล่องข้อมูล องค์กรปกครองส่วนท้องถิ่น/i,
-      /กล่องข้อมูล เทศบาล/i,
+      /กล่องข้อมูล (องค์กรปกครองส่วนท้องถิ่น|เทศบาล|ตำบล|อำเภอ)/i,
       /Infobox body of water/i,
     ],
   };
@@ -1064,6 +1068,7 @@ function appendRefSection(text: string): string {
 }
 
 function partyColorFix(text: string): string {
-  text = text.replace(/\{\{พรรค([^\/]+)\/meta\/color\}\}/gi, "{{สีพรรค|$1}}");
+  text = text.replace(/\{\{พรรค?([^\/]+)\/meta\/color\}\}/gi, "{{สีพรรค|$1}}");
+  text = text.replace(/\{\{ผู้สมัครอิสระ\/meta\/color\}\}/gi, "{{สีพรรค|อิสระ}}");
   return text;
 }
