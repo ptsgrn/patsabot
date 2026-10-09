@@ -12,11 +12,17 @@ export default defineScript({
     description: "จัดรูปแบบฉบับร่างให้เหมาะสม",
   },
   options: (c) =>
-    c.option(
-      "--from <title>",
-      "Start from a specific draft title in all page list mode",
-      "",
-    ),
+    c
+      .option(
+        "--from <title>",
+        "Start from a specific draft title in all page list mode",
+        "",
+      )
+      .option(
+        "--mode <mode>",
+        "Mode to run the bot in",
+        "allpages" as "allpages" | "livecats" | "recentdrafts",
+      ),
   async run(ctx) {
     const user = (await ctx.bot.userinfo()) as { name: string };
     ctx.bot.setOptions({
@@ -28,61 +34,66 @@ export default defineScript({
       },
     });
 
-    // const [draftWithCats, _] = await ctx.replica.query<{ name: string }[]>(`
-    // /* draft-cats.ts SLOW_OK */
-    // SELECT DISTINCT draft.page_title AS name
-    // FROM categorylinks
-    // JOIN page AS draft ON draft.page_id = cl_from
-    // JOIN linktarget ON lt_id = cl_target_id
-    // LEFT JOIN page AS catpage ON catpage.page_namespace = 14 AND catpage.page_title = lt_title
-    // LEFT JOIN page_props ON pp_page = catpage.page_id AND pp_propname = 'hiddencat'
-    // WHERE draft.page_namespace = 118
-    //   AND pp_page IS NULL
-    //   AND lt_title NOT LIKE '%\_drafts'
-    //   AND lt_title NOT LIKE 'AfC_%'
-    //   AND lt_title NOT LIKE 'ฉบับร่าง%'
-    //   AND NOT (draft.page_title = 'กระบะทราย' AND lt_title IN ('Namespace_example_pages', 'Wikipedia_drafts'))
-    //   AND NOT EXISTS (SELECT 1
-    //                   FROM templatelinks
-    //                   JOIN linktarget ON lt_id = tl_target_id AND lt_namespace = 10 AND lt_title = 'หมวดหมู่บำรุงรักษา'
-    //                   WHERE tl_from = catpage.page_id);`);
+    const [draftWithCats, _] = await ctx.replica.query<{ name: string }[]>(`
+    /* draft-cats.ts SLOW_OK */
+    SELECT DISTINCT draft.page_title AS name
+    FROM categorylinks
+    JOIN page AS draft ON draft.page_id = cl_from
+    JOIN linktarget ON lt_id = cl_target_id
+    LEFT JOIN page AS catpage ON catpage.page_namespace = 14 AND catpage.page_title = lt_title
+    LEFT JOIN page_props ON pp_page = catpage.page_id AND pp_propname = 'hiddencat'
+    WHERE draft.page_namespace = 118
+      AND pp_page IS NULL
+      AND lt_title NOT LIKE '%\_drafts'
+      AND lt_title NOT LIKE 'AfC_%'
+      AND lt_title NOT LIKE 'ฉบับร่าง%'
+      AND NOT (draft.page_title = 'กระบะทราย' AND lt_title IN ('Namespace_example_pages', 'Wikipedia_drafts'))
+      AND NOT EXISTS (SELECT 1
+                      FROM templatelinks
+                      JOIN linktarget ON lt_id = tl_target_id AND lt_namespace = 10 AND lt_title = 'หมวดหมู่บำรุงรักษา'
+                      WHERE tl_from = catpage.page_id);`);
 
-    // // 100 Most recently edited drafts in last 2 days where PatsaBot did not edit the page yet.
-    // const [recentDrafts, __] = await ctx.replica.query<{ name: string }[]>(`
-    // /* draft-cats.ts SLOW_OK */
-    // SELECT draft.page_title AS name
-    // FROM page AS draft
-    // JOIN revision ON rev_page = draft.page_id
-    // WHERE draft.page_namespace = 118
-    //   AND rev_timestamp >= DATE_FORMAT(DATE_SUB(NOW(), INTERVAL 2 DAY), '%Y%m%d%H%i%s')
-    //   AND NOT EXISTS (SELECT 1
-    //                   FROM revision AS botrev
-    //                   JOIN actor AS botactor ON botactor.actor_id = botrev.rev_actor
-    //                   WHERE botactor.actor_name = 'PatsaBot'
-    //                     AND botrev.rev_page = draft.page_id)
-    // GROUP BY draft.page_id
-    // ORDER BY MAX(rev_timestamp) DESC
-    // LIMIT 100;`);
+    // 100 Most recently edited drafts in last 2 days where PatsaBot did not edit the page yet.
+    const [recentDrafts, __] = await ctx.replica.query<{ name: string }[]>(`
+    /* draft-cats.ts SLOW_OK */
+    SELECT draft.page_title AS name
+    FROM page AS draft
+    JOIN revision ON rev_page = draft.page_id
+    WHERE draft.page_namespace = 118
+      AND rev_timestamp >= DATE_FORMAT(DATE_SUB(NOW(), INTERVAL 2 DAY), '%Y%m%d%H%i%s')
+      AND NOT EXISTS (SELECT 1
+                      FROM revision AS botrev
+                      JOIN actor AS botactor ON botactor.actor_id = botrev.rev_actor
+                      WHERE botactor.actor_name = 'PatsaBot'
+                        AND botrev.rev_page = draft.page_id)
+    GROUP BY draft.page_id
+    ORDER BY MAX(rev_timestamp) DESC
+    LIMIT 100;`);
 
-    // const drafts = [
-    //   ...draftWithCats.map((draft) => `ฉบับร่าง:${draft.name}`),
-    //   ...recentDrafts.map((draft) => `ฉบับร่าง:${draft.name}`),
-    // ].filter((value, index, self) => self.indexOf(value) === index); // unique
-    for await (const result of ctx.bot.continuedQueryGen({
-      action: "query",
-      format: "json",
-      list: "allpages",
-      formatversion: "2",
-      apfrom: "!",
-      apnamespace: "118",
-      apfilterredir: "nonredirects",
-      ...(ctx.opts.from ? { apfrom: ctx.opts.from } : {}),
-    })) {
-      const pages = (result.query?.allpages ?? []) as ApiPageList;
+    const drafts = [
+      ...draftWithCats.map((draft) => `ฉบับร่าง:${draft.name}`),
+      // ...recentDrafts.map((draft) => `ฉบับร่าง:${draft.name}`),
+    ].filter((value, index, self) => self.indexOf(value) === index); // unique
 
-      for (const { title } of pages) {
-        await processPage(ctx, title);
-      }
+    // for await (const result of ctx.bot.continuedQueryGen({
+    //   action: "query",
+    //   format: "json",
+    //   list: "allpages",
+    //   formatversion: "2",
+    //   apfrom: "!",
+    //   apnamespace: "118",
+    //   apfilterredir: "nonredirects",
+    //   ...(ctx.opts.from ? { apfrom: ctx.opts.from } : {}),
+    // })) {
+    //   const pages = (result.query?.allpages ?? []) as ApiPageList;
+
+    //   for (const { title } of pages) {
+    //     await processPage(ctx, title);
+    //   }
+    // }
+
+    for (const draftTitle of drafts) {
+      await processPage(ctx, draftTitle);
     }
   },
 });
@@ -1068,7 +1079,8 @@ function appendRefSection(text: string): string {
 }
 
 function partyColorFix(text: string): string {
-  text = text.replace(/\{\{พรรค?([^\/]+)\/meta\/color\}\}/gi, "{{สีพรรค|$1}}");
-  text = text.replace(/\{\{ผู้สมัครอิสระ\/meta\/color\}\}/gi, "{{สีพรรค|อิสระ}}");
+  text = text
+    .replace(/\{\{พรรค?([^\/]+)\/meta\/color\}\}/gi, "{{สีพรรค|$1}}")
+    .replace(/\{\{ผู้สมัครอิสระ\/meta\/color\}\}/gi, "{{สีพรรค|อิสระ}}");
   return text;
 }
