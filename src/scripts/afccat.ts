@@ -12,14 +12,13 @@ export default defineScript({
     c.option("--date <date>", "Date to create categories for", "today"),
 
   async run(ctx) {
-    const date = new Date(
-      ctx.opts.date === "today" ? new Date() : ctx.opts.date,
-    );
+    // Scheduled runs do not receive the CLI option defaults.
+    const dateOption = ctx.opts.date ?? "today";
+    const date = dateOption === "today" ? new Date() : new Date(dateOption);
 
-    const dateString =
-      ctx.opts.date === "today"
-        ? date.toISOString().split("T")[0]
-        : ctx.opts.date;
+    if (Number.isNaN(date.getTime())) {
+      throw new Error(`Invalid date: ${JSON.stringify(dateOption)}`);
+    }
 
     const thaiMonths = [
       "มกราคม",
